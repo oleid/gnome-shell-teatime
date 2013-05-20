@@ -167,7 +167,8 @@ const TeaTime = new Lang.Class({
 
 function init(metadata) {
     // TODO: at some point, add translations
-    ;
+    let theme = imports.gi.Gtk.IconTheme.get_default();
+    theme.append_search_path(metadata.path);
 }
 
 let _TeaTime;
