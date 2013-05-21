@@ -1,5 +1,7 @@
 /* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
-/* Olaf Leidinger <oleid@mescharet.de>  20130318  */
+/* Olaf Leidinger <oleid@mescharet.de>  
+   Thomas Liebetraut <thomas@tommie-lie.de>
+*/
 
 const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
