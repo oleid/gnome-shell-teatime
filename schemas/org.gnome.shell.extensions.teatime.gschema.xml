@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.teatime" path="/org/gnome/shell/extensions/teatime/">
+    <key name="steep-times" type="a{su}">
+      <default>{ "Green tea": 180, "Black tea": 210, "Fruit tea": 420, "White tea": 120 }</default>
+      <summary>Tea drawing times list</summary>
+      <description>A mapping of a tea times to their corresponding drawing time in seconds.</description>
+    </key>
+  </schema>
+</schemalist>
+
+

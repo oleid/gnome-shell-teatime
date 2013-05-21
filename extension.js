@@ -24,13 +24,39 @@ const N_ = function(e) { return e; };
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-// TODO: make this configurable via gsettings
-const defaultTeaList = [
-            {name : "Green tea", time : 180 }, 
-            {name : "Black tea", time : 210 }, 
-            {name : "Fruit tea", time : 7 * 60}, 
-            {name : "White tea", time : 120} 
-            ];
+const TEALIST_KEY = "steep-times"
+
+
+function getSettings(schema) {
+    let extension = ExtensionUtils.getCurrentExtension();
+
+    schema = schema || extension.metadata['settings-schema'];
+
+    const GioSSS = Gio.SettingsSchemaSource;
+
+    // check if this extension was built with "make zip-file", and thus
+    // has the schema files in a subfolder
+    // otherwise assume that extension has been installed in the
+    // same prefix as gnome-shell (and therefore schemas are available
+    // in the standard folders)
+    let schemaDir = extension.dir.get_child('schemas');
+    let schemaSource;
+    if (schemaDir.query_exists(null)) {
+        schemaSource = GioSSS.new_from_directory(schemaDir.get_path(),
+                                                 GioSSS.get_default(),
+                                                 false);
+                                                 }
+    else
+        schemaSource = GioSSS.get_default();
+
+    let schemaObj = schemaSource.lookup(schema, true);
+    if (!schemaObj)
+        throw new Error('Schema ' + schema + ' could not be found for extension '
+                        + extension.metadata.uuid + '. Please check your installation.');
+
+    return new Gio.Settings({ settings_schema: schemaObj });
+}
+
 
 const TeaTime = new Lang.Class({
     Name : 'TeaTime',
@@ -38,6 +64,8 @@ const TeaTime = new Lang.Class({
 
     _init : function() {
         this.parent(0.0, "TeaTime");
+
+        this._settings = getSettings();
 
         this._logo = new St.Icon({
             icon_name : 'utilities-teatime',
@@ -60,10 +88,10 @@ const TeaTime = new Lang.Class({
 
         this._createMenu();
     },
-
     _createMenu : function() {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this._addTeaList();
+        this._settings.connect("changed::" + TEALIST_KEY, Lang.bind(this, this._updateTeaList));
+        this._updateTeaList();
     },
     _formatTime : function(seconds) {
         let a = new Date(0,0,0); // important: hour needs to be set to zero in _locale_ time
@@ -75,25 +103,22 @@ const TeaTime = new Lang.Class({
         else 
             return a.toLocaleFormat("%M:%S");
     },
-    _addTeaList : function(config, output) {
-        let  item = new PopupMenu.PopupMenuItem(_("brewing times"));
-        item.label.add_style_class_name('display-subtitle');
-        item.actor.reactive = false;
-        item.actor.can_focus = false;
-        this.menu.addMenuItem(item);
-        this._callbacks = [];
-
-        defaultTeaList.sort(function(a, b) {
-            return -1 * (a.time < b.time) + (a.time > b.time);
-        });
+    _updateTeaList : function(config, output) {
+        // make sure the menu is empty
+        this.menu.removeAll();
         
-        for ( var i = 0; i < defaultTeaList.length; i++) {
-            let tea  = defaultTeaList[i];
-            let item = new PopupMenu.PopupMenuItem(this._formatTime(tea.time) + " - " + tea.name);
-
-            this._callbacks.push( function() {this._initCountdown(tea.time); });
-            item.connect('activate', Lang.bind(this, this._callbacks[i]));
-            this.menu.addMenuItem(item);
+        // fill with new teas
+        let list = this._settings.get_value(TEALIST_KEY);
+        for (let i = 0; i < list.n_children(); ++i) {
+            let item = list.get_child_value(i);
+            let teaname = item.get_child_value(0).get_string()[0];
+            let time = item.get_child_value(1).get_uint32();
+            
+            let menuItem = new PopupMenu.PopupMenuItem(teaname + ":  " + this._formatTime(time));
+            menuItem.connect('activate', Lang.bind(this, function() {
+                this._initCountdown(time);
+            }));
+            this.menu.addMenuItem(menuItem);
         }
     },
     _showNotification : function(subject, text) {
