@@ -1,1 +1,1 @@
-{"shell-version": ["3.6"], "uuid": "TeaTime@oleid.mescharet.de", "name": "TeaTime", "description": "A tea brewing timer"}
+{"shell-version": ["3.6"], "uuid": "TeaTime@oleid.mescharet.de", "name": "TeaTime", "settings-schema": "org.gnome.shell.extensions.teatime", "description": "A tea brewing timer"}
