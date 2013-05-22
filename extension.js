@@ -25,14 +25,8 @@ const N_ = function(e) { return e; };
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const Utils = Me.imports.utils;
 
-// TODO: make this configurable via gsettings
-const defaultTeaList = [
-            {name : "Green tea", time : 180 }, 
-            {name : "Black tea", time : 210 }, 
-            {name : "Fruit tea", time : 7 * 60}, 
-            {name : "White tea", time : 120} 
-            ];
 
 const TeaTime = new Lang.Class({
     Name : 'TeaTime',
@@ -41,13 +35,14 @@ const TeaTime = new Lang.Class({
     _init : function() {
         this.parent(0.0, "TeaTime");
 
+        this._settings = Utils.getSettings();
+
         this._logo = new St.Icon({
             icon_name : 'utilities-teatime',
             style_class : 'system-status-icon'
         });
 
         // set timer widget
-
         this._timer = new St.DrawingArea({
             reactive : true
         });
@@ -62,40 +57,26 @@ const TeaTime = new Lang.Class({
 
         this._createMenu();
     },
-
     _createMenu : function() {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this._addTeaList();
+        this._settings.connect("changed::" + Utils.TEATIME_STEEP_TIMES_KEY,
+                               Lang.bind(this, this._updateTeaList));
+        this._updateTeaList();
     },
-    _formatTime : function(seconds) {
-        let a = new Date(0,0,0); // important: hour needs to be set to zero in _locale_ time
-
-        a.setTime(a.getTime()+ seconds * 1000); // set time in msec, adding the time we want
-
-        if (seconds > 3600) 
-            return a.toLocaleFormat("%H:%M:%S");
-        else 
-            return a.toLocaleFormat("%M:%S");
-    },
-    _addTeaList : function(config, output) {
-        let  item = new PopupMenu.PopupMenuItem(_("brewing times"));
-        item.label.add_style_class_name('display-subtitle');
-        item.actor.reactive = false;
-        item.actor.can_focus = false;
-        this.menu.addMenuItem(item);
-        this._callbacks = [];
-
-        defaultTeaList.sort(function(a, b) {
-            return -1 * (a.time < b.time) + (a.time > b.time);
-        });
+    _updateTeaList : function(config, output) {
+        // make sure the menu is empty
+        this.menu.removeAll();
         
-        for ( var i = 0; i < defaultTeaList.length; i++) {
-            let tea  = defaultTeaList[i];
-            let item = new PopupMenu.PopupMenuItem(this._formatTime(tea.time) + " - " + tea.name);
-
-            this._callbacks.push( function() {this._initCountdown(tea.time); });
-            item.connect('activate', Lang.bind(this, this._callbacks[i]));
-            this.menu.addMenuItem(item);
+        // fill with new teas
+        let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
+        for (let teaname in list) {
+            let time = list[teaname].get_uint32();
+            
+            let menuItem = new PopupMenu.PopupMenuItem(teaname + ":  " + Utils.formatTime(time));
+            menuItem.connect('activate', Lang.bind(this, function() {
+                this._initCountdown(time);
+            }));
+            this.menu.addMenuItem(menuItem);
         }
     },
     _showNotification : function(subject, text) {
