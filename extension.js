@@ -25,39 +25,7 @@ const N_ = function(e) { return e; };
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-
-const TEALIST_KEY = "steep-times"
-
-
-function getSettings(schema) {
-    let extension = ExtensionUtils.getCurrentExtension();
-
-    schema = schema || extension.metadata['settings-schema'];
-
-    const GioSSS = Gio.SettingsSchemaSource;
-
-    // check if this extension was built with "make zip-file", and thus
-    // has the schema files in a subfolder
-    // otherwise assume that extension has been installed in the
-    // same prefix as gnome-shell (and therefore schemas are available
-    // in the standard folders)
-    let schemaDir = extension.dir.get_child('schemas');
-    let schemaSource;
-    if (schemaDir.query_exists(null)) {
-        schemaSource = GioSSS.new_from_directory(schemaDir.get_path(),
-                                                 GioSSS.get_default(),
-                                                 false);
-                                                 }
-    else
-        schemaSource = GioSSS.get_default();
-
-    let schemaObj = schemaSource.lookup(schema, true);
-    if (!schemaObj)
-        throw new Error('Schema ' + schema + ' could not be found for extension '
-                        + extension.metadata.uuid + '. Please check your installation.');
-
-    return new Gio.Settings({ settings_schema: schemaObj });
-}
+const Utils = Me.imports.utils;
 
 
 const TeaTime = new Lang.Class({
@@ -67,7 +35,7 @@ const TeaTime = new Lang.Class({
     _init : function() {
         this.parent(0.0, "TeaTime");
 
-        this._settings = getSettings();
+        this._settings = Utils.getSettings();
 
         this._logo = new St.Icon({
             icon_name : 'utilities-teatime',
@@ -75,7 +43,6 @@ const TeaTime = new Lang.Class({
         });
 
         // set timer widget
-
         this._timer = new St.DrawingArea({
             reactive : true
         });
@@ -92,31 +59,20 @@ const TeaTime = new Lang.Class({
     },
     _createMenu : function() {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this._settings.connect("changed::" + TEALIST_KEY, Lang.bind(this, this._updateTeaList));
+        this._settings.connect("changed::" + Utils.TEATIME_STEEP_TIMES_KEY,
+                               Lang.bind(this, this._updateTeaList));
         this._updateTeaList();
-    },
-    _formatTime : function(seconds) {
-        let a = new Date(0,0,0); // important: hour needs to be set to zero in _locale_ time
-
-        a.setTime(a.getTime()+ seconds * 1000); // set time in msec, adding the time we want
-
-        if (seconds > 3600) 
-            return a.toLocaleFormat("%H:%M:%S");
-        else 
-            return a.toLocaleFormat("%M:%S");
     },
     _updateTeaList : function(config, output) {
         // make sure the menu is empty
         this.menu.removeAll();
         
         // fill with new teas
-        let list = this._settings.get_value(TEALIST_KEY);
-        for (let i = 0; i < list.n_children(); ++i) {
-            let item = list.get_child_value(i);
-            let teaname = item.get_child_value(0).get_string()[0];
-            let time = item.get_child_value(1).get_uint32();
+        let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
+        for (let teaname in list) {
+            let time = list[teaname].get_uint32();
             
-            let menuItem = new PopupMenu.PopupMenuItem(teaname + ":  " + this._formatTime(time));
+            let menuItem = new PopupMenu.PopupMenuItem(teaname + ":  " + Utils.formatTime(time));
             menuItem.connect('activate', Lang.bind(this, function() {
                 this._initCountdown(time);
             }));

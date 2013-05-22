@@ -21,40 +21,13 @@ const N_ = function(e) { return e; };
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-
-let settings;
-
-const SETTINGS_TEALIST_KEY = 'steep-times';
+const Utils = Me.imports.utils;
 
 
-function getSettings(schema) {
-    let extension = ExtensionUtils.getCurrentExtension();
-
-    schema = schema || extension.metadata['settings-schema'];
-
-    const GioSSS = Gio.SettingsSchemaSource;
-
-    // check if this extension was built with "make zip-file", and thus
-    // has the schema files in a subfolder
-    // otherwise assume that extension has been installed in the
-    // same prefix as gnome-shell (and therefore schemas are available
-    // in the standard folders)
-    let schemaDir = extension.dir.get_child('schemas');
-    let schemaSource;
-    if (schemaDir.query_exists(null)) {
-        schemaSource = GioSSS.new_from_directory(schemaDir.get_path(),
-                                                 GioSSS.get_default(),
-                                                 false);
-                                                 }
-    else
-        schemaSource = GioSSS.get_default();
-
-    let schemaObj = schemaSource.lookup(schema, true);
-    if (!schemaObj)
-        throw new Error('Schema ' + schema + ' could not be found for extension '
-                        + extension.metadata.uuid + '. Please check your installation.');
-
-    return new Gio.Settings({ settings_schema: schemaObj });
+const Columns = {
+    TEA_NAME: 0,
+    STEEP_TIME: 1,
+    ADJUSTMENT: 2
 }
 
 const TeaTimePrefsWidget = new Lang.Class({
@@ -65,11 +38,16 @@ const TeaTimePrefsWidget = new Lang.Class({
         this.parent({ orientation: Gtk.Orientation.VERTICAL });
 
         this._tealist = new Gtk.ListStore();
-        this._tealist.set_column_types([GObject.TYPE_STRING, GObject.TYPE_INT, Gtk.Adjustment]);
+        this._tealist.set_column_types([
+            GObject.TYPE_STRING,
+            GObject.TYPE_INT,
+            Gtk.Adjustment
+        ]);
 
-        this._settings = getSettings();
+        this._settings = Utils.getSettings();
         this._inhibitUpdate = true;
-        this._settings.connect("changed::" + SETTINGS_TEALIST_KEY, Lang.bind(this, this._refresh));
+        this._settings.connect("changed::" + Utils.TEATIME_STEEP_TIMES_KEY,
+                               Lang.bind(this, this._refresh));
         
         this._initWindow();
         this.vexpand = true;
@@ -92,10 +70,10 @@ const TeaTimePrefsWidget = new Lang.Class({
         // when the UI does not know about the config storage backend.
         renderer.connect("edited", Lang.bind(this, function(renderer, pathString, newValue) {
             let [store, iter] = this._tealist.get_iter(Gtk.TreePath.new_from_string(pathString));
-            this._tealist.set(iter, [0], [newValue]);
+            this._tealist.set(iter, [Columns.TEA_NAME], [newValue]);
         }));
         teaname.pack_start(renderer, true);
-        teaname.add_attribute(renderer, "text", 0);
+        teaname.add_attribute(renderer, "text", Columns.TEA_NAME);
         this.treeview.append_column(teaname);        
         
         let steeptime = new Gtk.TreeViewColumn({ title: _("Steep time"), min_width: 150 });
@@ -103,12 +81,12 @@ const TeaTimePrefsWidget = new Lang.Class({
         // See comment above.
         spinrenderer.connect("edited", Lang.bind(this, function(renderer, pathString, newValue) {
             let [store, iter] = this._tealist.get_iter(Gtk.TreePath.new_from_string(pathString));
-            this._tealist.set(iter, [1], [parseInt(newValue)]);
+            this._tealist.set(iter, [Columns.STEEP_TIME], [parseInt(newValue)]);
         }));
 
         steeptime.pack_start(spinrenderer, true);
-        steeptime.add_attribute(spinrenderer, "adjustment", 2);
-        steeptime.add_attribute(spinrenderer, "text", 1);
+        steeptime.add_attribute(spinrenderer, "adjustment", Columns.ADJUSTMENT);
+        steeptime.add_attribute(spinrenderer, "text", Columns.STEEP_TIME);
         this.treeview.append_column(steeptime);
 
 
@@ -127,20 +105,20 @@ const TeaTimePrefsWidget = new Lang.Class({
         if (this._inhibitUpdate)
             return;
 
-        let list = this._settings.get_value(SETTINGS_TEALIST_KEY);
+        let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
 
         // stop everyone from reacting to the changes we are about to produce
         // in the model
         this._inhibitUpdate = true;
 
         this._tealist.clear();
-        for (let i = 0; i < list.n_children(); ++i) {
-            let item = list.get_child_value(i);
-            let teaname = item.get_child_value(0).get_string()[0];
-            let time = item.get_child_value(1).get_uint32();
-            
+        for (let teaname in list) {
+            let time = list[teaname].get_uint32();
+
             let adj = new Gtk.Adjustment({ lower: 1, step_increment: 1, upper: 65535, value: time });
-            this._tealist.set(this._tealist.append(), [0, 1, 2], [teaname, time, adj]);
+            this._tealist.set(this._tealist.append(),
+                    [Columns.TEA_NAME, Columns.STEEP_TIME, Columns.ADJUSTMENT],
+                    [teaname,          time,               adj]);
         }
 
         this._inhibitUpdate = false;
@@ -148,8 +126,12 @@ const TeaTimePrefsWidget = new Lang.Class({
     _addTea: function() {
         let adj = new Gtk.Adjustment({ lower: 1, step_increment: 1, upper: 65535, value: 1 });
         let item = this._tealist.append();
-        this._tealist.set(item, [0, 1, 2], ["", 1, adj]);
-        this.treeview.set_cursor(this._tealist.get_path(item), this.treeview.get_column(0), true);
+        this._tealist.set(item, 
+                    [Columns.TEA_NAME, Columns.STEEP_TIME, Columns.ADJUSTMENT],
+                    ["",               1,                  adj]);
+        this.treeview.set_cursor(this._tealist.get_path(item),
+                                 this.treeview.get_column(Columns.TEA_NAME),
+                                 true);
     },
     _removeSelectedTea: function() {
         let [selection, store] = this.treeview.get_selection().get_selected_rows();
@@ -175,8 +157,8 @@ const TeaTimePrefsWidget = new Lang.Class({
         let values = [];
         this._tealist.foreach(function(store, path, iter) {
             values.push(GLib.Variant.new_dict_entry(
-                GLib.Variant.new_string(store.get_value(iter, 0)),
-                GLib.Variant.new_uint32(store.get_value(iter, 1))))
+                GLib.Variant.new_string(store.get_value(iter, Columns.TEA_NAME)),
+                GLib.Variant.new_uint32(store.get_value(iter, Columns.STEEP_TIME))))
         });
         let settingsValue = GLib.Variant.new_array(GLib.VariantType.new("{su}"), values);
         
@@ -184,11 +166,10 @@ const TeaTimePrefsWidget = new Lang.Class({
         // disable updating it here to avoid an infinite loop
         this._inhibitUpdate = true;
 
-        this._settings.set_value(SETTINGS_TEALIST_KEY, settingsValue);
+        this._settings.set_value(Utils.TEATIME_STEEP_TIMES_KEY, settingsValue);
         
         this._inhibitUpdate = false;
     }
-
 });
 
 
