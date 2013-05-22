@@ -24,6 +24,7 @@ $SUDO cp  *.js *.json "$INST_DIR"
 
 if [ "$1" != "global" ]; then
     $SUDO cp -ax *.svg schemas  "$INST_DIR"
+    glib-compile-schemas "$INST_DIR"/schemas
 else 
     echo "Installing schema"
     $SUDO cp schemas/*.xml /usr/share/glib-2.0/schemas/ && \
