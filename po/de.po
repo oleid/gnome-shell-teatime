@@ -1,0 +1,65 @@
+# German translations for TeaTime package
+# German messages for TeaTime.
+# Copyright (C) 2013 THE TeaTime'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the TeaTime package.
+# Olaf Leidinger <oleid@mescharet.de>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: TeaTime 7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-10-31 09:30+0100\n"
+"PO-Revision-Date: 2013-10-31 09:38+0100\n"
+"Last-Translator: Olaf Leidinger <oleid@mescharet.de>\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.5.7\n"
+
+#: ../src/extension.js:88
+msgid "TeaTime applet"
+msgstr "TeaTime applet"
+
+#: ../src/extension.js:105
+msgid "Timer set!"
+msgstr "Die Zeit läuft!"
+
+#: ../src/extension.js:105
+msgid "s to go"
+msgstr "s verbleiben"
+
+#: ../src/extension.js:120
+msgid "Your tea is ready!"
+msgstr "Dein Tee ist fertig!"
+
+#: ../src/extension.js:121
+msgid "Drink it, while it is hot!"
+msgstr "Trink ihn, solange er noch heiß ist!"
+
+#: ../src/prefs.js:68
+msgid "Tea"
+msgstr "Tee"
+
+#: ../src/prefs.js:83
+msgid "Steep time"
+msgstr "Ziehzeit"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:1
+msgid ""
+"{ \"Green tea\": 180, \"Black tea\": 210, \"Fruit tea\": 420, \"White tea\": "
+"120 }"
+msgstr ""
+"{ \"Grüner Tee\": 180, \"Schwarztee\": 210, \"Früchtetee\": 420, \"Weißer Tee"
+"\": 120 }"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:2
+msgid "Tea drawing times list"
+msgstr "Liste der Teeziehzeiten"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:3
+msgid ""
+"A mapping of a tea times to their corresponding drawing time in seconds."
+msgstr "Eine Zuordnung zwischen Tees und Ziehzeiten"
