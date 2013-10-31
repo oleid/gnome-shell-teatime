@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="@GSETTINGS_SCHEMA@" path="/org/gnome/shell/extensions/teatime/" gettext-domain="@GETTEXT_DOMAIN@">
+    <key name="steep-times" type="a{su}">
+      <_default l10n="messages">{ "Green tea": 180, "Black tea": 210, "Fruit tea": 420, "White tea": 120 }</_default>
+      <_summary>Tea drawing times list</_summary>
+      <_description>A mapping of a teas to their corresponding drawing time in seconds.</_description>
+    </key>
+  </schema>
+</schemalist>
+
+
