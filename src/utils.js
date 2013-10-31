@@ -11,6 +11,15 @@ const Me = ExtensionUtils.getCurrentExtension();
 
 const TEATIME_STEEP_TIMES_KEY = 'steep-times';
 
+function bindTextDomain() {
+    // Evil hack to check, if extension is globally installed. 
+    // If it is, we may not bind to the text domain, as the translation won't 
+    // be found
+    if( Me.dir.get_path() != "/usr/share/gnome-shell/extensions/TeaTime@oleid.mescharet.de" ) {
+        Gettext.bindtextdomain("TeaTime", Me.dir.get_path() + "/locale");
+    }
+}
+
 function getSettings(schema) {
     let extension = ExtensionUtils.getCurrentExtension();
 

@@ -15,13 +15,17 @@ const Lang = imports.lang;
 const Gtk = imports.gi.Gtk;
 const GObject = imports.gi.GObject;
 
-const Gettext = imports.gettext.domain('gnome-shell-extensions');
-const _ = Gettext.gettext;
+const Gettext        = imports.gettext;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me             = ExtensionUtils.getCurrentExtension();
+const Utils          = Me.imports.utils;
+
+Gettext.textdomain("TeaTime");
+Utils.bindTextDomain();
+
+const _  = Gettext.gettext;
 const N_ = function(e) { return e; };
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Utils = Me.imports.utils;
 
 
 const Columns = {

@@ -19,13 +19,18 @@ const PanelMenu   = imports.ui.panelMenu;
 const PopupMenu   = imports.ui.popupMenu;
 const Panel       = imports.ui.panel;
 
-const Gettext = imports.gettext.domain('gnome-shell-extensions');
-const _ = Gettext.gettext;
+
+const Gettext        = imports.gettext;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me             = ExtensionUtils.getCurrentExtension();
+const Utils          = Me.imports.utils;
+
+Gettext.textdomain("TeaTime");
+Utils.bindTextDomain();
+
+const _  = Gettext.gettext;
 const N_ = function(e) { return e; };
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Utils = Me.imports.utils;
 
 
 const TeaTime = new Lang.Class({
@@ -72,7 +77,7 @@ const TeaTime = new Lang.Class({
         for (let teaname in list) {
             let time = list[teaname].get_uint32();
             
-            let menuItem = new PopupMenu.PopupMenuItem(teaname + ":  " + Utils.formatTime(time));
+            let menuItem = new PopupMenu.PopupMenuItem(_(teaname) + ":  " + Utils.formatTime(time));
             menuItem.connect('activate', Lang.bind(this, function() {
                 this._initCountdown(time);
             }));
@@ -80,7 +85,7 @@ const TeaTime = new Lang.Class({
         }
     },
     _showNotification : function(subject, text) {
-        let source = new MessageTray.Source("TeaTime applet", 'utilities-teatime');
+        let source = new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
         Main.messageTray.add(source);
         
         let notification = new MessageTray.Notification(source, subject, text);
@@ -97,7 +102,7 @@ const TeaTime = new Lang.Class({
         this.actor.remove_actor(this._logo);         // show timer instead of default icon
         this.actor.add_actor(this._timer);
 
-        this._showNotification("Timer set!", time + "s to go");
+        this._showNotification(_("Timer set!"), time + _("s to go"));
         this._idleTimeout = Mainloop.timeout_add_seconds(this._dt, Lang.bind(this, this._doCountdown));
     },
     _getRemainingSec: function() {
@@ -112,8 +117,8 @@ const TeaTime = new Lang.Class({
             // count down finished, switch display again
             this.actor.remove_actor(this._timer);
             this.actor.add_actor(this._logo);
-            this._showNotification("Your tea is ready!",
-                    "Drink it, while it is hot!");
+            this._showNotification(_("Your tea is ready!"),
+                    _("Drink it, while it is hot!"));
             this._idleTimeout = null;
             return false;
         } else {
