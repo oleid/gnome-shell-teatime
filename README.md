@@ -4,7 +4,7 @@ To install the extension, first run
 
 If everything worked well, do:
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 make
 
 And as a super user, e.g. using sudo
