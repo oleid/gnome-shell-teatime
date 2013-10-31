@@ -20,8 +20,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
 const Utils          = Me.imports.utils;
 
-Gettext.textdomain("TeaTime");
-Utils.bindTextDomain();
+Utils.initTranslations("TeaTime");
 
 const _  = Gettext.gettext;
 const N_ = function(e) { return e; };

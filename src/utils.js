@@ -3,22 +3,32 @@
    Thomas Liebetraut <thomas@tommie-lie.de>
 */
 
-const Gio = imports.gi.Gio;
-const Lang = imports.lang;
-
+const Gio            = imports.gi.Gio;
+const Lang           = imports.lang;
+const Gettext        = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+const Me             = ExtensionUtils.getCurrentExtension();
+const Config         = imports.misc.config;
 
 const TEATIME_STEEP_TIMES_KEY = 'steep-times';
 
-function bindTextDomain() {
-    // Evil hack to check, if extension is globally installed. 
-    // If it is, we may not bind to the text domain, as the translation won't 
-    // be found
-    if( Me.dir.get_path() != "/usr/share/gnome-shell/extensions/TeaTime@oleid.mescharet.de" ) {
-        Gettext.bindtextdomain("TeaTime", Me.dir.get_path() + "/locale");
-    }
+function initTranslations(domain) {
+    let extension = ExtensionUtils.getCurrentExtension();
+
+    domain = domain || extension.metadata['gettext-domain'];
+
+    Gettext.textdomain(domain);
+    // check if this extension was built with "make zip-file", and thus
+    // has the locale files in a subfolder
+    // otherwise assume that extension has been installed in the
+    // same prefix as gnome-shell
+    let localeDir = extension.dir.get_child('locale');
+    if (localeDir.query_exists(null))
+        Gettext.bindtextdomain(domain, localeDir.get_path());
+    else
+        Gettext.bindtextdomain(domain, Config.LOCALEDIR);
 }
+
 
 function getSettings(schema) {
     let extension = ExtensionUtils.getCurrentExtension();
