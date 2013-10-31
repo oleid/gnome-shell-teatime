@@ -7,7 +7,11 @@ If everything worked well, do:
 ./configure --prefix=/usr &&
 make
 
-And as a super user, e.g. using sudo
+To install the extension to your home directory, run
+
+make local-install
+
+Or to install it for all users you need administrator rights. Thus you've to use something like sudo or become root via su. Using sudo, simply run:
 
 sudo make install
 
