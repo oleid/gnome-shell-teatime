@@ -1,7 +1,24 @@
-Run install.sh without any arguments to install the extension into your home directory.
+To install the extension, first run
 
-If you want to install the extension for all users, run
+./autogen.sh
 
-install.sh global
+If everything worked well, do:
 
-instead.
+./configure --prefix=/usr
+make
+
+And as a super user, e.g. using sudo
+
+sudo make install
+
+Restart gnome-shell after that (using Alt+F2, enter "r" -- without quotes).
+
+If you wish to translate TeaTime to your language, have a look at the directory "po".
+
+A handy zip file can be created using:
+
+make zip   -- This is the same you get via http://extensions.gnome.org
+
+
+Thanks to  Thomas Liebetraut for the new build system.
+Get the latest version from:  https://github.com/tommie-lie/gnome-shell-extensions-template
