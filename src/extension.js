@@ -25,7 +25,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
 const Utils          = Me.imports.utils;
 
-Utils.initTranslations("TeaTime");
+Utils.initTranslations();
 
 const _  = Gettext.gettext;
 const N_ = function(e) { return e; };
@@ -101,7 +101,7 @@ const TeaTime = new Lang.Class({
         this.actor.remove_actor(this._logo);         // show timer instead of default icon
         this.actor.add_actor(this._timer);
 
-        this._showNotification(_("Timer set!"), time + _("s to go"));
+        this._showNotification(_("Timer set!"), _("%ss to go").format(time));
         this._idleTimeout = Mainloop.timeout_add_seconds(this._dt, Lang.bind(this, this._doCountdown));
     },
     _getRemainingSec: function() {

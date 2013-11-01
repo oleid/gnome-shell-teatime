@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TeaTime 7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-31 09:30+0100\n"
+"POT-Creation-Date: 2013-11-02 00:18+0100\n"
 "PO-Revision-Date: 2013-10-31 09:38+0100\n"
 "Last-Translator: Olaf Leidinger <oleid@mescharet.de>\n"
 "Language-Team: German\n"
@@ -19,40 +19,39 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.5.7\n"
 
-#: ../src/extension.js:88
+#: ../src/extension.js:87
 msgid "TeaTime applet"
 msgstr "TeaTime applet"
 
-#: ../src/extension.js:105
+#: ../src/extension.js:104
 msgid "Timer set!"
 msgstr "Die Zeit läuft!"
 
-#: ../src/extension.js:105
-msgid "s to go"
-msgstr "s verbleiben"
+#: ../src/extension.js:104
+#, fuzzy, javascript-format
+msgid "%ss to go"
+msgstr "%ss verbleiben"
 
-#: ../src/extension.js:120
+#: ../src/extension.js:119
 msgid "Your tea is ready!"
 msgstr "Dein Tee ist fertig!"
 
-#: ../src/extension.js:121
+#: ../src/extension.js:120
 msgid "Drink it, while it is hot!"
 msgstr "Trink ihn, solange er noch heiß ist!"
 
-#: ../src/prefs.js:68
+#: ../src/prefs.js:67
 msgid "Tea"
 msgstr "Tee"
 
-#: ../src/prefs.js:83
+#: ../src/prefs.js:82
 msgid "Steep time"
 msgstr "Ziehzeit"
 
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:1
-msgid ""
-"{ \"Green tea\": 180, \"Black tea\": 210, \"Fruit tea\": 420, \"White tea\": "
+msgid "{ \"Green tea\": 180, \"Black tea\": 210, \"Fruit tea\": 420, \"White tea\": "
 "120 }"
-msgstr ""
-"{ \"Grüner Tee\": 180, \"Schwarztee\": 210, \"Früchtetee\": 420, \"Weißer Tee"
+msgstr "{ \"Grüner Tee\": 180, \"Schwarztee\": 210, \"Früchtetee\": 420, \"Weißer Tee"
 "\": 120 }"
 
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:2
@@ -60,6 +59,5 @@ msgid "Tea drawing times list"
 msgstr "Liste der Teeziehzeiten"
 
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:3
-msgid ""
-"A mapping of a tea times to their corresponding drawing time in seconds."
-msgstr "Eine Zuordnung zwischen Tees und Ziehzeiten"
+msgid "A mapping of a teas to their corresponding drawing time in seconds."
+msgstr "Eine Zuordnung zwischen Tees und Ziehzeiten in Sekunden."
