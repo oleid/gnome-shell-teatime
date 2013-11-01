@@ -11,6 +11,7 @@ const Me             = ExtensionUtils.getCurrentExtension();
 const Config         = imports.misc.config;
 
 const TEATIME_STEEP_TIMES_KEY = 'steep-times';
+const TEATIME_FULLSCREEN_NOTIFICATION_KEY = 'fullscreen-notification';
 
 function initTranslations(domain) {
     let extension = ExtensionUtils.getCurrentExtension();

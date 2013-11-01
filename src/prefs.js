@@ -35,10 +35,14 @@ const Columns = {
 
 const TeaTimePrefsWidget = new Lang.Class({
     Name : 'TeaTimePrefsWidget',
-    Extends : Gtk.Box,
+    Extends : Gtk.Grid,
     
     _init: function() {
-        this.parent({ orientation: Gtk.Orientation.VERTICAL });
+        this.parent({ orientation: Gtk.Orientation.VERTICAL,
+                      column_homogeneous: false,
+                      vexpand: true,
+                      margin: 5,
+                      row_spacing: 5 });
 
         this._tealist = new Gtk.ListStore();
         this._tealist.set_column_types([
@@ -49,20 +53,26 @@ const TeaTimePrefsWidget = new Lang.Class({
 
         this._settings = Utils.getSettings();
         this._inhibitUpdate = true;
-        this._settings.connect("changed::" + Utils.TEATIME_STEEP_TIMES_KEY,
-                               Lang.bind(this, this._refresh));
+        this._settings.connect("changed", Lang.bind(this, this._refresh));
         
         this._initWindow();
-        this.vexpand = true;
         this._inhibitUpdate = false;
         this._refresh();
         this._tealist.connect("row-changed", Lang.bind(this, this._save));
         this._tealist.connect("row-deleted", Lang.bind(this, this._save));
     },
     _initWindow: function() {
+        let label = new Gtk.Label({ label: "Fullscreen Notifications",
+                                    hexpand: true,
+                                    halign: Gtk.Align.START });
+        this.attach(label, 0 /*col*/, 0 /*row*/, 1 /*col span*/, 1 /*row span*/);
+        this.fullscreenNotificationSwitch = new Gtk.Switch();
+        this.fullscreenNotificationSwitch.connect("notify::active", Lang.bind(this, this._saveFullscreenNotifications));
+        this.attach(this.fullscreenNotificationSwitch, 1, 0, 1, 1);
+        
         this.treeview = new Gtk.TreeView({model: this._tealist, expand: true});
         this.treeview.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
-        this.add(this.treeview);
+        this.attach(this.treeview, 0, 1, 2, 1);
         
         let teaname = new Gtk.TreeViewColumn({ title: _("Tea"), expand: true });
         let renderer = new Gtk.CellRendererText({ editable: true });
@@ -108,6 +118,8 @@ const TeaTimePrefsWidget = new Lang.Class({
         if (this._inhibitUpdate)
             return;
 
+        this.fullscreenNotificationSwitch.active = this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)
+
         let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
 
         // stop everyone from reacting to the changes we are about to produce
@@ -151,6 +163,15 @@ const TeaTimePrefsWidget = new Lang.Class({
         );
 
         this.treeview.get_selection().unselect_all();
+    },
+    _saveFullscreenNotifications: function(sw, data) {
+        // don't update the backend if someone else is messing with the model
+        if (this._inhibitUpdate)
+            return;
+        this._inhibitUpdate = true;
+        this._settings.set_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY,
+                                   sw.active);
+        this._inhibitUpdate = false;
     },
     _save: function(store, path_, iter_) {
         // don't update the backend if someone else is messing with the model

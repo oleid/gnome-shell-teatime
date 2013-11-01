@@ -6,6 +6,11 @@
       <_summary>Tea drawing times list</_summary>
       <_description>A mapping of a teas to their corresponding drawing time in seconds.</_description>
     </key>
+    <key name="fullscreen-notification" type="b">
+      <default>false</default>
+      <summary>Show fullscreen notifications.</summary>
+      <description>Displays a more disrupting, modal fullscreen notification when the timer has elapsed.</description>
+    </key>
   </schema>
 </schemalist>
 
