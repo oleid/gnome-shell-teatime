@@ -32,7 +32,7 @@ Or to install it for all users you need administrator rights. Thus you've to use
 
 sudo make install
 
-Restart gnome-shell after that (using Alt+F2, enter "r" -- without quotes).
+In case you can't find the applet in gnome-tweak-tool, restart gnome-shell (using Alt+F2, enter "r" -- without quotes).
 
 If you wish to translate TeaTime to your language, have a look at the directory "po".
 
