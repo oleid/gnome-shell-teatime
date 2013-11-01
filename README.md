@@ -1,8 +1,25 @@
-To install the extension, first run
+**Premise**
+
+Befor you do anything, please make sure, that you have the following packages installed:
+
+ - libglib2.0-dev
+ - intltool
+ - gnome-common
+ 
+The name of the package may vary from distribution to distributon. The first two packages provide m4-files needed for the generation of the configure script. The files in need are:
+
+- intltool.m4
+- gsettings.m4
+
+They should be located somewhere in /usr/share/aclocal.
+
+**Installaton**
+
+If everything is in place, run
 
 ./autogen.sh
 
-If everything worked well, do:
+to generate the configure script. If everything worked well, do:
 
 ./configure --prefix=/usr &&
 make
