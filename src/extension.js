@@ -187,6 +187,37 @@ const TeaTime = new Lang.Class({
             }));
             this.menu.addMenuItem(menuItem);
         }
+        let bottom = new PopupMenu.PopupMenuSection();
+        this._customEntry = new St.Entry({ style_class: 'teatime-custom-entry',
+                                         track_hover: true,
+                                         hint_text: "Custom..." });
+        this._customEntry.get_clutter_text().set_max_length(10);
+        this._customEntry.get_clutter_text().connect("key-press-event", Lang.bind(this, this._createCustomTimer));    
+        bottom.box.add(this._customEntry);
+        bottom.actor.set_style("padding: 0px 20px;")
+        this.menu.addMenuItem(bottom);
+    },
+    _createCustomTimer: function(text, event) {
+        if (event.get_key_symbol() == Clutter.KEY_Enter ||
+            event.get_key_symbol() == Clutter.KEY_Return) {
+
+            let customTime = text.get_text();
+            let seconds = 0;
+            let match = customTime.match(/^(?:(\d+)(?::(\d{0,2}))?|:(\d+))$/)
+            if (match) {
+                if (match[3])
+                    seconds = parseInt(match[3]);
+                else {
+                    if (match[1])
+                        seconds += parseInt(match[1]) * 60;
+                    if (match[2])
+                        seconds += parseInt(match[2]);
+                }
+                this._initCountdown(seconds);
+                this.menu.close();
+            }
+            this._customEntry.set_text("");
+        }
     },
     _showNotification : function(subject, text) {
         let source = new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
