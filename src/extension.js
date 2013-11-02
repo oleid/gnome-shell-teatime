@@ -59,11 +59,13 @@ const TeaTimeFullscreenNotification = new Lang.Class({
                                                         Gio.FileQueryInfoFlags.NONE,
                                                         null);
             let info;
-            while (info = enumerator.next_file(null)) {
+            info = enumerator.next_file(null);
+            while ( info != null ) {
                 let filename = info.get_name();
                 if (filename.match(/^cup.*/)) {
                     this._textureFiles.push(datadir.get_child(filename).get_path());
                 }
+                info = enumerator.next_file(null);
             }
         }
         this._textureFiles.sort();
@@ -132,7 +134,7 @@ const TeaTime = new Lang.Class({
 
         this.actor.add_actor(this._logo);
 
-        this._dt = 4;
+        this._dt = 1;
         this._idleTimeout = null;
 
         this._createMenu();
