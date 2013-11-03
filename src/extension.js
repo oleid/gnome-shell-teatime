@@ -119,15 +119,23 @@ const PopupTeaMenuItem = new Lang.Class({
     _init: function (sTeaname, nBrewtime, params) {
         this.parent(params);
 
+        this.tealabel  = new St.Label({ text: sTeaname });
+        this.timelabel = new St.Label({ text: Utils.formatTime(nBrewtime) });
+
         if (this.actor instanceof St.BoxLayout) {
-            // will be used for gnome-shell 3.10 and possibly above
-            this.tealabel  = new St.Label({ text: sTeaname });
-            this.timelabel = new St.Label({ text: Utils.formatTime(nBrewtime) });
+            // will be used for gnome-shell 3.10 and possibly above where this.actor is BoxLayout
+
             this.actor.add(this.tealabel,  { expand: true });
             this.actor.add(this.timelabel);
         } else {
-            this.tealabel  = new St.Label({ text: sTeaname + "\t\t" + Utils.formatTime(nBrewtime) });
-            this.actor.add(this.tealabel,  { expand: true });
+            this.actor2 = new St.BoxLayout({ style_class: 'popup-menu-item',
+                                        reactive:        true,
+                                        track_hover:     true,
+                                        can_focus:       true,
+                                        accessible_role: imports.gi.Atk.Role.MENU_ITEM });
+            this.actor2.add(this.tealabel,  { expand: true });
+            this.actor2.add(this.timelabel);
+            this.addActor(this.actor2, {expand: true});
         }
     }
 });
