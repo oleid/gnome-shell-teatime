@@ -152,7 +152,7 @@ const TeaTime = new Lang.Class({
         let bottom = new PopupMenu.PopupMenuSection();
         this._customEntry = new St.Entry({ style_class: 'teatime-custom-entry',
                                          track_hover: true,
-                                         hint_text: "Custom..." });
+                                         hint_text: _("Direct input...") });
         this._customEntry.get_clutter_text().set_max_length(10);
         this._customEntry.get_clutter_text().connect("key-press-event", Lang.bind(this, this._createCustomTimer));
         bottom.box.add(this._customEntry);

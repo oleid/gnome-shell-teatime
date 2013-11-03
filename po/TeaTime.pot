@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-03 13:48+0100\n"
+"POT-Creation-Date: 2013-11-03 16:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,24 +17,28 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/extension.js:82 ../src/extension.js:203
+#: ../src/extension.js:82 ../src/extension.js:240
 msgid "Your tea is ready!"
 msgstr ""
 
-#: ../src/extension.js:167
+#: ../src/extension.js:155
+msgid "Direct input..."
+msgstr ""
+
+#: ../src/extension.js:204
 msgid "TeaTime applet"
 msgstr ""
 
-#: ../src/extension.js:184
+#: ../src/extension.js:221
 msgid "Timer set!"
 msgstr ""
 
-#: ../src/extension.js:184
+#: ../src/extension.js:221
 #, javascript-format
 msgid "%ss to go"
 msgstr ""
 
-#: ../src/extension.js:204
+#: ../src/extension.js:241
 msgid "Drink it, while it is hot!"
 msgstr ""
 
