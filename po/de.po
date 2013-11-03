@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TeaTime 7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-03 17:59+0100\n"
+"POT-Creation-Date: 2013-11-03 18:16+0100\n"
 "PO-Revision-Date: 2013-10-31 09:38+0100\n"
 "Last-Translator: Olaf Leidinger <oleid@mescharet.de>\n"
 "Language-Team: German\n"
@@ -19,27 +19,32 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.5.7\n"
 
-#: ../src/extension.js:82 ../src/extension.js:228
+#: ../src/extension.js:82 ../src/extension.js:270
 msgid "Your tea is ready!"
 msgstr "Dein Tee ist fertig!"
 
-#: ../src/extension.js:170
+#: ../src/extension.js:169
 msgid "Show settings"
 msgstr "Einstellungen"
 
-#: ../src/extension.js:192
+#: ../src/extension.js:180
+msgid "min:sec"
+msgstr "min:sec"
+
+#: ../src/extension.js:234
 msgid "TeaTime applet"
 msgstr "TeaTime applet"
 
-#: ../src/extension.js:209
+#: ../src/extension.js:251
 msgid "Timer set!"
 msgstr "Die Zeit läuft!"
 
-#: ../src/extension.js:209
+#: ../src/extension.js:251
+#, javascript-format
 msgid "%ss to go"
 msgstr "%ss verbleiben"
 
-#: ../src/extension.js:229
+#: ../src/extension.js:271
 msgid "Drink it, while it is hot!"
 msgstr "Trink ihn, solange er noch heiß ist!"
 

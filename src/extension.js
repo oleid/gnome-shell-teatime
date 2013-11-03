@@ -160,22 +160,43 @@ const TeaTime = new Lang.Class({
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this._settings.connect("changed::" + Utils.TEATIME_STEEP_TIMES_KEY,
                                Lang.bind(this, this._updateTeaList));
+
+        this.teaItemCont = new PopupMenu.PopupMenuSection();
+
+        /*******************/
+        let head         = new PopupMenu.PopupMenuSection();
+        let settingsIcon = new St.Icon({ icon_name : 'gtk-preferences', icon_size: 15 });
+		let item         = new PopupMenu.PopupMenuItem(_("Show settings"));
+
+        item.actor.set_pack_start(true);  // pack the icon in front of the text label
+        item.actor.add(settingsIcon);
+		item.connect('activate', Lang.bind(this, this._showPreferences));
+		head.addMenuItem(item);
+
+        /*******************/
+        let bottom = new PopupMenu.PopupMenuSection();
+        this._customEntry = new St.Entry({ style_class: 'teatime-custom-entry',
+                                         track_hover: true,
+                                         hint_text: _("min:sec") });
+        this._customEntry.get_clutter_text().set_max_length(10);
+        this._customEntry.get_clutter_text().connect("key-press-event", Lang.bind(this, this._createCustomTimer));
+        bottom.box.add(this._customEntry);
+        bottom.actor.set_style("padding: 0px 18px;")
+
+        /*******************/
+
+        this.menu.addMenuItem(head);        
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(this.teaItemCont);
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(bottom);
+
         this._updateTeaList();
     },
     _updateTeaList : function(config, output) {
         // make sure the menu is empty
-        this.menu.removeAll();
-
-        settingsIcon = new St.Icon({ icon_name : 'gtk-preferences', icon_size: 15 });
-		item         = new PopupMenu.PopupMenuItem(_("Show settings"));
-        item.actor.set_pack_start(true);  // pack the icon in front of the text label
-        item.actor.add(settingsIcon);
-		item.connect('activate', Lang.bind(this, this._showPreferences));
-		this.menu.addMenuItem(item);
-
-        item = new PopupMenu.PopupSeparatorMenuItem();
-		this.menu.addMenuItem(item);
-
+        this.teaItemCont.removeAll();
+        
         // fill with new teas
         let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
         for (let teaname in list) {
@@ -185,17 +206,8 @@ const TeaTime = new Lang.Class({
             menuItem.connect('activate', Lang.bind(this, function() {
                 this._initCountdown(time);
             }));
-            this.menu.addMenuItem(menuItem);
+            this.teaItemCont.addMenuItem(menuItem);
         }
-        let bottom = new PopupMenu.PopupMenuSection();
-        this._customEntry = new St.Entry({ style_class: 'teatime-custom-entry',
-                                         track_hover: true,
-                                         hint_text: "Custom..." });
-        this._customEntry.get_clutter_text().set_max_length(10);
-        this._customEntry.get_clutter_text().connect("key-press-event", Lang.bind(this, this._createCustomTimer));    
-        bottom.box.add(this._customEntry);
-        bottom.actor.set_style("padding: 0px 20px;")
-        this.menu.addMenuItem(bottom);
     },
     _createCustomTimer: function(text, event) {
         if (event.get_key_symbol() == Clutter.KEY_Enter ||
