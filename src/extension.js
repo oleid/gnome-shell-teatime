@@ -112,6 +112,21 @@ const TeaTimeFullscreenNotification = new Lang.Class({
 })
 
 
+const PopupTeaMenuItem = new Lang.Class({
+    Name: 'PopupTeaMenuItem',
+    Extends: PopupMenu.PopupBaseMenuItem,
+
+    _init: function (sTeaname, nBrewtime, params) {
+        this.parent(params);
+
+        this.tealabel  = new St.Label({ text: sTeaname });
+        this.timelabel = new St.Label({ text: Utils.formatTime(nBrewtime) });
+        this.actor.add(this.tealabel,  { expand: true });
+        this.actor.add(this.timelabel);
+    }
+});
+
+
 const TeaTime = new Lang.Class({
     Name : 'TeaTime',
     Extends : PanelMenu.Button,
@@ -156,7 +171,7 @@ const TeaTime = new Lang.Class({
         for (let teaname in list) {
             let time = list[teaname].get_uint32();
             
-            let menuItem = new PopupMenu.PopupMenuItem(_(teaname) + ":  " + Utils.formatTime(time));
+            let menuItem = new PopupTeaMenuItem(_(teaname), time);
             menuItem.connect('activate', Lang.bind(this, function() {
                 this._initCountdown(time);
             }));
