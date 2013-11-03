@@ -41,7 +41,9 @@ const TeaTimeFullscreenNotification = new Lang.Class({
         // this spans the whole monitor and contains
         // the actual layout, which it displays in
         // the center of itself
-        this._bin = new St.Bin();
+        
+        // TODO: trying to centre the tea cup... doesn't work
+        this._bin = new St.Bin({ x_align: St.Align.MIDDLE, y_align: St.Align.MIDDLE});
         this._monitorConstraint = new Layout.MonitorConstraint();
         this._bin.add_constraint(this._monitorConstraint);
         Main.uiGroup.add_actor(this._bin);
@@ -73,7 +75,7 @@ const TeaTimeFullscreenNotification = new Lang.Class({
         this._texture = new Clutter.Texture({ reactive: true, keep_aspect_ratio: true });
         this._texture.connect("button-release-event", Lang.bind(this, this.hide));
         this._layout.add_child(this._texture);
-
+        
         this._timeline = new Clutter.Timeline({ duration: 2000, repeat_count: -1, progress_mode: Clutter.AnimationMode.LINEAR });
         this._timeline.connect("new-frame", Lang.bind(this, this._newFrame));
 
