@@ -119,10 +119,16 @@ const PopupTeaMenuItem = new Lang.Class({
     _init: function (sTeaname, nBrewtime, params) {
         this.parent(params);
 
-        this.tealabel  = new St.Label({ text: sTeaname });
-        this.timelabel = new St.Label({ text: Utils.formatTime(nBrewtime) });
-        this.actor.add(this.tealabel,  { expand: true });
-        this.actor.add(this.timelabel);
+        if (this.actor instanceof St.BoxLayout) {
+            // will be used for gnome-shell 3.10 and possibly above
+            this.tealabel  = new St.Label({ text: sTeaname });
+            this.timelabel = new St.Label({ text: Utils.formatTime(nBrewtime) });
+            this.actor.add(this.tealabel,  { expand: true });
+            this.actor.add(this.timelabel);
+        } else {
+            this.tealabel  = new St.Label({ text: sTeaname + "\t\t" + Utils.formatTime(nBrewtime) });
+            this.actor.add(this.tealabel,  { expand: true });
+        }
     }
 });
 
@@ -164,12 +170,10 @@ const TeaTime = new Lang.Class({
         this.teaItemCont = new PopupMenu.PopupMenuSection();
 
         /*******************/
-        let head         = new PopupMenu.PopupMenuSection();
-        let settingsIcon = new St.Icon({ icon_name : 'gtk-preferences', icon_size: 15 });
-		let item         = new PopupMenu.PopupMenuItem(_("Show settings"));
-
-        item.actor.set_pack_start(true);  // pack the icon in front of the text label
-        item.actor.add(settingsIcon);
+        // maybe one day the PopupImageMenuItem works^^
+        let head             = new PopupMenu.PopupMenuSection();
+		let item             = new PopupMenu.PopupMenuItem(_("Show settings")); //, 'gtk-preferences');
+//        item._icon.icon_size = 15;
 		item.connect('activate', Lang.bind(this, this._showPreferences));
 		head.addMenuItem(item);
 
