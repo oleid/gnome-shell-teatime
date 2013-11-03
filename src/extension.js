@@ -165,7 +165,17 @@ const TeaTime = new Lang.Class({
     _updateTeaList : function(config, output) {
         // make sure the menu is empty
         this.menu.removeAll();
-        
+
+        settingsIcon = new St.Icon({ icon_name : 'gtk-preferences', icon_size: 15 });
+		item         = new PopupMenu.PopupMenuItem(_("Show settings"));
+        item.actor.set_pack_start(true);  // pack the icon in front of the text label
+        item.actor.add(settingsIcon);
+		item.connect('activate', Lang.bind(this, this._showPreferences));
+		this.menu.addMenuItem(item);
+
+        item = new PopupMenu.PopupSeparatorMenuItem();
+		this.menu.addMenuItem(item);
+
         // fill with new teas
         let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
         for (let teaname in list) {
@@ -250,7 +260,11 @@ const TeaTime = new Lang.Class({
         cr.moveTo(0, 0);
         cr.arc(0, 0, r, 3 / 2 * pi, 3 / 2 * pi + 2 * pi * this._progress);
         cr.fill();
-    }
+    },
+	_showPreferences : function() {
+		imports.misc.util.spawn(["gnome-shell-extension-prefs", ExtensionUtils.getCurrentExtension().metadata['uuid']]);
+		return 0;
+	}
 });
 
 function init(metadata) {
