@@ -79,7 +79,7 @@ const TeaTimeFullscreenNotification = new Lang.Class({
         this._timeline = new Clutter.Timeline({ duration: 2000, repeat_count: -1, progress_mode: Clutter.AnimationMode.LINEAR });
         this._timeline.connect("new-frame", Lang.bind(this, this._newFrame));
 
-        this._label = new St.Label({ text: "Your tea is ready!", style_class: "dash-label" });
+        this._label = new St.Label({ text: _("Your tea is ready!"), style_class: "dash-label" });
         this._layout.add_child(this._label);
 
         this._lightbox = new imports.ui.lightbox.Lightbox(Main.uiGroup); // Seems not to work on Gnome 3.10 { fadeInTime: 0.5, fadeOutTime: 0.5 }
