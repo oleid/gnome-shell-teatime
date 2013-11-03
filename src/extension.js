@@ -80,7 +80,7 @@ const TeaTimeFullscreenNotification = new Lang.Class({
         this._label = new St.Label({ text: "Your tea is ready!", style_class: "dash-label" });
         this._layout.add_child(this._label);
 
-        this._lightbox = new imports.ui.lightbox.Lightbox(Main.uiGroup, { fadeInTime: 0.5, fadeOutTime: 0.5 });
+        this._lightbox = new imports.ui.lightbox.Lightbox(Main.uiGroup); // Seems not to work on Gnome 3.10 { fadeInTime: 0.5, fadeOutTime: 0.5 }
         this._lightbox.highlight(this._bin);
     },
     destroy: function() {
