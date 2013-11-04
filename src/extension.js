@@ -124,18 +124,11 @@ const PopupTeaMenuItem = new Lang.Class({
 
         if (this.actor instanceof St.BoxLayout) {
             // will be used for gnome-shell 3.10 and possibly above where this.actor is BoxLayout
-
             this.actor.add(this.tealabel,  { expand: true });
             this.actor.add(this.timelabel);
         } else {
-            this.actor2 = new St.BoxLayout({ style_class: 'popup-menu-item',
-                                        reactive:        true,
-                                        track_hover:     true,
-                                        can_focus:       true,
-                                        accessible_role: imports.gi.Atk.Role.MENU_ITEM });
-            this.actor2.add(this.tealabel,  { expand: true });
-            this.actor2.add(this.timelabel);
-            this.addActor(this.actor2, {expand: true});
+            this.addActor(this.tealabel,  {expand: true });
+            this.addActor(this.timelabel, {expand: false });
         }
     }
 });
