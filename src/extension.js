@@ -27,6 +27,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
 const Utils          = Me.imports.utils;
 
+const bUseGnome34Workarounds = imports.misc.extensionUtils.versionCheck( ["3.4"], imports.misc.config.PACKAGE_VERSION);
+
 Utils.initTranslations();
 
 const _  = Gettext.gettext;
@@ -148,10 +150,10 @@ const TeaTime = new Lang.Class({
 
         this._settings = Utils.getSettings();
 
-        this._logo = new St.Icon({
-            icon_name : 'utilities-teatime',
-            style_class : 'system-status-icon'
-        });
+        this._logo = new St.Icon({ icon_name: 'utilities-teatime',
+                                   icon_type: St.IconType.FULLCOLOR,
+                                   style_class : 'system-status-icon',
+                                   icon_size: 20 });
 
         // set timer widget
         this._timer = new St.DrawingArea({
@@ -241,7 +243,21 @@ const TeaTime = new Lang.Class({
         }
     },
     _showNotification : function(subject, text) {
-        let source = new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
+        let source = ( bUseGnome34Workarounds )
+                        ? new MessageTray.Source(_("TeaTime applet"))
+                        : new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
+
+        if (bUseGnome34Workarounds) { source.createNotificationIcon =
+            function() {
+                let iconBox = new St.Bin();
+                iconBox._size = this.ICON_SIZE;
+                iconBox.child = new St.Icon({ icon_name: 'utilities-teatime',
+                                          icon_type: St.IconType.FULLCOLOR,
+                                          icon_size: iconBox._size });
+                return iconBox;
+            } // createNotificationIcon
+        }
+
         Main.messageTray.add(source);
         
         let notification = new MessageTray.Notification(source, subject, text);
@@ -275,7 +291,7 @@ const TeaTime = new Lang.Class({
             // count down finished, switch display again
             this.actor.remove_actor(this._timer);
             this.actor.add_actor(this._logo);
-            if (this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)) {
+            if ( !bUseGnome34Workarounds && this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)) {
                 this.dialog = new TeaTimeFullscreenNotification();
                 this.dialog.show();
             } else {

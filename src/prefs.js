@@ -20,6 +20,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
 const Utils          = Me.imports.utils;
 
+const bUseGnome34Workarounds = imports.misc.extensionUtils.versionCheck( ["3.4"], imports.misc.config.PACKAGE_VERSION);
+
 Utils.initTranslations();
 
 const _  = Gettext.gettext;
@@ -65,10 +67,14 @@ const TeaTimePrefsWidget = new Lang.Class({
         let label = new Gtk.Label({ label: _("Fullscreen Notifications"),
                                     hexpand: true,
                                     halign: Gtk.Align.START });
-        this.attach(label, 0 /*col*/, 0 /*row*/, 1 /*col span*/, 1 /*row span*/);
         this.fullscreenNotificationSwitch = new Gtk.Switch();
         this.fullscreenNotificationSwitch.connect("notify::active", Lang.bind(this, this._saveFullscreenNotifications));
-        this.attach(this.fullscreenNotificationSwitch, 1, 0, 1, 1);
+
+        if ( !bUseGnome34Workarounds) {
+            // Full screen notifications currently not working on GNOME 3.4, thus don't show the switch
+            this.attach(label, 0 /*col*/, 0 /*row*/, 1 /*col span*/, 1 /*row span*/);
+            this.attach(this.fullscreenNotificationSwitch, 1, 0, 1, 1);
+        }
         
         this.treeview = new Gtk.TreeView({model: this._tealist, expand: true});
         this.treeview.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
