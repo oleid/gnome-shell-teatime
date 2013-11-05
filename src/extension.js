@@ -163,7 +163,6 @@ const TeaTime = new Lang.Class({
 
         this.actor.add_actor(this._logo);
 
-        this._dt = 1;
         this._idleTimeout = null;
 
         this._createMenu();
@@ -254,13 +253,15 @@ const TeaTime = new Lang.Class({
         this._stopTime      = new Date();
         this._cntdownStart  = time;
         this._progress      = 0;
+        let dt              = Math.max(0.1, time / 180); // change time step to fit animation
+
         this._stopTime.setTime(this._startTime.getTime() + time*1000); // in msec 
 
         this.actor.remove_actor(this._logo);         // show timer instead of default icon
         this.actor.add_actor(this._timer);
 
         this._showNotification(_("Timer set!"), _("%ss to go").format(time));
-        this._idleTimeout = Mainloop.timeout_add_seconds(this._dt, Lang.bind(this, this._doCountdown));
+        this._idleTimeout = Mainloop.timeout_add_seconds(dt, Lang.bind(this, this._doCountdown));
     },
     _getRemainingSec: function() {
         let a = new Date();
