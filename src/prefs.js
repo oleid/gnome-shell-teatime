@@ -62,7 +62,7 @@ const TeaTimePrefsWidget = new Lang.Class({
         this._tealist.connect("row-deleted", Lang.bind(this, this._save));
     },
     _initWindow: function() {
-        let label = new Gtk.Label({ label: "Fullscreen Notifications",
+        let label = new Gtk.Label({ label: _("Fullscreen Notifications"),
                                     hexpand: true,
                                     halign: Gtk.Align.START });
         this.attach(label, 0 /*col*/, 0 /*row*/, 1 /*col span*/, 1 /*row span*/);

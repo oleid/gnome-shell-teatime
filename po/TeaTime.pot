@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-03 18:16+0100\n"
+"POT-Creation-Date: 2013-11-05 10:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,33 +17,37 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/extension.js:82 ../src/extension.js:270
+#: ../src/extension.js:85 ../src/extension.js:281
 msgid "Your tea is ready!"
 msgstr ""
 
-#: ../src/extension.js:169
+#: ../src/extension.js:181
 msgid "Show settings"
 msgstr ""
 
-#: ../src/extension.js:180
+#: ../src/extension.js:190
 msgid "min:sec"
 msgstr ""
 
-#: ../src/extension.js:234
+#: ../src/extension.js:245
 msgid "TeaTime applet"
 msgstr ""
 
-#: ../src/extension.js:251
+#: ../src/extension.js:262
 msgid "Timer set!"
 msgstr ""
 
-#: ../src/extension.js:251
+#: ../src/extension.js:262
 #, javascript-format
 msgid "%ss to go"
 msgstr ""
 
-#: ../src/extension.js:271
+#: ../src/extension.js:282
 msgid "Drink it, while it is hot!"
+msgstr ""
+
+#: ../src/prefs.js:65
+msgid "Fullscreen Notifications"
 msgstr ""
 
 #: ../src/prefs.js:77
