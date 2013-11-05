@@ -150,11 +150,18 @@ const TeaTime = new Lang.Class({
 
         this._settings = Utils.getSettings();
 
-        this._logo = new St.Icon({ icon_name: 'utilities-teatime',
-                                   icon_type: St.IconType.FULLCOLOR,
-                                   style_class : 'system-status-icon',
-                                   icon_size: 20 });
-
+        if ( typeof St.IconType == 'undefined' ) {
+            // St.IconType was removed in May 2012 by commit c21b1e5fe00a99936f67d358a931f3083304ebc8
+            // but it's needed for Gnome 3.4
+            this._logo = new St.Icon({ icon_name: 'utilities-teatime',
+                                       style_class : 'system-status-icon',
+                                       icon_size: 20 });
+        } else {
+            this._logo = new St.Icon({ icon_name: 'utilities-teatime',
+                                       icon_type: St.IconType.FULLCOLOR,
+                                       style_class : 'system-status-icon',
+                                       icon_size: 20 });
+        }
         // set timer widget
         this._timer = new St.DrawingArea({
             reactive : true
