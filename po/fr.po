@@ -3,71 +3,72 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-05 14:36+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-11-05 14:22+0100\n"
+"Last-Translator: Solveig <teatime@solveig.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: french\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../src/extension.js:85 ../src/extension.js:282
 msgid "Your tea is ready!"
-msgstr ""
+msgstr "Votre thé est prêt !"
 
 #: ../src/extension.js:180
 msgid "Show settings"
-msgstr ""
+msgstr "Préférences"
 
 #: ../src/extension.js:189
 msgid "min:sec"
-msgstr ""
+msgstr "min:sec"
 
 #: ../src/extension.js:244
 msgid "TeaTime applet"
-msgstr ""
+msgstr "Application TeaTime"
 
 #: ../src/extension.js:263
 msgid "Timer set!"
-msgstr ""
+msgstr "Minuteur réglé !"
 
 #: ../src/extension.js:263
 #, javascript-format
 msgid "%ss to go"
-msgstr ""
+msgstr "encore %ss"
 
 #: ../src/extension.js:283
 msgid "Drink it, while it is hot!"
-msgstr ""
+msgstr "Buvez tant que c'est chaud !"
 
 #: ../src/prefs.js:65
 msgid "Fullscreen Notifications"
-msgstr ""
+msgstr "Notifications en plein écran"
 
 #: ../src/prefs.js:77
 msgid "Tea"
-msgstr ""
+msgstr "Thé"
 
 #: ../src/prefs.js:92
 msgid "Steep time"
-msgstr ""
+msgstr "Temps d'infusion"
 
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:1
 msgid ""
 "{ \"Green tea\": 180, \"Black tea\": 210, \"Fruit tea\": 420, \"White tea\": "
 "120 }"
 msgstr ""
+"{ \"Thé vert\": 180, \"Thé noir\": 210, \"Thé aux fruits\": 420, \"Thé blanc"
+"\": 120 }"
 
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:2
 msgid "Tea drawing times list"
-msgstr ""
+msgstr "Temps d'infusion des différents thés"
 
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:3
 msgid "A mapping of a teas to their corresponding drawing time in seconds."
-msgstr ""
+msgstr "Correspondances entre chaque thé et son temps d'infusion en secondes."
