@@ -42,15 +42,14 @@ const TeaTimeFullscreenNotification = new Lang.Class({
         // the actual layout, which it displays in
         // the center of itself
         
-        // TODO: trying to centre the tea cup... doesn't work
         this._bin = new St.Bin({ x_align: St.Align.MIDDLE, y_align: St.Align.MIDDLE});
         this._monitorConstraint = new Layout.MonitorConstraint();
         this._bin.add_constraint(this._monitorConstraint);
         Main.uiGroup.add_actor(this._bin);
         
-        // a vertical box layout to hold the texture and
+        // a table imitating a vertical box layout to hold the texture and
         // a label underneath it
-        this._layout = new St.BoxLayout({ vertical: true });
+        this._layout = new St.Table(); 
         this._bin.set_child(this._layout);
 
         // find all the textures
@@ -74,13 +73,13 @@ const TeaTimeFullscreenNotification = new Lang.Class({
 
         this._texture = new Clutter.Texture({ reactive: true, keep_aspect_ratio: true });
         this._texture.connect("button-release-event", Lang.bind(this, this.hide));
-        this._layout.add_child(this._texture);
+        this._layout.add(this._texture, {row: 0, col: 0});
         
         this._timeline = new Clutter.Timeline({ duration: 2000, repeat_count: -1, progress_mode: Clutter.AnimationMode.LINEAR });
         this._timeline.connect("new-frame", Lang.bind(this, this._newFrame));
 
         this._label = new St.Label({ text: _("Your tea is ready!"), style_class: "dash-label" });
-        this._layout.add_child(this._label);
+        this._layout.add(this._label, {row: 1, col: 0});
 
         this._lightbox = new imports.ui.lightbox.Lightbox(Main.uiGroup); // Seems not to work on Gnome 3.10 { fadeInTime: 0.5, fadeOutTime: 0.5 }
         this._lightbox.highlight(this._bin);
