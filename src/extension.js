@@ -43,8 +43,12 @@ const TeaTimeFullscreenNotification = new Lang.Class({
         // the center of itself
         
         this._bin = new St.Bin({ x_align: St.Align.MIDDLE, y_align: St.Align.MIDDLE});
-        this._monitorConstraint = new Layout.MonitorConstraint();
-        this._bin.add_constraint(this._monitorConstraint);
+
+        if (typeof Layout.MonitorConstraint != 'undefined') {
+            // MonitorConstraint was introduced in gnome-3.6
+            this._monitorConstraint = new Layout.MonitorConstraint();
+            this._bin.add_constraint(this._monitorConstraint);
+        }
         Main.uiGroup.add_actor(this._bin);
         
         // a table imitating a vertical box layout to hold the texture and
@@ -96,7 +100,9 @@ const TeaTimeFullscreenNotification = new Lang.Class({
         this._texture.set_from_file(this._textureFiles[idx]);
     },
     show: function() {
-        this._monitorConstraint.index = global.screen.get_current_monitor()
+        if (typeof Layout.MonitorConstraint != 'undefined') {
+            this._monitorConstraint.index = global.screen.get_current_monitor()
+        }
         Main.pushModal(this._bin);
         this._timeline.start();
         this._lightbox.show();
