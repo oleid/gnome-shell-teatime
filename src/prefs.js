@@ -63,22 +63,36 @@ const TeaTimePrefsWidget = new Lang.Class({
         this._tealist.connect("row-deleted", Lang.bind(this, this._save));
     },
     _initWindow: function() {
-        let label = new Gtk.Label({ label: _("Fullscreen Notifications"),
-                                    hexpand: true,
-                                    halign: Gtk.Align.START });
+        let curRow  = 0;
+        let labelFN = new Gtk.Label({ label: _("Fullscreen Notifications"),
+                                      hexpand: true,
+                                      halign: Gtk.Align.START });
+        let labelGC = new Gtk.Label({ label: _("Graphical Countdown"),
+                                      hexpand: true,
+                                      halign: Gtk.Align.START });
+
         this.fullscreenNotificationSwitch = new Gtk.Switch();
         this.fullscreenNotificationSwitch.connect("notify::active", Lang.bind(this, this._saveFullscreenNotifications));
 
+        this.graphicalCountdownSwitch = new Gtk.Switch();
+        this.graphicalCountdownSwitch.connect("notify::active", Lang.bind(this, this._saveGraphicalCountdown));
+
         if ( !bUseGnome34Workarounds) {
             // Full screen notifications currently not working on GNOME 3.4, thus don't show the switch
-            this.attach(label, 0 /*col*/, 0 /*row*/, 1 /*col span*/, 1 /*row span*/);
-            this.attach(this.fullscreenNotificationSwitch, 1, 0, 1, 1);
+            this.attach(labelFN, 0 /*col*/, curRow /*row*/, 1 /*col span*/, 1 /*row span*/);
+            this.attach(this.fullscreenNotificationSwitch, 1, curRow, 1, 1);
+            curRow += 1;
         }
+
+        this.attach(labelGC, 0 /*col*/, curRow /*row*/, 1 /*col span*/, 1 /*row span*/);
+        this.attach(this.graphicalCountdownSwitch, 1, curRow, 1, 1);
+        curRow += 1;
         
         this.treeview = new Gtk.TreeView({model: this._tealist, expand: true});
         this.treeview.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
-        this.attach(this.treeview, 0, 1, 2, 1);
-        
+        this.attach(this.treeview, 0, curRow, 2, 1);
+        curRow += 1;
+
         let teaname = new Gtk.TreeViewColumn({ title: _("Tea"), expand: true });
         let renderer = new Gtk.CellRendererText({ editable: true });
         // When the renderer is done editing it's value, we first write
@@ -110,7 +124,7 @@ const TeaTimePrefsWidget = new Lang.Class({
 
         this.toolbar = new Gtk.Toolbar({ icon_size: 1 });
         this.toolbar.get_style_context().add_class("inline-toolbar");
-        this.add(this.toolbar);
+        this.attach(this.toolbar, 0 /*col*/, curRow /*row*/, 2 /*col span*/, 1 /*row span*/);
         this.addButton = new Gtk.ToolButton({ icon_name: "list-add-symbolic", use_action_appearance: false });
         this.addButton.connect("clicked", Lang.bind(this, this._addTea));
         this.toolbar.insert(this.addButton, -1);
@@ -125,6 +139,7 @@ const TeaTimePrefsWidget = new Lang.Class({
 
         this.fullscreenNotificationSwitch.active = this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)
 
+        this.graphicalCountdownSwitch.active = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY)
         let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
 
         // stop everyone from reacting to the changes we are about to produce
@@ -175,6 +190,15 @@ const TeaTimePrefsWidget = new Lang.Class({
             return;
         this._inhibitUpdate = true;
         this._settings.set_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY,
+                                   sw.active);
+        this._inhibitUpdate = false;
+    },
+    _saveGraphicalCountdown: function(sw, data) {
+        // don't update the backend if someone else is messing with the model
+        if (this._inhibitUpdate)
+            return;
+        this._inhibitUpdate = true;
+        this._settings.set_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY,
                                    sw.active);
         this._inhibitUpdate = false;
     },

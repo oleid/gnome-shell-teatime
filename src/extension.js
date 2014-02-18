@@ -162,12 +162,13 @@ const TeaTime = new Lang.Class({
                                        icon_size: 20 });
         }
         // set timer widget
-        this._timer = new St.DrawingArea({
+        this._textualTimer   = new St.Label({ text: "" });
+        this._graphicalTimer = new St.DrawingArea({
             reactive : true
         });
-        this._timer.set_width(20);
-        this._timer.set_height(20);
-        this._timer.connect('repaint', Lang.bind(this, this._drawTimer));
+        this._graphicalTimer.set_width(20);
+        this._graphicalTimer.set_height(20);
+        this._graphicalTimer.connect('repaint', Lang.bind(this, this._drawTimer));
 
         this.actor.add_actor(this._logo);
 
@@ -179,6 +180,8 @@ const TeaTime = new Lang.Class({
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this._settings.connect("changed::" + Utils.TEATIME_STEEP_TIMES_KEY,
                                Lang.bind(this, this._updateTeaList));
+        this._settings.connect("changed::" + Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY,
+                               Lang.bind(this, this._updateCountdownType));
 
         this.teaItemCont = new PopupMenu.PopupMenuSection();
 
@@ -225,6 +228,22 @@ const TeaTime = new Lang.Class({
             }));
             this.teaItemCont.addMenuItem(menuItem);
         }
+    },
+    _updateCountdownType : function(config, output) {
+        let bWantGraphicalCountdown = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY);
+
+        if ( bWantGraphicalCountdown != this._bGraphicalCountdown) {
+            if (this._idleTimeout != null) {
+                // we have a running countdown, replace the display
+                this.actor.remove_actor( this._bGraphicalCountdown
+                                        ? this._graphicalTimer : this._textualTimer);
+                this._bGraphicalCountdown = bWantGraphicalCountdown;
+                this.actor.add_actor( this._bGraphicalCountdown
+                                      ? this._graphicalTimer : this._textualTimer);
+
+                this._updateTimerDisplay( this._getRemainingSec() );
+            } // if timeout active
+        } // value changed
     },
     _createCustomTimer: function(text, event) {
         if (event.get_key_symbol() == Clutter.KEY_Enter ||
@@ -275,12 +294,21 @@ const TeaTime = new Lang.Class({
         this._stopTime      = new Date();
         this._cntdownStart  = time;
         this._progress      = 0;
-        let dt              = Math.max(0.1, time / 180); // change time step to fit animation
+
+        this._bGraphicalCountdown = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY);
+
+        let dt              =  this._bGraphicalCountdown
+                               ? Math.max(0.1, time / 180) // set time step to fit animation
+                               : 1.0;                      // show every second for the textual countdown
 
         this._stopTime.setTime(this._startTime.getTime() + time*1000); // in msec 
 
         this.actor.remove_actor(this._logo);         // show timer instead of default icon
-        this.actor.add_actor(this._timer);
+
+        this._updateTimerDisplay(time);
+
+        this.actor.add_actor( this._bGraphicalCountdown
+                              ? this._graphicalTimer : this._textualTimer);
 
         this._showNotification(_("Timer set!"), _("%ss to go").format(time));
         this._idleTimeout = Mainloop.timeout_add_seconds(dt, Lang.bind(this, this._doCountdown));
@@ -289,13 +317,21 @@ const TeaTime = new Lang.Class({
         let a = new Date();
         return (this._stopTime.getTime() - a.getTime()) * 1e-3;
     },
+    _updateTimerDisplay: function(remainingTime) {
+        if (  this._bGraphicalCountdown ) {
+            this._progress    = (this._cntdownStart - remainingTime) / this._cntdownStart;
+            this._graphicalTimer.queue_repaint();
+        } else {
+            this._textualTimer.text =  Utils.formatTime(remainingTime);
+        }
+    },
     _doCountdown : function() {
         let remainingTime = this._getRemainingSec(); 
-        this._progress    = (this._cntdownStart - remainingTime) / this._cntdownStart;
 
         if (remainingTime <= 0) {
             // count down finished, switch display again
-            this.actor.remove_actor(this._timer);
+            this.actor.remove_actor( this._bGraphicalCountdown
+                                     ? this._graphicalTimer : this._textualTimer);
             this.actor.add_actor(this._logo);
             if ( !bUseGnome34Workarounds && this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)) {
                 this.dialog = new TeaTimeFullscreenNotification();
@@ -308,13 +344,13 @@ const TeaTime = new Lang.Class({
             this._idleTimeout = null;
             return false;
         } else {
-            this._timer.queue_repaint();
+            this._updateTimerDisplay(remainingTime);
             return true; // continue timer
         }
     },
     _drawTimer : function() {
-        let[width, height] = this._timer.get_surface_size();
-        let cr = this._timer.get_context();
+        let[width, height] = this._graphicalTimer.get_surface_size();
+        let cr = this._graphicalTimer.get_context();
         let pi = Math.PI;
         let  r = Math.min(width, height) * 0.5;;
 

@@ -11,6 +11,11 @@
       <summary>Show fullscreen notifications.</summary>
       <description>Displays a more disrupting, modal fullscreen notification when the timer has elapsed.</description>
     </key>
+    <key name="graphical-countdown" type="b">
+      <default>true</default>
+      <summary>Show an animated graphical countdown.</summary>
+      <description>Displays a small, yet nice animation instead of an textual countdown.</description>
+    </key>
   </schema>
 </schemalist>
 
