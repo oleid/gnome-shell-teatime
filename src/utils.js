@@ -61,13 +61,20 @@ function getSettings(schema) {
     return new Gio.Settings({ settings_schema: schemaObj });
 }
 
-function formatTime(seconds) {
-    let a = new Date(0,0,0); // important: hour needs to be set to zero in _locale_ time
+function formatTime(sec_num) {
+    /* toLocaleFormat would be nicer, however it doesn't work with
+       Debian Wheezy and some later gnome versions */
 
-    a.setTime(a.getTime()+ seconds * 1000); // set time in msec, adding the time we want
+    // based on code from
+    //  http://stackoverflow.com/questions/6312993/javascript-seconds-to-time-with-format-hhmmss
 
-    if (seconds > 3600)
-        return a.toLocaleFormat("%H:%M:%S");
-    else
-        return a.toLocaleFormat("%M:%S");
+    let hours   = Math.floor(sec_num / 3600);
+    let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    let seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+
+    return (( hours == "00") ?  "" : hours+':')  + minutes + ':' + seconds;
 }
