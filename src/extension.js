@@ -6,7 +6,6 @@
 const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
-const GnomeDesktop = imports.gi.GnomeDesktop;
 const Lang = imports.lang;
 const Mainloop = imports.mainloop; // timer
 const Shell = imports.gi.Shell;
