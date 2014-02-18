@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TeaTime 7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-05 14:36+0100\n"
-"PO-Revision-Date: 2013-10-31 09:38+0100\n"
+"POT-Creation-Date: 2014-02-18 23:13+0100\n"
+"PO-Revision-Date: 2014-02-18 23:25+0100\n"
 "Last-Translator: Olaf Leidinger <oleid@mescharet.de>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -17,46 +17,50 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.6.4\n"
 
-#: ../src/extension.js:85 ../src/extension.js:282
+#: ../src/extension.js:86 ../src/extension.js:340
 msgid "Your tea is ready!"
 msgstr "Dein Tee ist fertig!"
 
-#: ../src/extension.js:180
+#: ../src/extension.js:191
 msgid "Show settings"
 msgstr "Einstellungen"
 
-#: ../src/extension.js:189
+#: ../src/extension.js:200
 msgid "min:sec"
 msgstr "min:sec"
 
-#: ../src/extension.js:244
+#: ../src/extension.js:272 ../src/extension.js:273
 msgid "TeaTime applet"
 msgstr "TeaTime applet"
 
-#: ../src/extension.js:263
+#: ../src/extension.js:313
 msgid "Timer set!"
 msgstr "Die Zeit läuft!"
 
-#: ../src/extension.js:263
+#: ../src/extension.js:313
 #, javascript-format
 msgid "%ss to go"
 msgstr "%ss verbleiben"
 
-#: ../src/extension.js:283
+#: ../src/extension.js:341
 msgid "Drink it, while it is hot!"
 msgstr "Trink ihn, solange er noch heiß ist!"
 
-#: ../src/prefs.js:65
+#: ../src/prefs.js:67
 msgid "Fullscreen Notifications"
 msgstr "Vollbild-Benachrichtigungen"
 
-#: ../src/prefs.js:77
+#: ../src/prefs.js:70
+msgid "Graphical Countdown"
+msgstr "Grafisches Herunterzählen"
+
+#: ../src/prefs.js:96
 msgid "Tea"
 msgstr "Tee"
 
-#: ../src/prefs.js:92
+#: ../src/prefs.js:111
 msgid "Steep time"
 msgstr "Ziehzeit"
 

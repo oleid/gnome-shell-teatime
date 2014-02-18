@@ -12,6 +12,7 @@ const Config         = imports.misc.config;
 
 const TEATIME_STEEP_TIMES_KEY = 'steep-times';
 const TEATIME_FULLSCREEN_NOTIFICATION_KEY = 'fullscreen-notification';
+const TEATIME_GRAPHICAL_COUNTDOWN_KEY = 'graphical-countdown';
 
 function initTranslations(domain) {
     let extension = ExtensionUtils.getCurrentExtension();
