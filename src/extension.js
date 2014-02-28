@@ -310,7 +310,6 @@ const TeaTime = new Lang.Class({
         this.actor.add_actor( this._bGraphicalCountdown
                               ? this._graphicalTimer : this._textualTimer);
 
-        this._showNotification(_("Timer set!"), _("%ss to go").format(time));
         this._idleTimeout = Mainloop.timeout_add_seconds(dt, Lang.bind(this, this._doCountdown));
     },
     _getRemainingSec: function() {
