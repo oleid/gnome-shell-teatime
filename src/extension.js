@@ -253,17 +253,17 @@ const TeaTime = new Lang.Class({
             let seconds = 0;
             let match = customTime.match(/^(?:(\d+)(?::(\d{0,2}))?|:(\d+))$/)
             if (match) {
-                if (match[3])
-                    seconds = parseInt(match[3]);
-                else {
-                    if (match[1])
-                        seconds += parseInt(match[1]) * 60;
-                    if (match[2])
-                        seconds += parseInt(match[2]);
+                let factor = 1;
+                for (var i = match.length-2; i > 0; i--) {
+                    let s = match[i].replace(/^0/,''); // fix for elder GNOME <= 3.10 which don't like leading zeros
+                    seconds += factor * parseInt(s);
+                    factor  *= 60;
                 }
-                this._initCountdown(seconds);
-                this.menu.close();
-            }
+                if (seconds > 0) {
+                    this._initCountdown(seconds);
+                    this.menu.close();
+                }
+            } 
             this._customEntry.set_text("");
         }
     },
