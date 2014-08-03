@@ -332,6 +332,8 @@ const TeaTime = new Lang.Class({
             this.actor.remove_actor( this._bGraphicalCountdown
                                      ? this._graphicalTimer : this._textualTimer);
             this.actor.add_actor(this._logo);
+            this._playSound();
+
             if ( !bUseGnome34Workarounds && this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)) {
                 this.dialog = new TeaTimeFullscreenNotification();
                 this.dialog.show();
@@ -371,6 +373,12 @@ const TeaTime = new Lang.Class({
         cr.moveTo(0, 0);
         cr.arc(0, 0, r, 3 / 2 * pi, 3 / 2 * pi + 2 * pi * this._progress);
         cr.fill();
+    },
+    _playSound : function() {
+        let bPlayAlarmSound = this._settings.get_boolean(Utils.TEATIME_USE_ALARM_SOUND_KEY);
+        if (bPlayAlarmSound) {
+            Utils.playSound(this._settings.get_string(Utils.TEATIME_ALARM_SOUND_KEY));
+        }
     },
 	_showPreferences : function() {
 		imports.misc.util.spawn(["gnome-shell-extension-prefs", ExtensionUtils.getCurrentExtension().metadata['uuid']]);

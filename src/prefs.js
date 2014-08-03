@@ -52,10 +52,12 @@ const TeaTimePrefsWidget = new Lang.Class({
             Gtk.Adjustment
         ]);
 
+        this.set_column_spacing(3);
+
         this._settings = Utils.getSettings();
         this._inhibitUpdate = true;
         this._settings.connect("changed", Lang.bind(this, this._refresh));
-        
+
         this._initWindow();
         this._inhibitUpdate = false;
         this._refresh();
@@ -71,26 +73,49 @@ const TeaTimePrefsWidget = new Lang.Class({
                                       hexpand: true,
                                       halign: Gtk.Align.START });
 
+        let labelAS = new Gtk.Label({ label: _("Alarm sound"),
+                                      hexpand: true,
+                                      halign: Gtk.Align.START });
+
         this.fullscreenNotificationSwitch = new Gtk.Switch();
         this.fullscreenNotificationSwitch.connect("notify::active", Lang.bind(this, this._saveFullscreenNotifications));
 
         this.graphicalCountdownSwitch = new Gtk.Switch();
         this.graphicalCountdownSwitch.connect("notify::active", Lang.bind(this, this._saveGraphicalCountdown));
 
+        // alarm sound file chooser
+        this.alarmSoundSwitch = new Gtk.Switch();
+        this.alarmSoundSwitch.connect("notify::active", Lang.bind(this, this._saveUseAlarm));
+
+
+        this.alarmSoundFile       =  new Gtk.FileChooserButton ({
+                                        title: _("Select alarm sound file"),
+                                        action: Gtk.FileChooserAction.OPEN});
+        this.alarmSoundFileFilter = new Gtk.FileFilter();
+        this.alarmSoundFile.set_filter (this.alarmSoundFileFilter);
+		this.alarmSoundFileFilter.add_mime_type ("audio/*");
+        this.alarmSoundFile.connect("selection_changed", Lang.bind(this, this._saveSoundFile));
+
+
         if ( !bUseGnome34Workarounds) {
             // Full screen notifications currently not working on GNOME 3.4, thus don't show the switch
-            this.attach(labelFN, 0 /*col*/, curRow /*row*/, 1 /*col span*/, 1 /*row span*/);
-            this.attach(this.fullscreenNotificationSwitch, 1, curRow, 1, 1);
+            this.attach(labelFN, 0 /*col*/, curRow /*row*/, 2 /*col span*/, 1 /*row span*/);
+            this.attach(this.fullscreenNotificationSwitch, 2, curRow, 1, 1);
             curRow += 1;
         }
 
-        this.attach(labelGC, 0 /*col*/, curRow /*row*/, 1 /*col span*/, 1 /*row span*/);
-        this.attach(this.graphicalCountdownSwitch, 1, curRow, 1, 1);
+        this.attach(labelGC, 0 /*col*/, curRow /*row*/, 2 /*col span*/, 1 /*row span*/);
+        this.attach(this.graphicalCountdownSwitch, 2, curRow, 1, 1);
         curRow += 1;
         
+        this.attach(labelAS, 0 /*col*/, curRow /*row*/, 1 /*col span*/, 1 /*row span*/);
+        this.attach(this.alarmSoundFile, 1, curRow, 1, 1);
+        this.attach(this.alarmSoundSwitch, 2, curRow, 1, 1);
+        curRow += 1;
+
         this.treeview = new Gtk.TreeView({model: this._tealist, expand: true});
         this.treeview.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
-        this.attach(this.treeview, 0, curRow, 2, 1);
+        this.attach(this.treeview, 0, curRow, 3, 1);
         curRow += 1;
 
         let teaname = new Gtk.TreeViewColumn({ title: _("Tea"), expand: true });
@@ -124,7 +149,7 @@ const TeaTimePrefsWidget = new Lang.Class({
 
         this.toolbar = new Gtk.Toolbar({ icon_size: 1 });
         this.toolbar.get_style_context().add_class("inline-toolbar");
-        this.attach(this.toolbar, 0 /*col*/, curRow /*row*/, 2 /*col span*/, 1 /*row span*/);
+        this.attach(this.toolbar, 0 /*col*/, curRow /*row*/, 3 /*col span*/, 1 /*row span*/);
         this.addButton = new Gtk.ToolButton({ icon_name: "list-add-symbolic", use_action_appearance: false });
         this.addButton.connect("clicked", Lang.bind(this, this._addTea));
         this.toolbar.insert(this.addButton, -1);
@@ -140,7 +165,9 @@ const TeaTimePrefsWidget = new Lang.Class({
         this.fullscreenNotificationSwitch.active = this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)
 
         this.graphicalCountdownSwitch.active = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY)
+        this.alarmSoundSwitch.active = this._settings.get_boolean(Utils.TEATIME_USE_ALARM_SOUND_KEY)
         let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
+        this.alarmSoundFile.set_uri(this._settings.get_string(Utils.TEATIME_ALARM_SOUND_KEY));
 
         // stop everyone from reacting to the changes we are about to produce
         // in the model
@@ -201,6 +228,28 @@ const TeaTimePrefsWidget = new Lang.Class({
         this._settings.set_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY,
                                    sw.active);
         this._inhibitUpdate = false;
+    },
+    _saveUseAlarm: function(sw, data) {
+        // don't update the backend if someone else is messing with the model
+        if (this._inhibitUpdate)
+            return;
+        this._inhibitUpdate = true;
+        this._settings.set_boolean(Utils.TEATIME_USE_ALARM_SOUND_KEY,
+                                   sw.active);
+        this._inhibitUpdate = false;
+    },
+    _saveSoundFile: function(sw, data) {
+        // don't update the backend if someone else is messing with the model
+        if (this._inhibitUpdate)
+            return;
+        if (this._settings.get_string(Utils.TEATIME_ALARM_SOUND_KEY) != this.alarmSoundFile.get_uri()) {
+            this._inhibitUpdate = true;
+
+            Utils.playSound(this.alarmSoundFile.get_uri());
+
+            this._settings.set_string(Utils.TEATIME_ALARM_SOUND_KEY, uri);
+            this._inhibitUpdate = false;
+        }
     },
     _save: function(store, path_, iter_) {
         // don't update the backend if someone else is messing with the model

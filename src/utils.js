@@ -9,10 +9,13 @@ const Gettext        = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
 const Config         = imports.misc.config;
+const Gst            = imports.gi.Gst;
 
 const TEATIME_STEEP_TIMES_KEY = 'steep-times';
 const TEATIME_FULLSCREEN_NOTIFICATION_KEY = 'fullscreen-notification';
 const TEATIME_GRAPHICAL_COUNTDOWN_KEY = 'graphical-countdown';
+const TEATIME_USE_ALARM_SOUND_KEY = 'use-alarm-sound';
+const TEATIME_ALARM_SOUND_KEY = 'alarm-sound-file';
 
 function initTranslations(domain) {
     let extension = ExtensionUtils.getCurrentExtension();
@@ -78,4 +81,11 @@ function formatTime(sec_num) {
     if (seconds < 10) {seconds = "0"+seconds;}
 
     return (( hours == "00") ?  "" : hours+':')  + minutes + ':' + seconds;
+}
+
+function playSound(uri) {
+    Gst.init(null, 0);
+    let player = Gst.ElementFactory.make("playbin","player");
+    player.set_property('uri', uri);
+    player.set_state(Gst.State.PLAYING);
 }

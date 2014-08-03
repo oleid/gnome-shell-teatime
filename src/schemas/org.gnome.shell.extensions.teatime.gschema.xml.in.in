@@ -16,6 +16,16 @@
       <summary>Show an animated graphical countdown.</summary>
       <description>Displays a small, yet nice animation instead of an textual countdown.</description>
     </key>
+    <key name="alarm-sound-file" type="s">
+      <default>"file:///usr/share/sounds/freedesktop/stereo/complete.oga"</default>
+      <summary>Drawing completed sound</summary>
+      <description>A sound file played after drawing is completed.</description>
+    </key>
+    <key name="use-alarm-sound" type="b">
+      <default>true</default>
+      <summary>Play sound when drawing completed</summary>
+      <description>Play a sound file after drawing is completed.</description>
+    </key>
   </schema>
 </schemalist>
 
