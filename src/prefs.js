@@ -245,8 +245,9 @@ const TeaTimePrefsWidget = new Lang.Class({
         if (this._settings.get_string(Utils.TEATIME_ALARM_SOUND_KEY) != this.alarmSoundFile.get_uri()) {
             this._inhibitUpdate = true;
 
-            Utils.playSound(this.alarmSoundFile.get_uri());
+            let uri=this.alarmSoundFile.get_uri();
 
+            Utils.playSound(uri);
             this._settings.set_string(Utils.TEATIME_ALARM_SOUND_KEY, uri);
             this._inhibitUpdate = false;
         }
