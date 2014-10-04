@@ -355,11 +355,6 @@ const TeaTime = new Lang.Class({
         let pi = Math.PI;
         let  r = Math.min(width, height) * 0.5;;
 
-        // TODO: get colors from current theme!
-        cr.setSourceRGB(0, 0, 0);
-        cr.rectangle(0, 0, width, height);
-        cr.fill();
-
         cr.translate(Math.floor(width / 2), Math.floor(height / 2));
         cr.save();
 
