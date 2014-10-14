@@ -1,3 +1,15 @@
+/*********************************************************************
+ * A small custom icon class, which draws a two bit icon centered and
+ * maximized, preserving the aspect ratio.
+ *
+ * This class was introduced to solve the following problems:
+ *  a) draw the icon with the current theme color
+ *  b) to work-around the strange streched icon I get in gnome-3.14
+ *
+ * If there is a better way for a) using my previous svg icon file,
+ * please let me know ;)
+ ********************************************************************/
+
 const Lang    = imports.lang;
 const St      = imports.gi.St;
 const Clutter = imports.gi.Clutter;
@@ -29,7 +41,7 @@ const TeaPot = new Lang.Class({
     },
 	_drawIcon: function() {
 	  	let cr    = this.get_context();
-		let orWdt = 484;
+		let orWdt = 484; // from the svg file
 		let orHgt = 295;
         let[width, height] = this.get_surface_size();
 
