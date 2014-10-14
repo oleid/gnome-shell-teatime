@@ -20,7 +20,6 @@ const PanelMenu   = imports.ui.panelMenu;
 const PopupMenu   = imports.ui.popupMenu;
 const Panel       = imports.ui.panel;
 
-
 const Gettext        = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
@@ -149,18 +148,8 @@ const TeaTime = new Lang.Class({
 
         this._settings = Utils.getSettings();
 
-        if ( typeof St.IconType == 'undefined' ) {
-            // St.IconType was removed in May 2012 by commit c21b1e5fe00a99936f67d358a931f3083304ebc8
-            // but it's needed for Gnome 3.4
-            this._logo = new St.Icon({ icon_name: 'utilities-teatime',
-                                       style_class : 'system-status-icon',
-                                       icon_size: 20 });
-        } else {
-            this._logo = new St.Icon({ icon_name: 'utilities-teatime',
-                                       icon_type: St.IconType.FULLCOLOR,
-                                       style_class : 'system-status-icon',
-                                       icon_size: 20 });
-        }
+        this._logo     = new Me.imports.icon.TeaPot(24);
+
         // set timer widget
         this._textualTimer   = new St.Label({ text: "",
                                               x_align: Clutter.ActorAlign.END,
@@ -173,6 +162,8 @@ const TeaTime = new Lang.Class({
         this._graphicalTimer.connect('repaint', Lang.bind(this, this._drawTimer));
 
         this.actor.add_actor(this._logo);
+        this.actor.connect('style-changed', Lang.bind(this, this._onStyleChanged));
+
         this._idleTimeout = null;
 
         this._createMenu();
@@ -394,6 +385,7 @@ const TeaTime = new Lang.Class({
             blue: color.blue,
             alpha: color.alpha*0.3
         });
+        this._logo.setColor(this._primaryColor);
     }
 });
 
