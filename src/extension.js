@@ -162,7 +162,9 @@ const TeaTime = new Lang.Class({
                                        icon_size: 20 });
         }
         // set timer widget
-        this._textualTimer   = new St.Label({ text: "" });
+        this._textualTimer   = new St.Label({ text: "",
+                                              x_align: Clutter.ActorAlign.END,
+                                              y_align: Clutter.ActorAlign.CENTER  });
         this._graphicalTimer = new St.DrawingArea({
             reactive : true
         });
@@ -171,7 +173,6 @@ const TeaTime = new Lang.Class({
         this._graphicalTimer.connect('repaint', Lang.bind(this, this._drawTimer));
 
         this.actor.add_actor(this._logo);
-
         this._idleTimeout = null;
 
         this._createMenu();
@@ -355,21 +356,20 @@ const TeaTime = new Lang.Class({
         let pi = Math.PI;
         let  r = Math.min(width, height) * 0.5;;
 
-        // TODO: get colors from current theme!
-        cr.setSourceRGB(0, 0, 0);
+        cr.setSourceRGBA(0, 0, 0, 0);
         cr.rectangle(0, 0, width, height);
         cr.fill();
 
         cr.translate(Math.floor(width / 2), Math.floor(height / 2));
         cr.save();
 
-        cr.setSourceRGB(0.2, 0.2, 0.2);
+        Utils.setCairoColorFromClutter(cr, this._secondaryColor);
         cr.moveTo(0, 0);
         cr.arc(0, 0, r, 3 / 2 * pi + 2 * pi * this._progress, 3 / 2 * pi + 2
                 * pi);
         cr.fill();
 
-        cr.setSourceRGB(0.8, 0.8, 0.8);
+        Utils.setCairoColorFromClutter(cr, this._primaryColor);
         cr.moveTo(0, 0);
         cr.arc(0, 0, r, 3 / 2 * pi, 3 / 2 * pi + 2 * pi * this._progress);
         cr.fill();
@@ -383,11 +383,21 @@ const TeaTime = new Lang.Class({
 	_showPreferences : function() {
 		imports.misc.util.spawn(["gnome-shell-extension-prefs", ExtensionUtils.getCurrentExtension().metadata['uuid']]);
 		return 0;
-	}
+	},
+    _onStyleChanged: function(actor) {
+        let themeNode = actor.get_theme_node();
+        let color     = themeNode.get_foreground_color()
+        this._primaryColor = color;
+        this._secondaryColor = new Clutter.Color({
+            red: color.red,
+            green: color.green,
+            blue: color.blue,
+            alpha: color.alpha*0.3
+        });
+    }
 });
 
 function init(metadata) {
-    // TODO: at some point, add translations
     let theme = imports.gi.Gtk.IconTheme.get_default();
     theme.append_search_path(metadata.path);
 }

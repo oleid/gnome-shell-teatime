@@ -89,3 +89,8 @@ function playSound(uri) {
     player.set_property('uri', uri);
     player.set_state(Gst.State.PLAYING);
 }
+
+function setCairoColorFromClutter(cr, c) {
+  let s=1.0/255;
+  cr.setSourceRGBA(s*c.red, s*c.green, s*c.blue, s*c.alpha);
+}
