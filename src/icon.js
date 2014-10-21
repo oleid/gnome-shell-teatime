@@ -17,14 +17,16 @@ const ExUt    = imports.misc.extensionUtils;
 const Me      = ExUt.getCurrentExtension();
 const Utils   = Me.imports.utils;
 
-const TeaPot = new Lang.Class({
-	Name: 'TeaPot',
+const TwoColorIcon = new Lang.Class({
+	Name: 'TwoColorIcon',
 	Extends: St.DrawingArea,
 
-	_init : function(size) {
+	_init : function(size, drawingObject) {
 		this.parent({ reactive : true });
         this.set_width(size);
         this.set_height(size);
+		this._drawingObject = drawingObject;
+
 		this.connect('repaint', Lang.bind(this, this._drawIcon));
 
 		// some fallback color
@@ -34,18 +36,23 @@ const TeaPot = new Lang.Class({
             blue: 150,
             alpha: 255
         });
+		this._secundaryColor = this._primaryColor;
+		this._currentStatus  = null;
 	},
-    setColor: function(col) {
-		this._primaryColor = col;
+    setColor: function(primary, secundary) {
+		this._primaryColor   = primary;
+		this._secundaryColor = secundary;
 		this.queue_repaint();
     },
+	setStatus: function(newStatus) {
+		this._customStatus = newStatus;
+		this.queue_repaint();
+	},
 	_drawIcon: function() {
 	  	let cr    = this.get_context();
-		let orWdt = 484; // from the svg file
-		let orHgt = 295;
+		let orWdt = this._drawingObject.width; 
+		let orHgt = this._drawingObject.height;
         let[width, height] = this.get_surface_size();
-
-		Utils.setCairoColorFromClutter(cr, this._primaryColor);
 
 		cr.save();
 
@@ -58,11 +65,23 @@ const TeaPot = new Lang.Class({
 			cr.scale(height/orHgt, height/orHgt)
 			cr.translate(-(orWdt-orHgt)*0.5, 0);;	
 		}
-	
-		
-		// draw TeaPot
+
+		this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
+
+		cr.restore();
+	}
+
+});
+
+const TeaPot = {
+	width  : 484,
+	height : 295,
+	draw   : function(cr, stat, primary, secundary) {
+	// draw TeaPot
 		// cairo commands generated from svg2cairo
 		// https://github.com/akrinke/svg2cairo
+
+		Utils.setCairoColorFromClutter(cr, primary);
 
 		cr.moveTo(127.894531, 276.472656);
 		cr.curveTo(98.457031, 244.316406, 76.527344, 238.09375, 47.953125, 210.996094);
@@ -94,9 +113,31 @@ const TeaPot = new Lang.Class({
 		cr.fillPreserve();
 
 		// end of image
-		cr.restore();
-	}
-
-});
+	} // draw
+}; // TeaPot
 
 
+const Pie = {
+	width : 1,
+	height: 1,
+	draw   : function(cr, stat, primary, secundary) {
+        const pi = Math.PI;
+		const r  = 0.5;
+
+		if(stat == null) stat = 0;
+
+        cr.translate(0.5, 0.5);
+        cr.save();
+
+        Utils.setCairoColorFromClutter(cr, secundary);
+        cr.moveTo(0, 0);
+        cr.arc(0, 0, r, 3 / 2 * pi + 2 * pi * stat, 3 / 2 * pi + 2
+                * pi);
+        cr.fill();
+
+        Utils.setCairoColorFromClutter(cr, primary);
+        cr.moveTo(0, 0);
+        cr.arc(0, 0, r, 3 / 2 * pi, 3 / 2 * pi + 2 * pi * stat);
+        cr.fill();
+    } // draw
+}; // Pie
