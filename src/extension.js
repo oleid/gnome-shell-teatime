@@ -290,7 +290,7 @@ const TeaTime = new Lang.Class({
         this._bGraphicalCountdown = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY);
 
         let dt              =  this._bGraphicalCountdown
-                               ? Math.max(0.1, time / 180) // set time step to fit animation
+                               ? Math.max(1.0, time / 90) // set time step to fit animation
                                : 1.0;                      // show every second for the textual countdown
 
         this._stopTime.setTime(this._startTime.getTime() + time*1000); // in msec 
