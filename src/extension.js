@@ -24,6 +24,7 @@ const Gettext        = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me             = ExtensionUtils.getCurrentExtension();
 const Utils          = Me.imports.utils;
+const Icon           = Me.imports.icon;
 
 const bUseGnome34Workarounds = imports.misc.extensionUtils.versionCheck( ["3.4"], imports.misc.config.PACKAGE_VERSION);
 
@@ -148,18 +149,13 @@ const TeaTime = new Lang.Class({
 
         this._settings = Utils.getSettings();
 
-        this._logo     = new Me.imports.icon.TeaPot(24);
+        this._logo     = new Icon.TwoColorIcon(24, Icon.TeaPot);
 
         // set timer widget
         this._textualTimer   = new St.Label({ text: "",
                                               x_align: Clutter.ActorAlign.END,
                                               y_align: Clutter.ActorAlign.CENTER  });
-        this._graphicalTimer = new St.DrawingArea({
-            reactive : true
-        });
-        this._graphicalTimer.set_width(20);
-        this._graphicalTimer.set_height(20);
-        this._graphicalTimer.connect('repaint', Lang.bind(this, this._drawTimer));
+        this._graphicalTimer = new Icon.TwoColorIcon(24, Icon.Pie);
 
         this.actor.add_actor(this._logo);
         this.actor.connect('style-changed', Lang.bind(this, this._onStyleChanged));
@@ -285,7 +281,6 @@ const TeaTime = new Lang.Class({
         this._startTime     = new Date();
         this._stopTime      = new Date();
         this._cntdownStart  = time;
-        this._progress      = 0;
 
         this._bGraphicalCountdown = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY);
 
@@ -310,8 +305,7 @@ const TeaTime = new Lang.Class({
     },
     _updateTimerDisplay: function(remainingTime) {
         if (  this._bGraphicalCountdown ) {
-            this._progress    = (this._cntdownStart - remainingTime) / this._cntdownStart;
-            this._graphicalTimer.queue_repaint();
+            this._graphicalTimer.setStatus((this._cntdownStart - remainingTime) / this._cntdownStart);
         } else {
             this._textualTimer.text =  Utils.formatTime(remainingTime);
         }
@@ -341,30 +335,6 @@ const TeaTime = new Lang.Class({
             return true; // continue timer
         }
     },
-    _drawTimer : function() {
-        let[width, height] = this._graphicalTimer.get_surface_size();
-        let cr = this._graphicalTimer.get_context();
-        let pi = Math.PI;
-        let  r = Math.min(width, height) * 0.5;;
-
-        cr.setSourceRGBA(0, 0, 0, 0);
-        cr.rectangle(0, 0, width, height);
-        cr.fill();
-
-        cr.translate(Math.floor(width / 2), Math.floor(height / 2));
-        cr.save();
-
-        Utils.setCairoColorFromClutter(cr, this._secondaryColor);
-        cr.moveTo(0, 0);
-        cr.arc(0, 0, r, 3 / 2 * pi + 2 * pi * this._progress, 3 / 2 * pi + 2
-                * pi);
-        cr.fill();
-
-        Utils.setCairoColorFromClutter(cr, this._primaryColor);
-        cr.moveTo(0, 0);
-        cr.arc(0, 0, r, 3 / 2 * pi, 3 / 2 * pi + 2 * pi * this._progress);
-        cr.fill();
-    },
     _playSound : function() {
         let bPlayAlarmSound = this._settings.get_boolean(Utils.TEATIME_USE_ALARM_SOUND_KEY);
         if (bPlayAlarmSound) {
@@ -385,7 +355,8 @@ const TeaTime = new Lang.Class({
             blue: color.blue,
             alpha: color.alpha*0.3
         });
-        this._logo.setColor(this._primaryColor);
+        this._logo.setColor(this._primaryColor, this._secondaryColor);
+        this._graphicalTimer.setColor(this._primaryColor, this._secondaryColor);
     }
 });
 
