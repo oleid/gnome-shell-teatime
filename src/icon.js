@@ -122,9 +122,9 @@ const Pie = {
 	height: 1,
 	draw   : function(cr, stat, primary, secundary) {
         const pi = Math.PI;
-		const r  = 0.5;
+        const r  = 0.5;
 
-		if(stat == null) stat = 0;
+        if(stat == null) stat = 0;
 
         cr.translate(0.5, 0.5);
         cr.save();
