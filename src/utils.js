@@ -84,10 +84,24 @@ function formatTime(sec_num) {
 }
 
 function playSound(uri) {
-    Gst.init(null, 0);
-    let player = Gst.ElementFactory.make("playbin","player");
-    player.set_property('uri', uri);
-    player.set_state(Gst.State.PLAYING);
+    if ( typeof this.player == 'undefined' ) {
+        Gst.init(null, 0);
+        this.player  = Gst.ElementFactory.make("playbin","player");
+        this.playBus = this.player.get_bus();
+        this.playBus.add_signal_watch();
+        this.playBus.connect("message", Lang.bind(this,
+        function(playBus, message) {
+            if (message != null) {
+                // IMPORTANT: to reuse the player, set state to READY
+                let t = message.type;
+                if ( t == Gst.MessageType.EOS || t == Gst.MessageType.ERROR) {
+                    this.player.set_state(Gst.State.READY);
+                }
+            } // message handler
+        }));
+    } // if undefined
+    this.player.set_property('uri', uri);
+    this.player.set_state(Gst.State.PLAYING);
 }
 
 function setCairoColorFromClutter(cr, c) {
