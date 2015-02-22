@@ -39,6 +39,10 @@ const TwoColorIcon = new Lang.Class({
 		this._secundaryColor = this._primaryColor;
 		this._currentStatus  = null;
 	},
+	setPadding: function(padding) {
+		this.margin_left  = padding;
+		this.margin_right = padding;
+	},
     setColor: function(primary, secundary) {
 		this._primaryColor   = primary;
 		this._secundaryColor = secundary;

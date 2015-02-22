@@ -348,6 +348,8 @@ const TeaTime = new Lang.Class({
     _onStyleChanged: function(actor) {
         let themeNode = actor.get_theme_node();
         let color     = themeNode.get_foreground_color()
+        let [bHasPadding, padding] = themeNode.lookup_length("-natural-hpadding", false);
+
         this._primaryColor = color;
         this._secondaryColor = new Clutter.Color({
             red: color.red,
@@ -355,6 +357,8 @@ const TeaTime = new Lang.Class({
             blue: color.blue,
             alpha: color.alpha*0.3
         });
+        this._logo.setPadding(bHasPadding*padding);
+        this._graphicalTimer.setPadding(bHasPadding*padding);
         this._logo.setColor(this._primaryColor, this._secondaryColor);
         this._graphicalTimer.setColor(this._primaryColor, this._secondaryColor);
     }
