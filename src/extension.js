@@ -359,6 +359,9 @@ const TeaTime = new Lang.Class({
         });
         this._logo.setPadding(bHasPadding*padding);
         this._graphicalTimer.setPadding(bHasPadding*padding);
+        this._textualTimer.margin_right = bHasPadding*padding;
+        this._textualTimer.margin_left  = bHasPadding*padding;
+
         this._logo.setColor(this._primaryColor, this._secondaryColor);
         this._graphicalTimer.setColor(this._primaryColor, this._secondaryColor);
     }
