@@ -5,9 +5,9 @@
  * This class was introduced to solve the following problems:
  *  a) draw the icon with the current theme color
  *  b) to work-around the strange streched icon I get in gnome-3.14
+ *  c) draw an animation using current theme color
  *
- * If there is a better way for a) using my previous svg icon file,
- * please let me know ;)
+ * If there is a better way for that stuff, please let me know ;)
  ********************************************************************/
 
 const Lang    = imports.lang;
