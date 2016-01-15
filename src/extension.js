@@ -1,5 +1,5 @@
 /* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
-/* Olaf Leidinger <oleid@mescharet.de>  
+/* Olaf Leidinger <oleid@mescharet.de>
    Thomas Liebetraut <thomas@tommie-lie.de>
 */
 
@@ -37,12 +37,12 @@ const N_ = function(e) { return e; };
 
 const TeaTimeFullscreenNotification = new Lang.Class({
     Name: 'TeaTimeFullscreenNotification',
-    
+
     _init: function() {
         // this spans the whole monitor and contains
         // the actual layout, which it displays in
         // the center of itself
-        
+
         this._bin = new St.Bin({ x_align: St.Align.MIDDLE, y_align: St.Align.MIDDLE});
 
         if (typeof Layout.MonitorConstraint != 'undefined') {
@@ -51,10 +51,10 @@ const TeaTimeFullscreenNotification = new Lang.Class({
             this._bin.add_constraint(this._monitorConstraint);
         }
         Main.uiGroup.add_actor(this._bin);
-        
+
         // a table imitating a vertical box layout to hold the texture and
         // a label underneath it
-        this._layout = new St.Table(); 
+        this._layout = new St.BoxLayout({vertical:true, y_align:Clutter.ActorAlign.CENTER});
         this._bin.set_child(this._layout);
 
         // find all the textures
@@ -78,13 +78,13 @@ const TeaTimeFullscreenNotification = new Lang.Class({
 
         this._texture = new Clutter.Texture({ reactive: true, keep_aspect_ratio: true });
         this._texture.connect("button-release-event", Lang.bind(this, this.hide));
-        this._layout.add(this._texture, {row: 0, col: 0});
-        
+        this._layout.add_child(this._texture);
+
         this._timeline = new Clutter.Timeline({ duration: 2000, repeat_count: -1, progress_mode: Clutter.AnimationMode.LINEAR });
         this._timeline.connect("new-frame", Lang.bind(this, this._newFrame));
 
         this._label = new St.Label({ text: _("Your tea is ready!"), style_class: "dash-label" });
-        this._layout.add(this._label, {row: 1, col: 0});
+        this._layout.add_child(this._label);
 
         this._lightbox = new imports.ui.lightbox.Lightbox(Main.uiGroup); // Seems not to work on Gnome 3.10 { fadeInTime: 0.5, fadeOutTime: 0.5 }
         this._lightbox.highlight(this._bin);
@@ -193,7 +193,7 @@ const TeaTime = new Lang.Class({
 
         /*******************/
 
-        this.menu.addMenuItem(head);        
+        this.menu.addMenuItem(head);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this.teaItemCont);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
@@ -204,12 +204,12 @@ const TeaTime = new Lang.Class({
     _updateTeaList : function(config, output) {
         // make sure the menu is empty
         this.teaItemCont.removeAll();
-        
+
         // fill with new teas
         let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
         for (let teaname in list) {
             let time = list[teaname].get_uint32();
-            
+
             let menuItem = new PopupTeaMenuItem(_(teaname), time);
             menuItem.connect('activate', Lang.bind(this, function() {
                 this._initCountdown(time);
@@ -251,7 +251,7 @@ const TeaTime = new Lang.Class({
                     this._initCountdown(seconds);
                     this.menu.close();
                 }
-            } 
+            }
             this._customEntry.set_text("");
         }
     },
@@ -272,7 +272,7 @@ const TeaTime = new Lang.Class({
         }
 
         Main.messageTray.add(source);
-        
+
         let notification = new MessageTray.Notification(source, subject, text);
         notification.setTransient(true);
         source.notify(notification);
@@ -288,7 +288,7 @@ const TeaTime = new Lang.Class({
                                ? Math.max(1.0, time / 90) // set time step to fit animation
                                : 1.0;                      // show every second for the textual countdown
 
-        this._stopTime.setTime(this._startTime.getTime() + time*1000); // in msec 
+        this._stopTime.setTime(this._startTime.getTime() + time*1000); // in msec
 
         this.actor.remove_actor(this._logo);         // show timer instead of default icon
 
@@ -311,7 +311,7 @@ const TeaTime = new Lang.Class({
         }
     },
     _doCountdown : function() {
-        let remainingTime = this._getRemainingSec(); 
+        let remainingTime = this._getRemainingSec();
 
         if (remainingTime <= 0) {
             // count down finished, switch display again
