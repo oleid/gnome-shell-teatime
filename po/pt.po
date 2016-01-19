@@ -1,0 +1,80 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-01-19 20:43-0200\n"
+"PO-Revision-Date: 2016-01-19 20:52-0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"Last-Translator: Fábio B. Tramasoli <fabio@tramasoli.com>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: pt_BR\n"
+
+#: ../src/extension.js:86 ../src/extension.js:340
+msgid "Your tea is ready!"
+msgstr "Seu chá está pronto!"
+
+#: ../src/extension.js:191
+msgid "Show settings"
+msgstr "Exibir configurações"
+
+#: ../src/extension.js:200
+msgid "min:sec"
+msgstr "min:s"
+
+#: ../src/extension.js:272 ../src/extension.js:273
+msgid "TeaTime applet"
+msgstr "applet TeaTime"
+
+#: ../src/extension.js:313
+msgid "Timer set!"
+msgstr "Timer configurado!"
+
+#: ../src/extension.js:313
+#, javascript-format
+msgid "%ss to go"
+msgstr "%ss para acabar"
+
+#: ../src/extension.js:341
+msgid "Drink it, while it is hot!"
+msgstr "Beba enquanto está quente!"
+
+#: ../src/prefs.js:67
+msgid "Fullscreen Notifications"
+msgstr "Notificações em tela-cheia"
+
+#: ../src/prefs.js:70
+msgid "Graphical Countdown"
+msgstr "Contagem regressiva gráfica"
+
+#: ../src/prefs.js:96
+msgid "Tea"
+msgstr "Chá"
+
+#: ../src/prefs.js:111
+msgid "Steep time"
+msgstr "Tempo de infusão"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:1
+msgid ""
+"{ \"Green tea\": 180, \"Black tea\": 210, \"Fruit tea\": 420, \"White tea\": "
+"120 }"
+msgstr ""
+"{ \"Chá verde\": 180, \"Chá preto\": 210, \"Chá de fruta\": 420, \"Chá branco"
+"\": 120 }"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:2
+msgid "Tea drawing times list"
+msgstr "Lista de infusão de chás"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:3
+msgid "A mapping of a teas to their corresponding drawing time in seconds."
+msgstr "Um mapeamento de chás a seus tempos de infusão em segundos."
