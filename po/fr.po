@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:13+0100\n"
+"POT-Creation-Date: 2016-10-04 22:06+0200\n"
 "PO-Revision-Date: 2013-11-05 14:22+0100\n"
 "Last-Translator: Solveig <teatime@solveig.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,52 +16,51 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/extension.js:86 ../src/extension.js:340
+#: ../src/extension.js:86 ../src/extension.js:327
 msgid "Your tea is ready!"
 msgstr "Votre thé est prêt !"
 
-#: ../src/extension.js:191
+#: ../src/extension.js:179
 msgid "Show settings"
 msgstr "Préférences"
 
-#: ../src/extension.js:200
+#: ../src/extension.js:188
 msgid "min:sec"
 msgstr "min:sec"
 
-#: ../src/extension.js:272 ../src/extension.js:273
+#: ../src/extension.js:260 ../src/extension.js:261
 msgid "TeaTime applet"
 msgstr "Application TeaTime"
 
-#: ../src/extension.js:313
-msgid "Timer set!"
-msgstr "Minuteur réglé !"
-
-#: ../src/extension.js:313
-#, javascript-format
-msgid "%ss to go"
-msgstr "encore %ss"
-
-#: ../src/extension.js:341
+#: ../src/extension.js:328
 msgid "Drink it, while it is hot!"
 msgstr "Buvez tant que c'est chaud !"
 
-#: ../src/prefs.js:67
+#: ../src/prefs.js:69
 msgid "Fullscreen Notifications"
 msgstr "Notifications en plein écran"
 
-#: ../src/prefs.js:70
+#: ../src/prefs.js:72
 msgid "Graphical Countdown"
 msgstr ""
 
-#: ../src/prefs.js:96
+#: ../src/prefs.js:76
+msgid "Alarm sound"
+msgstr ""
+
+#: ../src/prefs.js:92
+msgid "Select alarm sound file"
+msgstr ""
+
+#: ../src/prefs.js:121
 msgid "Tea"
 msgstr "Thé"
 
-#: ../src/prefs.js:111
+#: ../src/prefs.js:136
 msgid "Steep time"
 msgstr "Temps d'infusion"
 
-#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:1
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:5
 msgid ""
 "{ \"Green tea\": 180, \"Black tea\": 210, \"Fruit tea\": 420, \"White tea\": "
 "120 }"
@@ -69,10 +68,51 @@ msgstr ""
 "{ \"Thé vert\": 180, \"Thé noir\": 210, \"Thé aux fruits\": 420, \"Thé blanc"
 "\": 120 }"
 
-#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:2
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:6
 msgid "Tea drawing times list"
 msgstr "Temps d'infusion des différents thés"
 
-#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:3
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:7
 msgid "A mapping of a teas to their corresponding drawing time in seconds."
 msgstr "Correspondances entre chaque thé et son temps d'infusion en secondes."
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:11
+#, fuzzy
+msgid "Show fullscreen notifications."
+msgstr "Notifications en plein écran"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:12
+msgid ""
+"Displays a more disrupting, modal fullscreen notification when the timer has "
+"elapsed."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:16
+msgid "Show an animated graphical countdown."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:17
+msgid "Displays a small, yet nice animation instead of an textual countdown."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:21
+msgid "Drawing completed sound"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:22
+msgid "A sound file played after drawing is completed."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:26
+msgid "Play sound when drawing completed"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:27
+msgid "Play a sound file after drawing is completed."
+msgstr ""
+
+#~ msgid "Timer set!"
+#~ msgstr "Minuteur réglé !"
+
+#~ msgid "%ss to go"
+#~ msgstr "encore %ss"

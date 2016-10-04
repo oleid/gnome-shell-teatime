@@ -7,63 +7,62 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-19 20:43-0200\n"
+"POT-Creation-Date: 2016-10-04 22:06+0200\n"
 "PO-Revision-Date: 2016-01-19 20:52-0200\n"
+"Last-Translator: Fábio B. Tramasoli <fabio@tramasoli.com>\n"
 "Language-Team: \n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.6\n"
-"Last-Translator: Fábio B. Tramasoli <fabio@tramasoli.com>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Language: pt_BR\n"
 
-#: ../src/extension.js:86 ../src/extension.js:340
+#: ../src/extension.js:86 ../src/extension.js:327
 msgid "Your tea is ready!"
 msgstr "Seu chá está pronto!"
 
-#: ../src/extension.js:191
+#: ../src/extension.js:179
 msgid "Show settings"
 msgstr "Exibir configurações"
 
-#: ../src/extension.js:200
+#: ../src/extension.js:188
 msgid "min:sec"
 msgstr "min:s"
 
-#: ../src/extension.js:272 ../src/extension.js:273
+#: ../src/extension.js:260 ../src/extension.js:261
 msgid "TeaTime applet"
 msgstr "applet TeaTime"
 
-#: ../src/extension.js:313
-msgid "Timer set!"
-msgstr "Timer configurado!"
-
-#: ../src/extension.js:313
-#, javascript-format
-msgid "%ss to go"
-msgstr "%ss para acabar"
-
-#: ../src/extension.js:341
+#: ../src/extension.js:328
 msgid "Drink it, while it is hot!"
 msgstr "Beba enquanto está quente!"
 
-#: ../src/prefs.js:67
+#: ../src/prefs.js:69
 msgid "Fullscreen Notifications"
 msgstr "Notificações em tela-cheia"
 
-#: ../src/prefs.js:70
+#: ../src/prefs.js:72
 msgid "Graphical Countdown"
 msgstr "Contagem regressiva gráfica"
 
-#: ../src/prefs.js:96
+#: ../src/prefs.js:76
+msgid "Alarm sound"
+msgstr ""
+
+#: ../src/prefs.js:92
+msgid "Select alarm sound file"
+msgstr ""
+
+#: ../src/prefs.js:121
 msgid "Tea"
 msgstr "Chá"
 
-#: ../src/prefs.js:111
+#: ../src/prefs.js:136
 msgid "Steep time"
 msgstr "Tempo de infusão"
 
-#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:1
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:5
 msgid ""
 "{ \"Green tea\": 180, \"Black tea\": 210, \"Fruit tea\": 420, \"White tea\": "
 "120 }"
@@ -71,10 +70,52 @@ msgstr ""
 "{ \"Chá verde\": 180, \"Chá preto\": 210, \"Chá de fruta\": 420, \"Chá branco"
 "\": 120 }"
 
-#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:2
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:6
 msgid "Tea drawing times list"
 msgstr "Lista de infusão de chás"
 
-#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml.in.h:3
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:7
 msgid "A mapping of a teas to their corresponding drawing time in seconds."
 msgstr "Um mapeamento de chás a seus tempos de infusão em segundos."
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:11
+#, fuzzy
+msgid "Show fullscreen notifications."
+msgstr "Notificações em tela-cheia"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:12
+msgid ""
+"Displays a more disrupting, modal fullscreen notification when the timer has "
+"elapsed."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:16
+#, fuzzy
+msgid "Show an animated graphical countdown."
+msgstr "Contagem regressiva gráfica"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:17
+msgid "Displays a small, yet nice animation instead of an textual countdown."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:21
+msgid "Drawing completed sound"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:22
+msgid "A sound file played after drawing is completed."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:26
+msgid "Play sound when drawing completed"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:27
+msgid "Play a sound file after drawing is completed."
+msgstr ""
+
+#~ msgid "Timer set!"
+#~ msgstr "Timer configurado!"
+
+#~ msgid "%ss to go"
+#~ msgstr "%ss para acabar"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-04 21:23+0800\n"
+"POT-Creation-Date: 2016-10-04 22:06+0200\n"
 "PO-Revision-Date: 2016-10-04 21:48+0800\n"
 "Last-Translator: 绿色圣光 <lishaohui.qd@163.com>\n"
 "Language-Team: Chinese (Simplified) <>\n"
@@ -18,47 +18,96 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: src/extension.js:86 src/extension.js:327
+#: ../src/extension.js:86 ../src/extension.js:327
 msgid "Your tea is ready!"
 msgstr "您的茶已经准备好了！"
 
-#: src/extension.js:179
+#: ../src/extension.js:179
 msgid "Show settings"
 msgstr "显示设置"
 
-#: src/extension.js:188
+#: ../src/extension.js:188
 msgid "min:sec"
 msgstr "分:秒"
 
-#: src/extension.js:260 src/extension.js:261
+#: ../src/extension.js:260 ../src/extension.js:261
 msgid "TeaTime applet"
 msgstr "泡茶时间小程序"
 
-#: src/extension.js:328
+#: ../src/extension.js:328
 msgid "Drink it, while it is hot!"
 msgstr "趁热喝吧！"
 
-#: src/prefs.js:69
+#: ../src/prefs.js:69
 msgid "Fullscreen Notifications"
 msgstr "全屏通知"
 
-#: src/prefs.js:72
+#: ../src/prefs.js:72
 msgid "Graphical Countdown"
 msgstr "图形化倒计时"
 
-#: src/prefs.js:76
+#: ../src/prefs.js:76
 msgid "Alarm sound"
 msgstr "提示音"
 
-#: src/prefs.js:92
+#: ../src/prefs.js:92
 msgid "Select alarm sound file"
 msgstr "选择提示声音文件"
 
-#: src/prefs.js:121
+#: ../src/prefs.js:121
 msgid "Tea"
 msgstr "茶"
 
-#: src/prefs.js:136
+#: ../src/prefs.js:136
 msgid "Steep time"
 msgstr "浸泡时间"
 
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:5
+msgid ""
+"{ \"Green tea\": 180, \"Black tea\": 210, \"Fruit tea\": 420, \"White tea\": "
+"120 }"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:6
+msgid "Tea drawing times list"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:7
+msgid "A mapping of a teas to their corresponding drawing time in seconds."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:11
+#, fuzzy
+msgid "Show fullscreen notifications."
+msgstr "全屏通知"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:12
+msgid ""
+"Displays a more disrupting, modal fullscreen notification when the timer has "
+"elapsed."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:16
+#, fuzzy
+msgid "Show an animated graphical countdown."
+msgstr "图形化倒计时"
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:17
+msgid "Displays a small, yet nice animation instead of an textual countdown."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:21
+msgid "Drawing completed sound"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:22
+msgid "A sound file played after drawing is completed."
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:26
+msgid "Play sound when drawing completed"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:27
+msgid "Play a sound file after drawing is completed."
+msgstr ""
