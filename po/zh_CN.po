@@ -1,0 +1,64 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2016 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 绿色圣光 <lishaohui.qd@163.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-04 21:23+0800\n"
+"PO-Revision-Date: 2016-10-04 21:48+0800\n"
+"Last-Translator: 绿色圣光 <lishaohui.qd@163.com>\n"
+"Language-Team: Chinese (Simplified) <>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: src/extension.js:86 src/extension.js:327
+msgid "Your tea is ready!"
+msgstr "您的茶已经准备好了！"
+
+#: src/extension.js:179
+msgid "Show settings"
+msgstr "显示设置"
+
+#: src/extension.js:188
+msgid "min:sec"
+msgstr "分:秒"
+
+#: src/extension.js:260 src/extension.js:261
+msgid "TeaTime applet"
+msgstr "泡茶时间小程序"
+
+#: src/extension.js:328
+msgid "Drink it, while it is hot!"
+msgstr "趁热喝吧！"
+
+#: src/prefs.js:69
+msgid "Fullscreen Notifications"
+msgstr "全屏通知"
+
+#: src/prefs.js:72
+msgid "Graphical Countdown"
+msgstr "图形化倒计时"
+
+#: src/prefs.js:76
+msgid "Alarm sound"
+msgstr "提示音"
+
+#: src/prefs.js:92
+msgid "Select alarm sound file"
+msgstr "选择提示声音文件"
+
+#: src/prefs.js:121
+msgid "Tea"
+msgstr "茶"
+
+#: src/prefs.js:136
+msgid "Steep time"
+msgstr "浸泡时间"
+
