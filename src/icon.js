@@ -22,7 +22,7 @@ const TwoColorIcon = new Lang.Class({
 	Extends: St.DrawingArea,
 
 	_init : function(size, drawingObject) {
-		this.parent({ reactive : true });
+		this.parent({ reactive : true, style: 'padding: 0px 2px' });
         this.set_width(size);
         this.set_height(size);
 		this._drawingObject = drawingObject;
@@ -53,21 +53,23 @@ const TwoColorIcon = new Lang.Class({
 		this.queue_repaint();
 	},
 	_drawIcon: function() {
-	  	let cr    = this.get_context();
-		let orWdt = this._drawingObject.width; 
+		let cr    = this.get_context();
+		let orWdt = this._drawingObject.width;
 		let orHgt = this._drawingObject.height;
-        let[width, height] = this.get_surface_size();
+		let[width, height] = this.get_surface_size();
 
 		cr.save();
 
-		// layout object in box	
+		// layout object in box
 		if (orWdt/orHgt > width/height) {
 			// take full width and center vertically
-			cr.scale(width/orWdt, width/orWdt);	
-			cr.translate(0, (orWdt-orHgt)*0.5);
+			cr.translate(0, height * 0.5);
+			cr.scale(width/orWdt, width/orWdt);
+			cr.translate(0, (height*width/orWdt - orHgt) * 0.5);
 		} else {
-			cr.scale(height/orHgt, height/orHgt)
-			cr.translate(-(orWdt-orHgt)*0.5, 0);;	
+			cr.translate(width * 0.5, 0);
+			cr.scale(height/orHgt, height/orHgt);
+			cr.translate((width*height/orHgt - orWdt) * 0.5, 0);
 		}
 
 		this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
