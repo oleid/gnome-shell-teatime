@@ -1,6 +1,6 @@
 **Premise**
 
-Befor you do anything, please make sure, that you have the following packages installed:
+Before you do anything, please make sure, that you have the following packages installed:
 
  - libglib2.0-dev
  - intltool
@@ -11,34 +11,34 @@ The name of the package may vary from distribution to distributon. The first two
 - intltool.m4
 - gsettings.m4
 
-They should be located somewhere in /usr/share/aclocal.
+They should be located somewhere in `/usr/share/aclocal`.
 
 **Installaton**
 
 If everything is in place, run
 
-./autogen.sh
+    ./autogen.sh
 
 to generate the configure script. If everything worked well, do:
 
-./configure --prefix=/usr &&
-make
+    ./configure --prefix=/usr && make
 
-To install the extension to your home directory, run
+To install the extension to your home directory, run:
 
-make local-install
+    make local-install
 
 Or to install it for all users you need administrator rights. Thus you've to use something like sudo or become root via su. Using sudo, simply run:
 
-sudo make install
+    sudo make install
 
-In case you can't find the applet in gnome-tweak-tool, restart gnome-shell (using Alt+F2, enter "r" -- without quotes).
+In case you can't find the applet in gnome-tweak-tool, restart gnome-shell (using <kbd>Alt</kbd>
++<kbd>F2</kbd>, enter: <kbd>r</kbd>).
 
-If you wish to translate TeaTime to your language, have a look at the directory "po".
+If you wish to translate TeaTime to your language, have a look at the directory `po`.
 
 A handy zip file can be created using:
 
-make zip   -- This is the same you get via http://extensions.gnome.org
+    make zip   # This is the same you get via http://extensions.gnome.org
 
 
 Thanks to  Thomas Liebetraut for the new build system.
