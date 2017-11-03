@@ -60,17 +60,14 @@ const TwoColorIcon = new Lang.Class({
 
 		cr.save();
 
-		// layout object in box
-		if (orWdt/orHgt > width/height) {
-			// take full width and center vertically
-			cr.translate(0, height * 0.5);
-			cr.scale(width/orWdt, width/orWdt);
-			cr.translate(0, (height*width/orWdt - orHgt) * 0.5);
-		} else {
-			cr.translate(width * 0.5, 0);
-			cr.scale(height/orHgt, height/orHgt);
-			cr.translate((width*height/orHgt - orWdt) * 0.5, 0);
-		}
+		let object_longest_edge = Math.max(orWdt, orHgt);
+		let surface_shortest_edge = Math.min(width, height);
+		let scaling = surface_shortest_edge / object_longest_edge;
+		let padding_x = (width - orWdt * scaling)*0.5;
+		let padding_y = (height - orHgt * scaling)*0.5;
+
+		cr.translate(padding_x, padding_y);
+		cr.scale(scaling, scaling);
 
 		this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
 
@@ -145,5 +142,6 @@ const Pie = {
         cr.moveTo(0, 0);
         cr.arc(0, 0, r, 3 / 2 * pi, 3 / 2 * pi + 2 * pi * stat);
         cr.fill();
+        cr.restore();
     } // draw
 }; // Pie
