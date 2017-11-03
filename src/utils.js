@@ -17,21 +17,35 @@ const TEATIME_GRAPHICAL_COUNTDOWN_KEY = 'graphical-countdown';
 const TEATIME_USE_ALARM_SOUND_KEY = 'use-alarm-sound';
 const TEATIME_ALARM_SOUND_KEY = 'alarm-sound-file';
 
+const ENABLE_LOGGING = false;
+
+function debug(text) {
+    if (ENABLE_LOGGING)
+        log("**TeaTime >: " + text);
+}
+
+function getExtensionLocaleDir() {
+    // check if this extension was built with "make zip-file", and thus
+    // has the locale files in a subfolder
+    // otherwise assume that extension has been installed in the
+    // same prefix as gnome-shell
+    let localLocaleDir = ExtensionUtils.getCurrentExtension().dir.get_child('locale');
+    let selectedDir = (localLocaleDir.query_exists(null))
+        ? localLocaleDir.get_path()
+        : Config.LOCALEDIR;
+
+    debug("Using locale dir: " + selectedDir);
+
+    return selectedDir;
+}
+
 function initTranslations(domain) {
     let extension = ExtensionUtils.getCurrentExtension();
 
     domain = domain || extension.metadata['gettext-domain'];
 
     Gettext.textdomain(domain);
-    // check if this extension was built with "make zip-file", and thus
-    // has the locale files in a subfolder
-    // otherwise assume that extension has been installed in the
-    // same prefix as gnome-shell
-    let localeDir = extension.dir.get_child('locale');
-    if (localeDir.query_exists(null))
-        Gettext.bindtextdomain(domain, localeDir.get_path());
-    else
-        Gettext.bindtextdomain(domain, Config.LOCALEDIR);
+    Gettext.bindtextdomain(domain, getExtensionLocaleDir());
 }
 
 
