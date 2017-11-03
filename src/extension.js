@@ -54,7 +54,7 @@ const TeaTimeFullscreenNotification = new Lang.Class({
 
         // a table imitating a vertical box layout to hold the texture and
         // a label underneath it
-        this._layout = new St.BoxLayout({vertical:true, y_align:Clutter.ActorAlign.CENTER});
+        this._layout = new St.BoxLayout({ vertical: true, y_align: Clutter.ActorAlign.CENTER });
         this._bin.set_child(this._layout);
 
         // find all the textures
@@ -145,7 +145,7 @@ const TeaTime = new Lang.Class({
     Extends : PanelMenu.Button,
 
     _init : function() {
-        this.parent(0.0, "TeaTime");
+        this.parent(null, "TeaTime");
 
         this._settings = Utils.getSettings();
 
@@ -158,6 +158,7 @@ const TeaTime = new Lang.Class({
         this._graphicalTimer = new Icon.TwoColorIcon(24, Icon.Pie);
 
         this.actor.add_actor(this._logo);
+        this.actor.add_style_class_name('panel-status-button');
         this.actor.connect('style-changed', Lang.bind(this, this._onStyleChanged));
 
         this._idleTimeout = null;
