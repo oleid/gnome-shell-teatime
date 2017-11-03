@@ -10,61 +10,64 @@
  * If there is a better way for that stuff, please let me know ;)
  ********************************************************************/
 
-const Lang    = imports.lang;
-const St      = imports.gi.St;
+const Lang = imports.lang;
+const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
-const ExUt    = imports.misc.extensionUtils;
-const Me      = ExUt.getCurrentExtension();
-const Utils   = Me.imports.utils;
+const ExUt = imports.misc.extensionUtils;
+const Me = ExUt.getCurrentExtension();
+const Utils = Me.imports.utils;
 
 const TwoColorIcon = new Lang.Class({
 	Name: 'TwoColorIcon',
 	Extends: St.DrawingArea,
 
-	_init : function(size, drawingObject) {
-		this.parent({ reactive : true, style: 'padding: 0px 2px' });
-        this.set_width(size);
-        this.set_height(size);
+	_init: function (size, drawingObject) {
+		this.parent({
+			reactive: true,
+			style: 'padding: 0px 2px'
+		});
+		this.set_width(size);
+		this.set_height(size);
 		this._drawingObject = drawingObject;
 
 		this.connect('repaint', Lang.bind(this, this._drawIcon));
 
 		// some fallback color
 		this._primaryColor = new Clutter.Color({
-            red: 150,
-            green: 150,
-            blue: 150,
-            alpha: 255
-        });
+			red: 150,
+			green: 150,
+			blue: 150,
+			alpha: 255
+		});
 		this._secundaryColor = this._primaryColor;
-		this._currentStatus  = null;
+		this._currentStatus = null;
 	},
-	setPadding: function(padding) {
-		this.margin_left  = padding;
+	setPadding: function (padding) {
+		this.margin_left = padding;
 		this.margin_right = padding;
 	},
-    setColor: function(primary, secundary) {
-		this._primaryColor   = primary;
+	setColor: function (primary, secundary) {
+		this._primaryColor = primary;
 		this._secundaryColor = secundary;
 		this.queue_repaint();
-    },
-	setStatus: function(newStatus) {
+	},
+	setStatus: function (newStatus) {
 		this._customStatus = newStatus;
 		this.queue_repaint();
 	},
-	_drawIcon: function() {
-		let cr    = this.get_context();
+	_drawIcon: function () {
+		let cr = this.get_context();
 		let orWdt = this._drawingObject.width;
 		let orHgt = this._drawingObject.height;
-		let[width, height] = this.get_surface_size();
+		let [width, height] = this.get_surface_size();
 
 		cr.save();
 
 		let object_longest_edge = Math.max(orWdt, orHgt);
 		let surface_shortest_edge = Math.min(width, height);
 		let scaling = surface_shortest_edge / object_longest_edge;
-		let padding_x = (width - orWdt * scaling)*0.5;
-		let padding_y = (height - orHgt * scaling)*0.5;
+		let padding_x = (width - orWdt * scaling) * 0.5;
+		let padding_y = (height - orHgt * scaling) * 0.5;
 
 		cr.translate(padding_x, padding_y);
 		cr.scale(scaling, scaling);
@@ -77,10 +80,10 @@ const TwoColorIcon = new Lang.Class({
 });
 
 const TeaPot = {
-	width  : 484,
-	height : 295,
-	draw   : function(cr, stat, primary, secundary) {
-	// draw TeaPot
+	width: 484,
+	height: 295,
+	draw: function (cr, stat, primary, secundary) {
+		// draw TeaPot
 		// cairo commands generated from svg2cairo
 		// https://github.com/akrinke/svg2cairo
 
@@ -121,27 +124,27 @@ const TeaPot = {
 
 
 const Pie = {
-	width : 1,
+	width: 1,
 	height: 1,
-	draw   : function(cr, stat, primary, secundary) {
-        const pi = Math.PI;
-        const r  = 0.5;
+	draw: function (cr, stat, primary, secundary) {
+		const pi = Math.PI;
+		const r = 0.5;
 
-        if(stat == null) stat = 0;
+		if (stat == null) stat = 0;
 
-        cr.translate(0.5, 0.5);
-        cr.save();
+		cr.translate(0.5, 0.5);
+		cr.save();
 
-        Utils.setCairoColorFromClutter(cr, secundary);
-        cr.moveTo(0, 0);
-        cr.arc(0, 0, r, 3 / 2 * pi + 2 * pi * stat, 3 / 2 * pi + 2
-                * pi);
-        cr.fill();
+		Utils.setCairoColorFromClutter(cr, secundary);
+		cr.moveTo(0, 0);
+		cr.arc(0, 0, r, 3 / 2 * pi + 2 * pi * stat, 3 / 2 * pi + 2 *
+			pi);
+		cr.fill();
 
-        Utils.setCairoColorFromClutter(cr, primary);
-        cr.moveTo(0, 0);
-        cr.arc(0, 0, r, 3 / 2 * pi, 3 / 2 * pi + 2 * pi * stat);
-        cr.fill();
-        cr.restore();
-    } // draw
+		Utils.setCairoColorFromClutter(cr, primary);
+		cr.moveTo(0, 0);
+		cr.arc(0, 0, r, 3 / 2 * pi, 3 / 2 * pi + 2 * pi * stat);
+		cr.fill();
+		cr.restore();
+	} // draw
 }; // Pie
