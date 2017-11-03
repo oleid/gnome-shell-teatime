@@ -7,7 +7,6 @@ const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Mainloop = imports.mainloop; // timer
-const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 
 const Lang = imports.lang;
