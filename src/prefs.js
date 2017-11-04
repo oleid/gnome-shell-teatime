@@ -13,7 +13,7 @@ const Lang = imports.lang;
 const Gtk = imports.gi.Gtk;
 const GObject = imports.gi.GObject;
 
-const Gettext = imports.gettext;
+const Gettext = imports.gettext.domain('TeaTime');
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
