@@ -5,7 +5,6 @@
 
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
-const Gettxt = imports.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Config = imports.misc.config;
@@ -44,7 +43,7 @@ function initTranslations(domain) {
 
 	domain = domain || extension.metadata['gettext-domain'];
 
-	Gettxt.bindtextdomain(domain, getExtensionLocaleDir());
+	imports.gettext.bindtextdomain(domain, getExtensionLocaleDir());
 }
 
 
