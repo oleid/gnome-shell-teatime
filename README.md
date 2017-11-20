@@ -44,7 +44,7 @@ A handy zip file can be created using:
 Thanks to  Thomas Liebetraut for the new build system.
 Get the latest version from:  https://github.com/tommie-lie/gnome-shell-extensions-template
 
-** Contribution **
+**Contribution**
 
 Patches are welcome. But please make sure the code you contribute is formated properly.
 Please run `beautify-code.sh` before sending pull requests. Therefore, you'll need to install the
