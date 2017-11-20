@@ -46,6 +46,16 @@ function initTranslations(domain) {
 	imports.gettext.bindtextdomain(domain, getExtensionLocaleDir());
 }
 
+function getTranslationFunc() {
+	let extension = ExtensionUtils.getCurrentExtension();
+	let domain = extension.metadata['gettext-domain'];
+
+	if (typeof getTranslationFunc.initialized == 'undefined') {
+		initTranslations(domain);
+		getTranslationFunc.initialized = true;
+	}
+	return imports.gettext.domain(domain).gettext;
+}
 
 function getSettings(schema) {
 	let extension = ExtensionUtils.getCurrentExtension();

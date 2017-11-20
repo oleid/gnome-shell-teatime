@@ -20,7 +20,6 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Panel = imports.ui.panel;
 
-const Gettext = imports.gettext.domain('TeaTime');
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
@@ -28,9 +27,7 @@ const Icon = Me.imports.icon;
 
 const bUseGnome34Workarounds = imports.misc.extensionUtils.versionCheck(["3.4"], imports.misc.config.PACKAGE_VERSION);
 
-Utils.initTranslations();
-
-const _ = Gettext.gettext;
+const _ = Utils.getTranslationFunc();
 const N_ = function (e) {
 	return e;
 };

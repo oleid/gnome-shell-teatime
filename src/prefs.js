@@ -13,16 +13,13 @@ const Lang = imports.lang;
 const Gtk = imports.gi.Gtk;
 const GObject = imports.gi.GObject;
 
-const Gettext = imports.gettext.domain('TeaTime');
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
 const bUseGnome34Workarounds = imports.misc.extensionUtils.versionCheck(["3.4"], imports.misc.config.PACKAGE_VERSION);
 
-Utils.initTranslations();
-
-const _ = Gettext.gettext;
+const _ = Utils.getTranslationFunc();
 const N_ = function (e) {
 	return e;
 };
