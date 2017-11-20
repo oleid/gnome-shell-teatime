@@ -47,10 +47,10 @@ const TeaTimePrefsWidget = new Lang.Class({
 
 		this._tealist = new Gtk.ListStore();
 		this._tealist.set_column_types([
-            GObject.TYPE_STRING,
-            GObject.TYPE_INT,
-            Gtk.Adjustment
-        ]);
+			GObject.TYPE_STRING,
+			GObject.TYPE_INT,
+			Gtk.Adjustment
+		]);
 
 		this.set_column_spacing(3);
 
