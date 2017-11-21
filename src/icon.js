@@ -26,8 +26,9 @@ const TwoColorIcon = new Lang.Class({
 			reactive: true,
 			style: 'padding: 0px 2px'
 		});
-		this.set_width(size);
-		this.set_height(size);
+		this._base_size = size;
+		this.setScaling(Utils.getGlobalDisplayScaleFactor());
+
 		this._drawingObject = drawingObject;
 
 		this.connect('repaint', Lang.bind(this, this._drawIcon));
@@ -49,6 +50,12 @@ const TwoColorIcon = new Lang.Class({
 	setColor: function (primary, secundary) {
 		this._primaryColor = primary;
 		this._secundaryColor = secundary;
+		this.queue_repaint();
+	},
+	setScaling: function (newScale) {
+		this._default_scale = newScale;
+		this.set_width(this._base_size * this._default_scale);
+		this.set_height(this._base_size * this._default_scale);
 		this.queue_repaint();
 	},
 	setStatus: function (newStatus) {

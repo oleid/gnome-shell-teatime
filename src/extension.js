@@ -399,6 +399,11 @@ const TeaTime = new Lang.Class({
 
 		this._logo.setColor(this._primaryColor, this._secondaryColor);
 		this._graphicalTimer.setColor(this._primaryColor, this._secondaryColor);
+
+		// forward (possible) scaling style change to child
+		let scaling = Utils.getGlobalDisplayScaleFactor();
+		this._logo.setScaling(scaling);
+		this._graphicalTimer.setScaling(scaling);
 	}
 });
 
