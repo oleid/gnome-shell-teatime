@@ -124,6 +124,7 @@ const TeaTimePrefsWidget = new Lang.Class({
 			model: this._tealist,
 			expand: true
 		});
+		this.treeview.set_reorderable(true);
 		this.treeview.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
 		this.attach(this.treeview, 0, curRow, 3, 1);
 		curRow += 1;
