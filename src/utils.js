@@ -9,7 +9,6 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Config = imports.misc.config;
 const Gst = imports.gi.Gst;
-const St = imports.gi.St;
 
 const TEATIME_STEEP_TIMES_KEY = 'steep-times';
 const TEATIME_FULLSCREEN_NOTIFICATION_KEY = 'fullscreen-notification';
@@ -141,5 +140,6 @@ function setCairoColorFromClutter(cr, c) {
 }
 
 function getGlobalDisplayScaleFactor() {
+	const St = imports.gi.St;
 	return St.ThemeContext.get_for_stage(global.stage).scale_factor;
 }
