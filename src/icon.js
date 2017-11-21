@@ -41,7 +41,7 @@ var TwoColorIcon = new Lang.Class({
 			alpha: 255
 		});
 		this._secundaryColor = this._primaryColor;
-		this._currentStatus = null;
+		this._customStatus = null;
 	},
 	setPadding: function (padding) {
 		this.margin_left = padding;
