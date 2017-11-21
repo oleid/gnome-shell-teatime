@@ -17,7 +17,7 @@ const ExUt = imports.misc.extensionUtils;
 const Me = ExUt.getCurrentExtension();
 const Utils = Me.imports.utils;
 
-const TwoColorIcon = new Lang.Class({
+var TwoColorIcon = new Lang.Class({
 	Name: 'TwoColorIcon',
 	Extends: St.DrawingArea,
 
@@ -86,7 +86,7 @@ const TwoColorIcon = new Lang.Class({
 
 });
 
-const TeaPot = {
+var TeaPot = {
 	width: 484,
 	height: 295,
 	draw: function (cr, stat, primary, secundary) {
@@ -130,7 +130,7 @@ const TeaPot = {
 }; // TeaPot
 
 
-const Pie = {
+var Pie = {
 	width: 1,
 	height: 1,
 	draw: function (cr, stat, primary, secundary) {

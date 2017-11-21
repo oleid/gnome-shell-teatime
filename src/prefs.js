@@ -1,13 +1,7 @@
-/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
+/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: t -*- */
 /* Olaf Leidinger <oleid@mescharet.de>
    Thomas Liebetraut <thomas@tommie-lie.de>
 */
-
-const Gdk = imports.gi.Gdk;
-const Gio = imports.gi.Gio;
-const GLib = imports.gi.GLib;
-const Mainloop = imports.mainloop; // timer
-const Clutter = imports.gi.Clutter;
 
 const Lang = imports.lang;
 const Gtk = imports.gi.Gtk;
@@ -17,13 +11,10 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
-const bUseGnome34Workarounds = imports.misc.extensionUtils.versionCheck(["3.4"], imports.misc.config.PACKAGE_VERSION);
-
 const _ = Utils.getTranslationFunc();
 const N_ = function (e) {
 	return e;
 };
-
 
 
 const Columns = {
@@ -104,7 +95,7 @@ const TeaTimePrefsWidget = new Lang.Class({
 		this.alarmSoundFile.connect("selection_changed", Lang.bind(this, this._saveSoundFile));
 
 
-		if (!bUseGnome34Workarounds) {
+		if (!Utils.isGnome34()) {
 			// Full screen notifications currently not working on GNOME 3.4, thus don't show the switch
 			this.attach(labelFN, 0 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
 			this.attach(this.fullscreenNotificationSwitch, 2, curRow, 1, 1);
@@ -191,12 +182,13 @@ const TeaTimePrefsWidget = new Lang.Class({
 		if (this._inhibitUpdate)
 			return;
 
-		this.fullscreenNotificationSwitch.active = this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)
+		this.fullscreenNotificationSwitch.active = this._settings.get_boolean(this.config_keys.fullscreen_notification)
 
-		this.graphicalCountdownSwitch.active = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY)
-		this.alarmSoundSwitch.active = this._settings.get_boolean(Utils.TEATIME_USE_ALARM_SOUND_KEY)
-		let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
-		this.alarmSoundFile.set_uri(this._settings.get_string(Utils.TEATIME_ALARM_SOUND_KEY));
+		this.graphicalCountdownSwitch.active = this._settings.get_boolean(this.config_keys.graphical_countdown)
+		this.alarmSoundSwitch.active = this._settings.get_boolean(this.config_keys.use_alarm_sound)
+		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
+		let file_name = this._settings.get_string(this.config_keys.alarm_sound);
+		this.alarmSoundFile.set_uri(file_name);
 
 		// stop everyone from reacting to the changes we are about to produce
 		// in the model
@@ -251,7 +243,7 @@ const TeaTimePrefsWidget = new Lang.Class({
 		if (this._inhibitUpdate)
 			return;
 		this._inhibitUpdate = true;
-		this._settings.set_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY,
+		this._settings.set_boolean(this.config_keys.fullscreen_notification,
 			sw.active);
 		this._inhibitUpdate = false;
 	},
@@ -260,7 +252,7 @@ const TeaTimePrefsWidget = new Lang.Class({
 		if (this._inhibitUpdate)
 			return;
 		this._inhibitUpdate = true;
-		this._settings.set_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY,
+		this._settings.set_boolean(this.config_keys.graphical_countdown,
 			sw.active);
 		this._inhibitUpdate = false;
 	},
@@ -269,7 +261,7 @@ const TeaTimePrefsWidget = new Lang.Class({
 		if (this._inhibitUpdate)
 			return;
 		this._inhibitUpdate = true;
-		this._settings.set_boolean(Utils.TEATIME_USE_ALARM_SOUND_KEY,
+		this._settings.set_boolean(this.config_keys.use_alarm_sound,
 			sw.active);
 		this._inhibitUpdate = false;
 	},
@@ -277,17 +269,23 @@ const TeaTimePrefsWidget = new Lang.Class({
 		// don't update the backend if someone else is messing with the model
 		if (this._inhibitUpdate)
 			return;
-		if (this._settings.get_string(Utils.TEATIME_ALARM_SOUND_KEY) != this.alarmSoundFile.get_uri()) {
+		let alarm_sound = this.alarmSoundFile.get_uri();
+		Utils.debug(this._settings.get_string(this.config_keys.alarm_sound) + "-->" + alarm_sound);
+
+		let have_value = Utils.isType(alarm_sound, "string");
+		let setting_is_different =
+			this._settings.get_string(this.config_keys.alarm_sound) != alarm_sound;
+		if (have_value && setting_is_different) {
 			this._inhibitUpdate = true;
 
-			let uri = this.alarmSoundFile.get_uri();
-
-			Utils.playSound(uri);
-			this._settings.set_string(Utils.TEATIME_ALARM_SOUND_KEY, uri);
+			Utils.playSound(alarm_sound);
+			this._settings.set_string(this.config_keys.alarm_sound, alarm_sound);
 			this._inhibitUpdate = false;
 		}
 	},
 	_save: function (store, path_, iter_) {
+		const GLib = imports.gi.GLib;
+
 		// don't update the backend if someone else is messing with the model
 		if (this._inhibitUpdate)
 			return;
@@ -304,10 +302,11 @@ const TeaTimePrefsWidget = new Lang.Class({
 		// disable updating it here to avoid an infinite loop
 		this._inhibitUpdate = true;
 
-		this._settings.set_value(Utils.TEATIME_STEEP_TIMES_KEY, settingsValue);
+		this._settings.set_value(this.config_keys.steep_times, settingsValue);
 
 		this._inhibitUpdate = false;
-	}
+	},
+	config_keys: Utils.GetConfigKeys()
 });
 
 

@@ -1,26 +1,25 @@
-/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
+/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: t -*- */
 /* Olaf Leidinger <oleid@mescharet.de>
    Thomas Liebetraut <thomas@tommie-lie.de>
 */
 
-const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Config = imports.misc.config;
-const Gst = imports.gi.Gst;
-
-const TEATIME_STEEP_TIMES_KEY = 'steep-times';
-const TEATIME_FULLSCREEN_NOTIFICATION_KEY = 'fullscreen-notification';
-const TEATIME_GRAPHICAL_COUNTDOWN_KEY = 'graphical-countdown';
-const TEATIME_USE_ALARM_SOUND_KEY = 'use-alarm-sound';
-const TEATIME_ALARM_SOUND_KEY = 'alarm-sound-file';
 
 const ENABLE_LOGGING = false;
 
 function debug(text) {
 	if (ENABLE_LOGGING)
 		log("**TeaTime >: " + text);
+}
+
+function GetConfigKeys() {
+	return {
+		steep_times: 'steep-times',
+		fullscreen_notification: 'fullscreen-notification',
+		graphical_countdown: 'graphical-countdown',
+		use_alarm_sound: 'use-alarm-sound',
+		alarm_sound: 'alarm-sound-file'
+	};
 }
 
 function getExtensionLocaleDir() {
@@ -31,7 +30,7 @@ function getExtensionLocaleDir() {
 	let localLocaleDir = ExtensionUtils.getCurrentExtension().dir.get_child('locale');
 	let selectedDir = (localLocaleDir.query_exists(null)) ?
 		localLocaleDir.get_path() :
-		Config.LOCALEDIR;
+		imports.misc.config.LOCALEDIR;
 
 	debug("Using locale dir: " + selectedDir);
 
@@ -58,6 +57,8 @@ function getTranslationFunc() {
 }
 
 function getSettings(schema) {
+	const Gio = imports.gi.Gio;
+
 	let extension = ExtensionUtils.getCurrentExtension();
 
 	schema = schema || extension.metadata['settings-schema'];
@@ -114,8 +115,13 @@ function formatTime(sec_num) {
 }
 
 function playSound(uri) {
+	const Gst = imports.gi.Gst;
+	const Lang = imports.lang;
+
+	debug("Playing " + uri);
+
 	if (typeof this.player == 'undefined') {
-		Gst.init(null, 0);
+		Gst.init(null);
 		this.player = Gst.ElementFactory.make("playbin", "player");
 		this.playBus = this.player.get_bus();
 		this.playBus.add_signal_watch();
@@ -142,4 +148,12 @@ function setCairoColorFromClutter(cr, c) {
 function getGlobalDisplayScaleFactor() {
 	const St = imports.gi.St;
 	return St.ThemeContext.get_for_stage(global.stage).scale_factor;
+}
+
+function isType(value, typename) {
+	return typeof value == typename;
+}
+
+function isGnome34() {
+	return imports.misc.extensionUtils.versionCheck(["3.4"], imports.misc.config.PACKAGE_VERSION);
 }

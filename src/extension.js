@@ -1,18 +1,15 @@
-/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
+/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: t -*- */
 /* Olaf Leidinger <oleid@mescharet.de>
    Thomas Liebetraut <thomas@tommie-lie.de>
 */
 
-const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
-const GLib = imports.gi.GLib;
 const Lang = imports.lang;
 const Mainloop = imports.mainloop; // timer
 const Shell = imports.gi.Shell;
 const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 const Layout = imports.ui.layout;
-const FileUtils = imports.misc.fileUtils;
 
 const Main = imports.ui.main;
 const MessageTray = imports.ui.messageTray;
@@ -24,8 +21,6 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const Icon = Me.imports.icon;
-
-const bUseGnome34Workarounds = imports.misc.extensionUtils.versionCheck(["3.4"], imports.misc.config.PACKAGE_VERSION);
 
 const _ = Utils.getTranslationFunc();
 const N_ = function (e) {
@@ -194,9 +189,9 @@ const TeaTime = new Lang.Class({
 	},
 	_createMenu: function () {
 		this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-		this._settings.connect("changed::" + Utils.TEATIME_STEEP_TIMES_KEY,
+		this._settings.connect("changed::" + this.config_keys.steep_times,
 			Lang.bind(this, this._updateTeaList));
-		this._settings.connect("changed::" + Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY,
+		this._settings.connect("changed::" + this.config_keys.graphical_countdown,
 			Lang.bind(this, this._updateCountdownType));
 
 		this.teaItemCont = new PopupMenu.PopupMenuSection();
@@ -236,7 +231,7 @@ const TeaTime = new Lang.Class({
 		this.teaItemCont.removeAll();
 
 		// fill with new teas
-		let list = this._settings.get_value(Utils.TEATIME_STEEP_TIMES_KEY).unpack();
+		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
 		for (let teaname in list) {
 			let time = list[teaname].get_uint32();
 
@@ -248,7 +243,7 @@ const TeaTime = new Lang.Class({
 		}
 	},
 	_updateCountdownType: function (config, output) {
-		let bWantGraphicalCountdown = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY);
+		let bWantGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
 
 		if (bWantGraphicalCountdown != this._bGraphicalCountdown) {
 			if (this._idleTimeout != null) {
@@ -286,11 +281,11 @@ const TeaTime = new Lang.Class({
 		}
 	},
 	_showNotification: function (subject, text) {
-		let source = (bUseGnome34Workarounds) ?
+		let source = (Utils.isGnome34()) ?
 			new MessageTray.Source(_("TeaTime applet")) :
 			new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
 
-		if (bUseGnome34Workarounds) {
+		if (Utils.isGnome34()) {
 			source.createNotificationIcon =
 				function () {
 					let iconBox = new St.Bin();
@@ -315,7 +310,7 @@ const TeaTime = new Lang.Class({
 		this._stopTime = new Date();
 		this._cntdownStart = time;
 
-		this._bGraphicalCountdown = this._settings.get_boolean(Utils.TEATIME_GRAPHICAL_COUNTDOWN_KEY);
+		this._bGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
 
 		let dt = this._bGraphicalCountdown ?
 			Math.max(1.0, time / 90) // set time step to fit animation
@@ -355,7 +350,7 @@ const TeaTime = new Lang.Class({
 			this.actor.add_actor(this._logo);
 			this._playSound();
 
-			if (!bUseGnome34Workarounds && this._settings.get_boolean(Utils.TEATIME_FULLSCREEN_NOTIFICATION_KEY)) {
+			if (!Utils.isGnome34() && this._settings.get_boolean(this.config_keys.fullscreen_notification)) {
 				this.dialog = new TeaTimeFullscreenNotification();
 				this.dialog.show();
 			} else {
@@ -371,9 +366,9 @@ const TeaTime = new Lang.Class({
 		}
 	},
 	_playSound: function () {
-		let bPlayAlarmSound = this._settings.get_boolean(Utils.TEATIME_USE_ALARM_SOUND_KEY);
+		let bPlayAlarmSound = this._settings.get_boolean(this.config_keys.use_alarm_sound);
 		if (bPlayAlarmSound) {
-			Utils.playSound(this._settings.get_string(Utils.TEATIME_ALARM_SOUND_KEY));
+			Utils.playSound(this._settings.get_string(this.config_keys.alarm_sound));
 		}
 	},
 	_showPreferences: function () {
@@ -404,7 +399,8 @@ const TeaTime = new Lang.Class({
 		let scaling = Utils.getGlobalDisplayScaleFactor();
 		this._logo.setScaling(scaling);
 		this._graphicalTimer.setScaling(scaling);
-	}
+	},
+	config_keys: Utils.GetConfigKeys()
 });
 
 function init(metadata) {
