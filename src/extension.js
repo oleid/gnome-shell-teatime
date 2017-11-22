@@ -410,7 +410,7 @@ const TeaTime = new Lang.Class({
 
 		// forward (possible) scaling style change to child
 		let scaling = Utils.getGlobalDisplayScaleFactor();
-		this._logo.setScaling(scaling);
+		this._logo.setScaling(1);
 		this._graphicalTimer.setScaling(scaling);
 	},
 	_containerGetPreferredWidth: function (container, for_height, alloc) {
