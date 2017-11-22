@@ -179,12 +179,22 @@ const TeaTime = new Lang.Class({
 		});
 		this._graphicalTimer = new Icon.TwoColorIcon(24, Icon.Pie);
 
-		this.actor.add_actor(this._logo);
+		this._container = new Shell.GenericContainer();
+		this._container.connect('get-preferred-width', Lang.bind(this, this._containerGetPreferredWidth));
+		this._container.connect('get-preferred-height', Lang.bind(this, this._containerGetPreferredHeight));
+		this._container.connect('allocate', Lang.bind(this, this._containerAllocate));
+
+		this._container.add_actor(this._logo);
+		this._container.add_actor(this._textualTimer);
+		this._container.add_actor(this._graphicalTimer);
+
+		this.actor.add_actor(this._container);
 		this.actor.add_style_class_name('panel-status-button');
 		this.actor.connect('style-changed', Lang.bind(this, this._onStyleChanged));
 
 		this._idleTimeout = null;
 
+		this._makeSureLogoIsVisible();
 		this._createMenu();
 	},
 	_createMenu: function () {
@@ -247,16 +257,22 @@ const TeaTime = new Lang.Class({
 
 		if (bWantGraphicalCountdown != this._bGraphicalCountdown) {
 			if (this._idleTimeout != null) {
-				// we have a running countdown, replace the display
-				this.actor.remove_actor(this._bGraphicalCountdown ?
-					this._graphicalTimer : this._textualTimer);
-				this._bGraphicalCountdown = bWantGraphicalCountdown;
-				this.actor.add_actor(this._bGraphicalCountdown ?
-					this._graphicalTimer : this._textualTimer);
+				this._makeSureCountdownIsVisible(bWantGraphicalCountdown);
 
 				this._updateTimerDisplay(this._getRemainingSec());
 			} // if timeout active
 		} // value changed
+	},
+	_makeSureCountdownIsVisible: function (bWantGraphicalCountdown) {
+		this._logo.visible = false;
+		this._graphicalTimer.visible = bWantGraphicalCountdown;
+		this._textualTimer.visible = !bWantGraphicalCountdown;
+		this._bGraphicalCountdown = bWantGraphicalCountdown;
+	},
+	_makeSureLogoIsVisible: function () {
+		this._logo.visible = true;
+		this._graphicalTimer.visible = false;
+		this._textualTimer.visible = false;
 	},
 	_createCustomTimer: function (text, event) {
 		if (event.get_key_symbol() == Clutter.KEY_Enter ||
@@ -319,12 +335,9 @@ const TeaTime = new Lang.Class({
 
 		this._stopTime.setTime(this._startTime.getTime() + time * 1000); // in msec
 
-		this.actor.remove_actor(this._logo); // show timer instead of default icon
-
 		this._updateTimerDisplay(time);
 
-		this.actor.add_actor(this._bGraphicalCountdown ?
-			this._graphicalTimer : this._textualTimer);
+		this._makeSureCountdownIsVisible(this._bGraphicalCountdown);
 
 		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
 		this._idleTimeout = Mainloop.timeout_add_seconds(dt, Lang.bind(this, this._doCountdown));
@@ -344,10 +357,7 @@ const TeaTime = new Lang.Class({
 		let remainingTime = this._getRemainingSec();
 
 		if (remainingTime <= 0) {
-			// count down finished, switch display again
-			this.actor.remove_actor(this._bGraphicalCountdown ?
-				this._graphicalTimer : this._textualTimer);
-			this.actor.add_actor(this._logo);
+			this._makeSureLogoIsVisible();
 			this._playSound();
 
 			if (!Utils.isGnome34() && this._settings.get_boolean(this.config_keys.fullscreen_notification)) {
@@ -379,6 +389,9 @@ const TeaTime = new Lang.Class({
 		let themeNode = actor.get_theme_node();
 		let color = themeNode.get_foreground_color()
 		let [bHasPadding, padding] = themeNode.lookup_length("-natural-hpadding", false);
+		let [bHasVPadding, v_padding] = themeNode.lookup_length("padding", false);
+
+		Utils.debug("_onStyleChanged: hpadding " + padding + ", vpadding " + v_padding);
 
 		this._primaryColor = color;
 		this._secondaryColor = new Clutter.Color({
@@ -399,6 +412,60 @@ const TeaTime = new Lang.Class({
 		let scaling = Utils.getGlobalDisplayScaleFactor();
 		this._logo.setScaling(scaling);
 		this._graphicalTimer.setScaling(scaling);
+	},
+	_containerGetPreferredWidth: function (container, for_height, alloc) {
+		// Here, and in _containerGetPreferredHeight, we need to query
+		// for the height of all children, but we ignore the results
+		// for those we don't actually display.
+
+		let [text_min_width, text_natural_width] = this._textualTimer.is_visible() ?
+			get_preferred_width(for_height) :
+			[-1, -1];
+		let [logo_min_width, logo_natural_width] = this._logo.get_preferred_width(for_height);
+
+		Utils.debug("_containerGetPreferredWidth (label: " + this._textualTimer.is_visible() + ") " + for_height + " " + text_min_width + " / " + text_natural_width);
+		Utils.debug("_containerGetPreferredWidth (logo)" + for_height + " " + logo_min_width + " / " + logo_natural_width);
+
+		alloc.min_size = Math.max(text_min_width, logo_min_width);
+		alloc.natural_size = Math.max(text_natural_width, logo_natural_width);
+	},
+
+	_containerGetPreferredHeight: function (container, for_width, alloc) {
+		let max_min_height = 0,
+			max_natural_height = 0;
+
+		let [text_min_height, text_natural_height] = this._textualTimer.is_visible() ?
+			this._textualTimer.get_preferred_height(for_width) :
+			[-1, -1];
+		let [logo_min_height, logo_natural_height] = this._logo.get_preferred_height(for_width);
+
+		Utils.debug("_containerGetPreferredHeight (label:" + this._textualTimer.is_visible() + ") " + for_width + " " + text_min_height + " / " + text_natural_height);
+		Utils.debug("_containerGetPreferredHeight (logo)" + for_width + " " + logo_min_height + " / " + logo_natural_height);
+
+		alloc.min_size = Math.max(text_min_height, logo_min_height);
+		alloc.natural_size = Math.max(text_natural_height, logo_natural_height);
+	},
+
+	_containerAllocate: function (container, box, flags) {
+		// translate box to (0, 0)
+		box.x2 -= box.x1;
+		box.x1 = 0;
+		box.y2 -= box.y1;
+		box.y1 = 0;
+
+		Utils.debug("_containerAllocate: box = [0, " + box.x2 + "; 0, " + box.y2 + "] , flags = " + JSON.stringify(flags));
+		if (this._logo.is_visible()) {
+			this._logo.allocate_align_fill(box, 0.5, 0.5, false, false, flags);
+			this._logo._base_size = box.y2;
+			this._logo.setScaling(1);
+		}
+		if (this._graphicalTimer.is_visible()) {
+			this._graphicalTimer.allocate_align_fill(box, 0.5, 0.5, false, false, flags);
+			this._graphicalTimer._base_size = box.y2 * 0.8;
+			this._graphicalTimer.setScaling(1);
+		}
+		if (this._textualTimer.is_visible())
+			this._textualTimer.allocate_align_fill(box, 0.5, 0.5, false, false, flags);
 	},
 	config_keys: Utils.GetConfigKeys()
 });
