@@ -138,23 +138,29 @@ const PopupTeaMenuItem = new Lang.Class({
 		this.tealabel = new St.Label({
 			text: sTeaname
 		});
-		this.timelabel = new St.Label({
-			text: Utils.formatTime(nBrewtime)
-		});
+		if (nBrewtime != 0) {
+			this.timelabel = new St.Label({
+				text: Utils.formatTime(nBrewtime)
+			});
+		}
 
 		if (this.actor instanceof St.BoxLayout) {
 			// will be used for gnome-shell 3.10 and possibly above where this.actor is BoxLayout
 			this.actor.add(this.tealabel, {
 				expand: true
 			});
-			this.actor.add(this.timelabel);
+			if (nBrewtime != 0) {
+				this.actor.add(this.timelabel);
+			}
 		} else {
 			this.addActor(this.tealabel, {
 				expand: true
 			});
-			this.addActor(this.timelabel, {
-				expand: false
-			});
+			if (nBrewtime != 0) {
+				this.addActor(this.timelabel, {
+					expand: false
+				});
+			}
 		}
 	}
 });
@@ -232,6 +238,11 @@ const TeaTime = new Lang.Class({
 
 		// fill with new teas
 		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
+		let menuItem = new PopupTeaMenuItem("Stop Timer", 0);
+		menuItem.connect('activate', Lang.bind(this, function () {
+			this._stopCountdown();
+		}));
+		this.teaItemCont.addMenuItem(menuItem);
 		for (let teaname in list) {
 			let time = list[teaname].get_uint32();
 
@@ -329,6 +340,13 @@ const TeaTime = new Lang.Class({
 		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
 		this._idleTimeout = Mainloop.timeout_add_seconds(dt, Lang.bind(this, this._doCountdown));
 	},
+	_stopCountdown: function () {
+		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
+		this.actor.remove_actor(this._bGraphicalCountdown ?
+			this._graphicalTimer : this._textualTimer);
+		this.actor.add_actor(this._logo);
+		this._idleTimeout = null;
+	},
 	_getRemainingSec: function () {
 		let a = new Date();
 		return (this._stopTime.getTime() - a.getTime()) * 1e-3;
@@ -345,9 +363,7 @@ const TeaTime = new Lang.Class({
 
 		if (remainingTime <= 0) {
 			// count down finished, switch display again
-			this.actor.remove_actor(this._bGraphicalCountdown ?
-				this._graphicalTimer : this._textualTimer);
-			this.actor.add_actor(this._logo);
+			this._stopCountdown();
 			this._playSound();
 
 			if (!Utils.isGnome34() && this._settings.get_boolean(this.config_keys.fullscreen_notification)) {
@@ -357,8 +373,6 @@ const TeaTime = new Lang.Class({
 				this._showNotification(_("Your tea is ready!"),
 					_("Drink it, while it is hot!"));
 			}
-
-			this._idleTimeout = null;
 			return false;
 		} else {
 			this._updateTimerDisplay(remainingTime);
