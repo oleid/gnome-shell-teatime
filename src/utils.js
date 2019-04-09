@@ -116,7 +116,6 @@ function formatTime(sec_num) {
 
 function playSound(uri) {
 	const Gst = imports.gi.Gst;
-	const Lang = imports.lang;
 
 	debug("Playing " + uri);
 
@@ -125,7 +124,7 @@ function playSound(uri) {
 		this.player = Gst.ElementFactory.make("playbin", "player");
 		this.playBus = this.player.get_bus();
 		this.playBus.add_signal_watch();
-		this.playBus.connect("message", Lang.bind(this,
+		this.playBus.connect("message",
 			function (playBus, message) {
 				if (message != null) {
 					// IMPORTANT: to reuse the player, set state to READY
@@ -134,7 +133,7 @@ function playSound(uri) {
 						this.player.set_state(Gst.State.READY);
 					}
 				} // message handler
-			}));
+			}.bind(this));
 	} // if undefined
 	this.player.set_property('uri', uri);
 	this.player.set_state(Gst.State.PLAYING);

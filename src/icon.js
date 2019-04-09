@@ -10,86 +10,90 @@
  * If there is a better way for that stuff, please let me know ;)
  ********************************************************************/
 
-const Lang = imports.lang;
 const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 const ExUt = imports.misc.extensionUtils;
 const Me = ExUt.getCurrentExtension();
 const Utils = Me.imports.utils;
 
-var TwoColorIcon = new Lang.Class({
-	Name: 'TwoColorIcon',
-	Extends: St.DrawingArea,
-
-	_init: function (size, drawingObject) {
-		this.parent({
+var TwoColorIcon = class extends St.DrawingArea {
+	constructor(size, drawingObject) {
+		super({
 			reactive: true,
 			style: 'padding: 0px 2px'
 		});
-		this._base_size = size;
-		this.setScaling(Utils.getGlobalDisplayScaleFactor());
+		this.myinit = function () {
+			this._base_size = size;
+			//this.setScaling(Utils.getGlobalDisplayScaleFactor());
 
-		this._drawingObject = drawingObject;
+			this._drawingObject = drawingObject;
 
-		this.connect('repaint', Lang.bind(this, this._drawIcon));
+			this.connect('repaint', function () {
+				this._drawIcon();
+			}.bind(this));
 
-		// some fallback color
-		this._primaryColor = new Clutter.Color({
-			red: 150,
-			green: 150,
-			blue: 150,
-			alpha: 255
-		});
-		this._secundaryColor = this._primaryColor;
-		this._customStatus = null;
-	},
-	setPadding: function (padding) {
-		this.margin_left = padding;
-		this.margin_right = padding;
-	},
-	setColor: function (primary, secundary) {
-		this._primaryColor = primary;
-		this._secundaryColor = secundary;
-		this.queue_repaint();
-	},
-	setScaling: function (newScale) {
-		this._default_scale = newScale;
-		this.set_width(this._base_size * this._default_scale);
-		this.set_height(this._base_size * this._default_scale);
-		this.queue_repaint();
-	},
-	setStatus: function (newStatus) {
-		this._customStatus = newStatus;
-		this.queue_repaint();
-	},
-	_drawIcon: function () {
-		let cr = this.get_context();
-		let orWdt = this._drawingObject.width;
-		let orHgt = this._drawingObject.height;
-		let [width, height] = this.get_surface_size();
+			// some fallback color
+			this._primaryColor = new Clutter.Color({
+				red: 150,
+				green: 150,
+				blue: 150,
+				alpha: 255
+			});
+			this._secundaryColor = this._primaryColor;
+			this._customStatus = null;
+		};
+		this.setPadding = function (padding) {
+			this.margin_left = padding;
+			this.margin_right = padding;
+		};
+		this.setColor = function (primary, secundary) {
+			this._primaryColor = primary;
+			this._secundaryColor = secundary;
+			this.queue_repaint();
+		};
+		this.setScaling = function (newScale) {
+			this._default_scale = newScale;
+			this.set_width(this._base_size * this._default_scale);
+			this.set_height(this._base_size * this._default_scale);
+			this.queue_repaint();
+		};
+		this.setStatus = function (newStatus) {
+			this._customStatus = newStatus;
+			this.queue_repaint();
+		};
+		this._drawIcon = function () {
+			let cr = this.get_context();
+			let orWdt = this._drawingObject.width;
+			let orHgt = this._drawingObject.height;
+			let [width, height] = this.get_surface_size();
 
-		cr.save();
+			cr.save();
 
-		let object_longest_edge = Math.max(orWdt, orHgt);
-		let surface_shortest_edge = Math.min(width, height);
-		let scaling = surface_shortest_edge / object_longest_edge;
-		let padding_x = (width - orWdt * scaling) * 0.5;
-		let padding_y = (height - orHgt * scaling) * 0.5;
+			let object_longest_edge = Math.max(orWdt, orHgt);
+			let surface_shortest_edge = Math.min(width, height);
+			let scaling = surface_shortest_edge / object_longest_edge;
+			let padding_x = (width - orWdt * scaling) * 0.5;
+			let padding_y = (height - orHgt * scaling) * 0.5;
 
-		cr.translate(padding_x, padding_y);
-		cr.scale(scaling, scaling);
+			cr.translate(padding_x, padding_y);
+			try {
+				cr.scale(scaling, scaling);
 
-		this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
+				this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
 
-		cr.restore();
+				cr.restore();
+			} catch (e) {
+				// ignore
+			}
+		};
+		this.myinit();
 	}
-
-});
+};
 
 var TeaPot = {
 	width: 484,
 	height: 295,
-	draw: function (cr, stat, primary, secundary) {
+	draw(cr, stat, primary, secundary) {
 		// draw TeaPot
 		// cairo commands generated from svg2cairo
 		// https://github.com/akrinke/svg2cairo
@@ -133,7 +137,7 @@ var TeaPot = {
 var Pie = {
 	width: 1,
 	height: 1,
-	draw: function (cr, stat, primary, secundary) {
+	draw(cr, stat, primary, secundary) {
 		const pi = Math.PI;
 		const r = 0.5;
 

@@ -4,7 +4,6 @@
 */
 
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 const Mainloop = imports.mainloop; // timer
 const Shell = imports.gi.Shell;
 const St = imports.gi.St;
@@ -29,10 +28,8 @@ const N_ = function (e) {
 
 
 
-const TeaTimeFullscreenNotification = new Lang.Class({
-	Name: 'TeaTimeFullscreenNotification',
-
-	_init: function () {
+class TeaTimeFullscreenNotification {
+	constructor() {
 		// this spans the whole monitor and contains
 		// the actual layout, which it displays in
 		// the center of itself
@@ -80,7 +77,7 @@ const TeaTimeFullscreenNotification = new Lang.Class({
 			reactive: true,
 			keep_aspect_ratio: true
 		});
-		this._texture.connect("button-release-event", Lang.bind(this, this.hide));
+		this._texture.connect("button-release-event", this.hide.bind(this));
 		this._layout.add_child(this._texture);
 
 		this._timeline = new Clutter.Timeline({
@@ -88,7 +85,7 @@ const TeaTimeFullscreenNotification = new Lang.Class({
 			repeat_count: -1,
 			progress_mode: Clutter.AnimationMode.LINEAR
 		});
-		this._timeline.connect("new-frame", Lang.bind(this, this._newFrame));
+		this._timeline.connect("new-frame", this._newFrame.bind(this));
 
 		this._label = new St.Label({
 			text: _("Your tea is ready!"),
@@ -98,19 +95,19 @@ const TeaTimeFullscreenNotification = new Lang.Class({
 
 		this._lightbox = new imports.ui.lightbox.Lightbox(Main.uiGroup); // Seems not to work on Gnome 3.10 { fadeInTime: 0.5, fadeOutTime: 0.5 }
 		this._lightbox.highlight(this._bin);
-	},
-	destroy: function () {
+	}
+	destroy() {
 		this.hide();
 		Main.popModal(this._bin);
 		this._bin.destroy();
 		this._lightbox.hide();
-	},
-	_newFrame: function (timeline, msecs, user) {
+	}
+	_newFrame(timeline, msecs, user) {
 		let progress = timeline.get_progress();
 		let idx = Math.round(progress * this._textureFiles.length) % this._textureFiles.length;
 		this._texture.set_from_file(this._textureFiles[idx]);
-	},
-	show: function () {
+	}
+	show() {
 		if (typeof Layout.MonitorConstraint != 'undefined') {
 			this._monitorConstraint.index = global.screen.get_current_monitor()
 		}
@@ -118,22 +115,19 @@ const TeaTimeFullscreenNotification = new Lang.Class({
 		this._timeline.start();
 		this._lightbox.show();
 		this._bin.show_all();
-	},
-	hide: function () {
+	}
+	hide() {
 		Main.popModal(this._bin);
 		this._bin.hide();
 		this._lightbox.hide();
 		this._timeline.stop();
 	}
-})
+};
 
 
-const PopupTeaMenuItem = new Lang.Class({
-	Name: 'PopupTeaMenuItem',
-	Extends: PopupMenu.PopupBaseMenuItem,
-
-	_init: function (sTeaname, nBrewtime, params) {
-		this.parent(params);
+class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
+	constructor(sTeaname, nBrewtime, params) {
+		super(params);
 
 		this.tealabel = new St.Label({
 			text: sTeaname
@@ -163,259 +157,270 @@ const PopupTeaMenuItem = new Lang.Class({
 			}
 		}
 	}
-});
+};
 
+var TeaTime = class extends PanelMenu.Button {
 
-const TeaTime = new Lang.Class({
-	Name: 'TeaTime',
-	Extends: PanelMenu.Button,
+	constructor() {
+		super(null, "TeaTime");
 
-	_init: function () {
-		this.parent(null, "TeaTime");
+		this.myinit = function () {
 
-		this._settings = Utils.getSettings();
+			this._settings = Utils.getSettings();
 
-		this._logo = new Icon.TwoColorIcon(24, Icon.TeaPot);
+			this._logo = new Icon.TwoColorIcon(24, Icon.TeaPot);
 
-		// set timer widget
-		this._textualTimer = new St.Label({
-			text: "",
-			x_align: Clutter.ActorAlign.END,
-			y_align: Clutter.ActorAlign.CENTER
-		});
-		this._graphicalTimer = new Icon.TwoColorIcon(24, Icon.Pie);
+			// set timer widget
+			this._textualTimer = new St.Label({
+				text: "",
+				x_align: Clutter.ActorAlign.END,
+				y_align: Clutter.ActorAlign.CENTER
+			});
+			this._graphicalTimer = new Icon.TwoColorIcon(24, Icon.Pie);
 
-		this.actor.add_actor(this._logo);
-		this.actor.add_style_class_name('panel-status-button');
-		this.actor.connect('style-changed', Lang.bind(this, this._onStyleChanged));
+			this.actor.add_actor(this._logo);
+			this.actor.add_style_class_name('panel-status-button');
+			this.actor.connect('style-changed', this._onStyleChanged.bind(this));
 
-		this._idleTimeout = null;
+			this._idleTimeout = null;
 
-		this._createMenu();
-	},
-	_createMenu: function () {
-		this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-		this._settings.connect("changed::" + this.config_keys.steep_times,
-			Lang.bind(this, this._updateTeaList));
-		this._settings.connect("changed::" + this.config_keys.graphical_countdown,
-			Lang.bind(this, this._updateCountdownType));
+			this._createMenu();
+		};
 
-		this.teaItemCont = new PopupMenu.PopupMenuSection();
+		this._createMenu = function () {
+			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+			this._settings.connect("changed::" + this.config_keys.steep_times,
+				this._updateTeaList.bind(this));
+			this._settings.connect("changed::" + this.config_keys.graphical_countdown,
+				this._updateCountdownType.bind(this));
 
-		/*******************/
-		// maybe one day the PopupImageMenuItem works^^
-		let head = new PopupMenu.PopupMenuSection();
-		let item = new PopupMenu.PopupMenuItem(_("Show settings")); //, 'gtk-preferences');
-		//        item._icon.icon_size = 15;
-		item.connect('activate', Lang.bind(this, this._showPreferences));
-		head.addMenuItem(item);
+			this.teaItemCont = new PopupMenu.PopupMenuSection();
 
-		/*******************/
-		let bottom = new PopupMenu.PopupMenuSection();
-		this._customEntry = new St.Entry({
-			style_class: 'teatime-custom-entry',
-			track_hover: true,
-			hint_text: _("min:sec")
-		});
-		this._customEntry.get_clutter_text().set_max_length(10);
-		this._customEntry.get_clutter_text().connect("key-press-event", Lang.bind(this, this._createCustomTimer));
-		bottom.box.add(this._customEntry);
-		bottom.actor.set_style("padding: 0px 18px;")
+			/*******************/
+			// maybe one day the PopupImageMenuItem works^^
+			let head = new PopupMenu.PopupMenuSection();
+			let item = new PopupMenu.PopupMenuItem(_("Show settings")); //, 'gtk-preferences');
+			//        item._icon.icon_size = 15;
+			item.connect('activate', this._showPreferences.bind(this));
+			head.addMenuItem(item);
 
-		/*******************/
+			/*******************/
+			let bottom = new PopupMenu.PopupMenuSection();
+			this._customEntry = new St.Entry({
+				style_class: 'teatime-custom-entry',
+				track_hover: true,
+				hint_text: _("min:sec")
+			});
+			this._customEntry.get_clutter_text().set_max_length(10);
+			this._customEntry.get_clutter_text().connect("key-press-event", this._createCustomTimer.bind(this));
+			bottom.box.add(this._customEntry);
+			bottom.actor.set_style("padding: 0px 18px;")
 
-		this.menu.addMenuItem(head);
-		this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-		this.menu.addMenuItem(this.teaItemCont);
-		this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-		this.menu.addMenuItem(bottom);
+			/*******************/
 
-		this._updateTeaList();
-	},
-	_updateTeaList: function (config, output) {
-		// make sure the menu is empty
-		this.teaItemCont.removeAll();
+			this.menu.addMenuItem(head);
+			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+			this.menu.addMenuItem(this.teaItemCont);
+			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+			this.menu.addMenuItem(bottom);
 
-		// fill with new teas
-		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
-		let menuItem = new PopupTeaMenuItem("Stop Timer", 0);
-		menuItem.connect('activate', Lang.bind(this, function () {
-			this._stopCountdown();
-		}));
-		this.teaItemCont.addMenuItem(menuItem);
-		for (let teaname in list) {
-			let time = list[teaname].get_uint32();
+			this._updateTeaList();
+		};
+		this._updateTeaList = function (config, output) {
+			// make sure the menu is empty
+			this.teaItemCont.removeAll();
 
-			let menuItem = new PopupTeaMenuItem(_(teaname), time);
-			menuItem.connect('activate', Lang.bind(this, function () {
-				this._initCountdown(time);
-			}));
+			// fill with new teas
+			let list = this._settings.get_value(this.config_keys.steep_times).unpack();
+			let menuItem = new PopupTeaMenuItem("Stop Timer", 0);
+			menuItem.connect('activate', function () {
+				this._stopCountdown();
+			}.bind(this));
 			this.teaItemCont.addMenuItem(menuItem);
-		}
-	},
-	_updateCountdownType: function (config, output) {
-		let bWantGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
+			for (let teaname in list) {
+				let time = list[teaname].get_uint32();
 
-		if (bWantGraphicalCountdown != this._bGraphicalCountdown) {
-			if (this._idleTimeout != null) {
-				// we have a running countdown, replace the display
-				this.actor.remove_actor(this._bGraphicalCountdown ?
-					this._graphicalTimer : this._textualTimer);
-				this._bGraphicalCountdown = bWantGraphicalCountdown;
-				this.actor.add_actor(this._bGraphicalCountdown ?
-					this._graphicalTimer : this._textualTimer);
-
-				this._updateTimerDisplay(this._getRemainingSec());
-			} // if timeout active
-		} // value changed
-	},
-	_createCustomTimer: function (text, event) {
-		if (event.get_key_symbol() == Clutter.KEY_Enter ||
-			event.get_key_symbol() == Clutter.KEY_Return) {
-
-			let customTime = text.get_text();
-			let seconds = 0;
-			let match = customTime.match(/^(?:(\d+)(?::(\d{0,2}))?|:(\d+))$/)
-			if (match) {
-				let factor = 1;
-				for (var i = match.length - 2; i > 0; i--) {
-					let s = match[i].replace(/^0/, ''); // fix for elder GNOME <= 3.10 which don't like leading zeros
-					seconds += factor * parseInt(s);
-					factor *= 60;
-				}
-				if (seconds > 0) {
-					this._initCountdown(seconds);
-					this.menu.close();
-				}
+				let menuItem = new PopupTeaMenuItem(_(teaname), time);
+				menuItem.connect('activate', function () {
+					this._initCountdown(time);
+				}.bind(this));
+				this.teaItemCont.addMenuItem(menuItem);
 			}
-			this._customEntry.set_text("");
-		}
-	},
-	_showNotification: function (subject, text) {
-		let source = (Utils.isGnome34()) ?
-			new MessageTray.Source(_("TeaTime applet")) :
-			new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
+		};
+		this._updateCountdownType = function (config, output) {
+			let bWantGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
 
-		if (Utils.isGnome34()) {
-			source.createNotificationIcon =
-				function () {
-					let iconBox = new St.Bin();
-					iconBox._size = this.ICON_SIZE;
-					iconBox.child = new St.Icon({
-						icon_name: 'utilities-teatime',
-						icon_type: St.IconType.FULLCOLOR,
-						icon_size: iconBox._size
-					});
-					return iconBox;
-				} // createNotificationIcon
-		}
+			if (bWantGraphicalCountdown != this._bGraphicalCountdown) {
+				if (this._idleTimeout != null) {
+					// we have a running countdown, replace the display
+					this.actor.remove_actor(this._bGraphicalCountdown ?
+						this._graphicalTimer : this._textualTimer);
+					this._bGraphicalCountdown = bWantGraphicalCountdown;
+					this.actor.add_actor(this._bGraphicalCountdown ?
+						this._graphicalTimer : this._textualTimer);
 
-		Main.messageTray.add(source);
+					this._updateTimerDisplay(this._getRemainingSec());
+				} // if timeout active
+			} // value changed
+		};
+		this._createCustomTimer = function (text, event) {
+			if (event.get_key_symbol() == Clutter.KEY_Enter ||
+				event.get_key_symbol() == Clutter.KEY_Return ||
+				event.get_key_symbol() == Clutter.KEY_KP_Enter) {
 
-		let notification = new MessageTray.Notification(source, subject, text);
-		notification.setTransient(true);
-		source.notify(notification);
-	},
-	_initCountdown: function (time) {
-		this._startTime = new Date();
-		this._stopTime = new Date();
-		this._cntdownStart = time;
+				let customTime = text.get_text();
+				let seconds = 0;
+				let match = customTime.match(/^(?:(\d+)(?::(\d{0,2}))?|:(\d+))$/)
+				if (match) {
+					let factor = 1;
+					if (match[3] === undefined) { // minutes and seconds?
+						for (var i = match.length - 2; i > 0; i--) {
+							let s = match[i] === undefined ? "" : match[i].replace(/^0/, ''); // fix for elder GNOME <= 3.10 which don't like leading zeros
+							if (s.match(/^\d+$/)) { // only if something left
+								seconds += factor * parseInt(s);
+							}
+							factor *= 60;
+						}
+					} else { // only seconds?
+						let s = match[3].replace(/^0/, '');
+						seconds = parseInt(s);
+					}
+					if (seconds > 0) {
+						this._initCountdown(seconds);
+						this.menu.close();
+					}
+				}
+				this._customEntry.set_text("");
+			}
+		};
+		this._showNotification = function (subject, text) {
+			let source = (Utils.isGnome34()) ?
+				new MessageTray.Source(_("TeaTime applet")) :
+				new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
 
-		this._bGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
+			if (Utils.isGnome34()) {
+				source.createNotificationIcon =
+					function () {
+						let iconBox = new St.Bin();
+						iconBox._size = this.ICON_SIZE;
+						iconBox.child = new St.Icon({
+							icon_name: 'utilities-teatime',
+							icon_type: St.IconType.FULLCOLOR,
+							icon_size: iconBox._size
+						});
+						return iconBox;
+					} // createNotificationIcon
+			}
 
-		let dt = this._bGraphicalCountdown ?
-			Math.max(1.0, time / 90) // set time step to fit animation
-			:
-			1.0; // show every second for the textual countdown
+			Main.messageTray.add(source);
 
-		this._stopTime.setTime(this._startTime.getTime() + time * 1000); // in msec
+			let notification = new MessageTray.Notification(source, subject, text);
+			notification.setTransient(true);
+			source.notify(notification);
+		};
+		this._initCountdown = function (time) {
+			this._startTime = new Date();
+			this._stopTime = new Date();
+			this._cntdownStart = time;
 
-		this.actor.remove_actor(this._logo); // show timer instead of default icon
+			this._bGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
 
-		this._updateTimerDisplay(time);
+			let dt = this._bGraphicalCountdown ?
+				Math.max(1.0, time / 90) // set time step to fit animation
+				:
+				1.0; // show every second for the textual countdown
 
-		this.actor.add_actor(this._bGraphicalCountdown ?
-			this._graphicalTimer : this._textualTimer);
+			this._stopTime.setTime(this._startTime.getTime() + time * 1000); // in msec
 
-		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
-		this._idleTimeout = Mainloop.timeout_add_seconds(dt, Lang.bind(this, this._doCountdown));
-	},
-	_stopCountdown: function () {
-		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
-		this.actor.remove_actor(this._bGraphicalCountdown ?
-			this._graphicalTimer : this._textualTimer);
-		this.actor.add_actor(this._logo);
-		this._idleTimeout = null;
-	},
-	_getRemainingSec: function () {
-		let a = new Date();
-		return (this._stopTime.getTime() - a.getTime()) * 1e-3;
-	},
-	_updateTimerDisplay: function (remainingTime) {
-		if (this._bGraphicalCountdown) {
-			this._graphicalTimer.setStatus((this._cntdownStart - remainingTime) / this._cntdownStart);
-		} else {
-			this._textualTimer.text = Utils.formatTime(remainingTime);
-		}
-	},
-	_doCountdown: function () {
-		let remainingTime = this._getRemainingSec();
+			this.actor.remove_actor(this._logo); // show timer instead of default icon
 
-		if (remainingTime <= 0) {
-			// count down finished, switch display again
-			this._stopCountdown();
-			this._playSound();
+			this._updateTimerDisplay(time);
 
-			if (!Utils.isGnome34() && this._settings.get_boolean(this.config_keys.fullscreen_notification)) {
-				this.dialog = new TeaTimeFullscreenNotification();
-				this.dialog.show();
+			this.actor.add_actor(this._bGraphicalCountdown ?
+				this._graphicalTimer : this._textualTimer);
+
+			if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
+			this._idleTimeout = Mainloop.timeout_add_seconds(dt, this._doCountdown.bind(this));
+		};
+		this._stopCountdown = function () {
+			if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
+			this.actor.remove_actor(this._bGraphicalCountdown ?
+				this._graphicalTimer : this._textualTimer);
+			this.actor.add_actor(this._logo);
+			this._idleTimeout = null;
+		};
+		this._getRemainingSec = function () {
+			let a = new Date();
+			return (this._stopTime.getTime() - a.getTime()) * 1e-3;
+		};
+		this._updateTimerDisplay = function (remainingTime) {
+			if (this._bGraphicalCountdown) {
+				this._graphicalTimer.setStatus((this._cntdownStart - remainingTime) / this._cntdownStart);
 			} else {
-				this._showNotification(_("Your tea is ready!"),
-					_("Drink it, while it is hot!"));
+				this._textualTimer.text = Utils.formatTime(remainingTime);
 			}
-			return false;
-		} else {
-			this._updateTimerDisplay(remainingTime);
-			return true; // continue timer
-		}
-	},
-	_playSound: function () {
-		let bPlayAlarmSound = this._settings.get_boolean(this.config_keys.use_alarm_sound);
-		if (bPlayAlarmSound) {
-			Utils.playSound(this._settings.get_string(this.config_keys.alarm_sound));
-		}
-	},
-	_showPreferences: function () {
-		imports.misc.util.spawn(["gnome-shell-extension-prefs", ExtensionUtils.getCurrentExtension().metadata['uuid']]);
-		return 0;
-	},
-	_onStyleChanged: function (actor) {
-		let themeNode = actor.get_theme_node();
-		let color = themeNode.get_foreground_color()
-		let [bHasPadding, padding] = themeNode.lookup_length("-natural-hpadding", false);
+		};
+		this._doCountdown = function () {
+			let remainingTime = this._getRemainingSec();
 
-		this._primaryColor = color;
-		this._secondaryColor = new Clutter.Color({
-			red: color.red,
-			green: color.green,
-			blue: color.blue,
-			alpha: color.alpha * 0.3
-		});
-		this._logo.setPadding(bHasPadding * padding);
-		this._graphicalTimer.setPadding(bHasPadding * padding);
-		this._textualTimer.margin_right = bHasPadding * padding;
-		this._textualTimer.margin_left = bHasPadding * padding;
+			if (remainingTime <= 0) {
+				// count down finished, switch display again
+				this._stopCountdown();
+				this._playSound();
 
-		this._logo.setColor(this._primaryColor, this._secondaryColor);
-		this._graphicalTimer.setColor(this._primaryColor, this._secondaryColor);
+				if (!Utils.isGnome34() && this._settings.get_boolean(this.config_keys.fullscreen_notification)) {
+					this.dialog = new TeaTimeFullscreenNotification();
+					this.dialog.show();
+				} else {
+					this._showNotification(_("Your tea is ready!"),
+						_("Drink it, while it is hot!"));
+				}
+				return false;
+			} else {
+				this._updateTimerDisplay(remainingTime);
+				return true; // continue timer
+			}
+		};
+		this._playSound = function () {
+			let bPlayAlarmSound = this._settings.get_boolean(this.config_keys.use_alarm_sound);
+			if (bPlayAlarmSound) {
+				Utils.playSound(this._settings.get_string(this.config_keys.alarm_sound));
+			}
+		};
+		this._showPreferences = function () {
+			const currExt = ExtensionUtils.getCurrentExtension();
+			imports.misc.util.spawn(["gnome-shell-extension-prefs", currExt.metadata['uuid']]);
+			return 0;
+		};
+		this._onStyleChanged = function (actor) {
+			let themeNode = actor.get_theme_node();
+			let color = themeNode.get_foreground_color()
+			let [bHasPadding, padding] = themeNode.lookup_length("-natural-hpadding", false);
 
-		// forward (possible) scaling style change to child
-		let scaling = Utils.getGlobalDisplayScaleFactor();
-		this._logo.setScaling(scaling);
-		this._graphicalTimer.setScaling(scaling);
-	},
-	config_keys: Utils.GetConfigKeys()
-});
+			this._primaryColor = color;
+			this._secondaryColor = new Clutter.Color({
+				red: color.red,
+				green: color.green,
+				blue: color.blue,
+				alpha: color.alpha * 0.3
+			});
+			this._logo.setPadding(bHasPadding * padding);
+			this._graphicalTimer.setPadding(bHasPadding * padding);
+			this._textualTimer.margin_right = bHasPadding * padding;
+			this._textualTimer.margin_left = bHasPadding * padding;
+
+			this._logo.setColor(this._primaryColor, this._secondaryColor);
+			this._graphicalTimer.setColor(this._primaryColor, this._secondaryColor);
+
+			// forward (possible) scaling style change to child
+			let scaling = Utils.getGlobalDisplayScaleFactor();
+			this._logo.setScaling(scaling);
+			this._graphicalTimer.setScaling(scaling);
+		};
+		this.config_keys = Utils.GetConfigKeys();
+		this.myinit();
+	}
+};
 
 function init(metadata) {
 	let theme = imports.gi.Gtk.IconTheme.get_default();
