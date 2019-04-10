@@ -109,7 +109,12 @@ class TeaTimeFullscreenNotification {
 	}
 	show() {
 		if (typeof Layout.MonitorConstraint != 'undefined') {
-			this._monitorConstraint.index = global.screen.get_current_monitor()
+			// global.display was introduced in gnome-shell 3.30
+			if (typeof global.screen != 'undefined') {
+				this._monitorConstraint.index = global.screen.get_current_monitor();
+			} else {
+				this._monitorConstraint.index = global.display.get_current_monitor();
+			}
 		}
 		Main.pushModal(this._bin);
 		this._timeline.start();
