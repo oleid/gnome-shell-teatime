@@ -20,7 +20,7 @@ var TwoColorIcon = class extends St.DrawingArea {
 	constructor(size, drawingObject) {
 		super({
 			reactive: true,
-			style: 'padding: 0px 2px'
+			style: 'padding: 0px 0px'
 		});
 		this.myinit = function () {
 			this._base_size = size;

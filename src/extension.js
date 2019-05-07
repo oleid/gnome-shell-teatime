@@ -173,7 +173,7 @@ var TeaTime = class extends PanelMenu.Button {
 
 			this._settings = Utils.getSettings();
 
-			this._logo = new Icon.TwoColorIcon(24, Icon.TeaPot);
+			this._logo = new Icon.TwoColorIcon(20, Icon.TeaPot);
 
 			// set timer widget
 			this._textualTimer = new St.Label({
@@ -181,7 +181,7 @@ var TeaTime = class extends PanelMenu.Button {
 				x_align: Clutter.ActorAlign.END,
 				y_align: Clutter.ActorAlign.CENTER
 			});
-			this._graphicalTimer = new Icon.TwoColorIcon(24, Icon.Pie);
+			this._graphicalTimer = new Icon.TwoColorIcon(20, Icon.Pie);
 
 			this.actor.add_actor(this._logo);
 			this.actor.add_style_class_name('panel-status-button');
