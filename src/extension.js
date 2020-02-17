@@ -58,6 +58,8 @@ class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
 				});
 			}
 		}
+
+		this._delegate = this;
 	}
 });
 
