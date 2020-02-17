@@ -10,19 +10,20 @@
  * If there is a better way for that stuff, please let me know ;)
  ********************************************************************/
 
+const GObject = imports.gi.GObject;
 const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 const ExUt = imports.misc.extensionUtils;
 const Me = ExUt.getCurrentExtension();
 const Utils = Me.imports.utils;
 
-var TwoColorIcon = class extends St.DrawingArea {
-	constructor(size, drawingObject) {
-		super({
+var TwoColorIcon = GObject.registerClass(
+class TwoColorIcon extends St.DrawingArea {
+	_init(size, drawingObject) {
+		super._init({
 			reactive: true,
 			style: 'padding: 0px 0px'
 		});
-		this.myinit = function () {
 			this._base_size = size;
 			//this.setScaling(Utils.getGlobalDisplayScaleFactor());
 
@@ -41,27 +42,32 @@ var TwoColorIcon = class extends St.DrawingArea {
 			});
 			this._secundaryColor = this._primaryColor;
 			this._customStatus = null;
-		};
-		this.setPadding = function (padding) {
+	}
+
+	setPadding(padding) {
 			this.margin_left = padding;
 			this.margin_right = padding;
-		};
-		this.setColor = function (primary, secundary) {
+	}
+
+	setColor(primary, secundary) {
 			this._primaryColor = primary;
 			this._secundaryColor = secundary;
 			this.queue_repaint();
-		};
-		this.setScaling = function (newScale) {
+	}
+
+	setScaling(newScale) {
 			this._default_scale = newScale;
 			this.set_width(this._base_size * this._default_scale);
 			this.set_height(this._base_size * this._default_scale);
 			this.queue_repaint();
-		};
-		this.setStatus = function (newStatus) {
+	}
+
+	setStatus(newStatus) {
 			this._customStatus = newStatus;
 			this.queue_repaint();
-		};
-		this._drawIcon = function () {
+	}
+
+	_drawIcon() {
 			let cr = this.get_context();
 			let orWdt = this._drawingObject.width;
 			let orHgt = this._drawingObject.height;
@@ -85,10 +91,8 @@ var TwoColorIcon = class extends St.DrawingArea {
 			} catch (e) {
 				// ignore
 			}
-		};
-		this.myinit();
 	}
-};
+});
 
 var TeaPot = {
 	width: 484,

@@ -22,9 +22,10 @@ const Columns = {
 	ADJUSTMENT: 2
 }
 
-var TeaTimePrefsWidget = class extends Gtk.Grid {
-	constructor() {
-		super({
+var TeaTimePrefsWidget = GObject.registerClass(
+class TeaTimePrefsWidget extends Gtk.Grid {
+	_init() {
+		super._init({
 			orientation: Gtk.Orientation.VERTICAL,
 			column_homogeneous: false,
 			vexpand: true,
@@ -32,7 +33,8 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			row_spacing: 5
 		});
 
-		this.myinit = function () {
+		this.config_keys = Utils.GetConfigKeys();
+
 			this._tealist = new Gtk.ListStore();
 			this._tealist.set_column_types([
 				GObject.TYPE_STRING,
@@ -51,8 +53,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			this._refresh();
 			this._tealist.connect("row-changed", this._save.bind(this));
 			this._tealist.connect("row-deleted", this._save.bind(this));
-		};
-		this._initWindow = function () {
+	}
+
+	_initWindow() {
 			let curRow = 0;
 			let labelFN = new Gtk.Label({
 				label: _("Fullscreen Notifications"),
@@ -173,8 +176,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			});
 			this.removeButton.connect("clicked", this._removeSelectedTea.bind(this));
 			this.toolbar.insert(this.removeButton, -1);
-		};
-		this._refresh = function () {
+	}
+
+	_refresh() {
 			// don't update the model if someone else is messing with the backend
 			if (this._inhibitUpdate)
 				return;
@@ -205,8 +209,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			}
 
 			this._inhibitUpdate = false;
-		};
-		this._addTea = function () {
+	}
+
+	_addTea() {
 			let adj = new Gtk.Adjustment({
 				lower: 1,
 				step_increment: 1,
@@ -218,8 +223,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			this.treeview.set_cursor(this._tealist.get_path(item),
 				this.treeview.get_column(Columns.TEA_NAME),
 				true);
-		};
-		this._removeSelectedTea = function () {
+	}
+
+	_removeSelectedTea() {
 			let [selection, store] = this.treeview.get_selection().get_selected_rows();
 			let iters = [];
 			for (let i = 0; i < selection.length; ++i) {
@@ -234,8 +240,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			});
 
 			this.treeview.get_selection().unselect_all();
-		};
-		this._saveFullscreenNotifications = function (sw, data) {
+	}
+
+	_saveFullscreenNotifications(sw, data) {
 			// don't update the backend if someone else is messing with the model
 			if (this._inhibitUpdate)
 				return;
@@ -243,8 +250,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			this._settings.set_boolean(this.config_keys.fullscreen_notification,
 				sw.active);
 			this._inhibitUpdate = false;
-		};
-		this._saveGraphicalCountdown = function (sw, data) {
+	}
+
+	_saveGraphicalCountdown(sw, data) {
 			// don't update the backend if someone else is messing with the model
 			if (this._inhibitUpdate)
 				return;
@@ -252,8 +260,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			this._settings.set_boolean(this.config_keys.graphical_countdown,
 				sw.active);
 			this._inhibitUpdate = false;
-		};
-		this._saveUseAlarm = function (sw, data) {
+	}
+
+	_saveUseAlarm(sw, data) {
 			// don't update the backend if someone else is messing with the model
 			if (this._inhibitUpdate)
 				return;
@@ -261,8 +270,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			this._settings.set_boolean(this.config_keys.use_alarm_sound,
 				sw.active);
 			this._inhibitUpdate = false;
-		};
-		this._saveSoundFile = function (sw, data) {
+	}
+
+	_saveSoundFile(sw, data) {
 			// don't update the backend if someone else is messing with the model
 			if (this._inhibitUpdate)
 				return;
@@ -279,8 +289,9 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 				this._settings.set_string(this.config_keys.alarm_sound, alarm_sound);
 				this._inhibitUpdate = false;
 			}
-		};
-		this._save = function (store, path_, iter_) {
+	}
+
+	_save(store, path_, iter_) {
 			const GLib = imports.gi.GLib;
 
 			// don't update the backend if someone else is messing with the model
@@ -302,12 +313,8 @@ var TeaTimePrefsWidget = class extends Gtk.Grid {
 			this._settings.set_value(this.config_keys.steep_times, settingsValue);
 
 			this._inhibitUpdate = false;
-		};
-		this.config_keys = Utils.GetConfigKeys();
-		this.myinit();
 	}
-};
-
+});
 
 function init() {}
 

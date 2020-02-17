@@ -4,6 +4,7 @@
 */
 
 const Gio = imports.gi.Gio;
+const GObject = imports.gi.GObject;
 const Mainloop = imports.mainloop; // timer
 const Shell = imports.gi.Shell;
 const St = imports.gi.St;
@@ -130,9 +131,10 @@ class TeaTimeFullscreenNotification {
 };
 
 
+let PopupTeaMenuItem = GObject.registerClass(
 class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
-	constructor(sTeaname, nBrewtime, params) {
-		super(params);
+	_init(sTeaname, nBrewtime, params) {
+		super._init(params);
 
 		this.tealabel = new St.Label({
 			text: sTeaname
@@ -162,14 +164,14 @@ class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
 			}
 		}
 	}
-};
+});
 
-var TeaTime = class extends PanelMenu.Button {
+let TeaTime = GObject.registerClass(
+class TeaTime extends PanelMenu.Button {
+	_init() {
+		super._init(1.0, "TeaTime");
 
-	constructor() {
-		super(null, "TeaTime");
-
-		this.myinit = function () {
+		this.config_keys = Utils.GetConfigKeys();
 
 			this._settings = Utils.getSettings();
 
@@ -190,9 +192,9 @@ var TeaTime = class extends PanelMenu.Button {
 			this._idleTimeout = null;
 
 			this._createMenu();
-		};
+	}
 
-		this._createMenu = function () {
+	_createMenu() {
 			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 			this._settings.connect("changed::" + this.config_keys.steep_times,
 				this._updateTeaList.bind(this));
@@ -230,8 +232,9 @@ var TeaTime = class extends PanelMenu.Button {
 			this.menu.addMenuItem(bottom);
 
 			this._updateTeaList();
-		};
-		this._updateTeaList = function (config, output) {
+	}
+
+	_updateTeaList(config, output) {
 			// make sure the menu is empty
 			this.teaItemCont.removeAll();
 
@@ -251,8 +254,9 @@ var TeaTime = class extends PanelMenu.Button {
 				}.bind(this));
 				this.teaItemCont.addMenuItem(menuItem);
 			}
-		};
-		this._updateCountdownType = function (config, output) {
+	}
+
+	_updateCountdownType(config, output) {
 			let bWantGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
 
 			if (bWantGraphicalCountdown != this._bGraphicalCountdown) {
@@ -267,8 +271,9 @@ var TeaTime = class extends PanelMenu.Button {
 					this._updateTimerDisplay(this._getRemainingSec());
 				} // if timeout active
 			} // value changed
-		};
-		this._createCustomTimer = function (text, event) {
+	}
+
+	_createCustomTimer(text, event) {
 			if (event.get_key_symbol() == Clutter.KEY_Enter ||
 				event.get_key_symbol() == Clutter.KEY_Return ||
 				event.get_key_symbol() == Clutter.KEY_KP_Enter) {
@@ -297,8 +302,9 @@ var TeaTime = class extends PanelMenu.Button {
 				}
 				this._customEntry.set_text("");
 			}
-		};
-		this._showNotification = function (subject, text) {
+	}
+
+	_showNotification(subject, text) {
 			let source = (Utils.isGnome34()) ?
 				new MessageTray.Source(_("TeaTime applet")) :
 				new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
@@ -322,8 +328,9 @@ var TeaTime = class extends PanelMenu.Button {
 			let notification = new MessageTray.Notification(source, subject, text);
 			notification.setTransient(true);
 			source.notify(notification);
-		};
-		this._initCountdown = function (time) {
+	}
+
+	_initCountdown(time) {
 			this._startTime = new Date();
 			this._stopTime = new Date();
 			this._cntdownStart = time;
@@ -346,26 +353,30 @@ var TeaTime = class extends PanelMenu.Button {
 
 			if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
 			this._idleTimeout = Mainloop.timeout_add_seconds(dt, this._doCountdown.bind(this));
-		};
-		this._stopCountdown = function () {
+	}
+
+	_stopCountdown() {
 			if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
 			this.actor.remove_actor(this._bGraphicalCountdown ?
 				this._graphicalTimer : this._textualTimer);
 			this.actor.add_actor(this._logo);
 			this._idleTimeout = null;
-		};
-		this._getRemainingSec = function () {
+	}
+
+	_getRemainingSec() {
 			let a = new Date();
 			return (this._stopTime.getTime() - a.getTime()) * 1e-3;
-		};
-		this._updateTimerDisplay = function (remainingTime) {
+	}
+
+	_updateTimerDisplay(remainingTime) {
 			if (this._bGraphicalCountdown) {
 				this._graphicalTimer.setStatus((this._cntdownStart - remainingTime) / this._cntdownStart);
 			} else {
 				this._textualTimer.text = Utils.formatTime(remainingTime);
 			}
-		};
-		this._doCountdown = function () {
+	}
+
+	_doCountdown() {
 			let remainingTime = this._getRemainingSec();
 
 			if (remainingTime <= 0) {
@@ -385,19 +396,22 @@ var TeaTime = class extends PanelMenu.Button {
 				this._updateTimerDisplay(remainingTime);
 				return true; // continue timer
 			}
-		};
-		this._playSound = function () {
+	}
+
+	_playSound() {
 			let bPlayAlarmSound = this._settings.get_boolean(this.config_keys.use_alarm_sound);
 			if (bPlayAlarmSound) {
 				Utils.playSound(this._settings.get_string(this.config_keys.alarm_sound));
 			}
-		};
-		this._showPreferences = function () {
+	}
+
+	_showPreferences() {
 			const currExt = ExtensionUtils.getCurrentExtension();
 			imports.misc.util.spawn(["gnome-shell-extension-prefs", currExt.metadata['uuid']]);
 			return 0;
-		};
-		this._onStyleChanged = function (actor) {
+	}
+
+	_onStyleChanged(actor) {
 			let themeNode = actor.get_theme_node();
 			let color = themeNode.get_foreground_color()
 			let [bHasPadding, padding] = themeNode.lookup_length("-natural-hpadding", false);
@@ -421,11 +435,8 @@ var TeaTime = class extends PanelMenu.Button {
 			let scaling = Utils.getGlobalDisplayScaleFactor();
 			this._logo.setScaling(scaling);
 			this._graphicalTimer.setScaling(scaling);
-		};
-		this.config_keys = Utils.GetConfigKeys();
-		this.myinit();
 	}
-};
+});
 
 function init(metadata) {
 	let theme = imports.gi.Gtk.IconTheme.get_default();
@@ -442,4 +453,4 @@ function enable() {
 function disable() {
 	if (_TeaTime._idleTimeout != null) Mainloop.source_remove(_TeaTime._idleTimeout);
 	_TeaTime.destroy();
-};
+}
