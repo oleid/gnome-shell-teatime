@@ -224,7 +224,11 @@ class TeaTime extends PanelMenu.Button {
 
 		let notification = new MessageTray.Notification(source, subject, text);
 		notification.setTransient(true);
-		source.notify(notification);
+		if (typeof source.showNotification === 'function') {
+			source.showNotification(notification);
+		} else {
+			source.notify(notification);
+		}
 	}
 
 	_initCountdown(time) {
