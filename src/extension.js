@@ -44,9 +44,7 @@ class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
 
 		if (this.actor instanceof St.BoxLayout) {
 			// will be used for gnome-shell 3.10 and possibly above where this.actor is BoxLayout
-			this.actor.add(this.tealabel, {
-				expand: true
-			});
+			this.actor.add(this.tealabel);
 			if (nBrewtime != 0) {
 				this.actor.add(this.timelabel);
 			}
