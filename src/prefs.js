@@ -57,11 +57,6 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 
 	_initWindow() {
 		let curRow = 0;
-		let labelFN = new Gtk.Label({
-			label: _("Fullscreen Notifications"),
-			hexpand: true,
-			halign: Gtk.Align.START
-		});
 		let labelGC = new Gtk.Label({
 			label: _("Graphical Countdown"),
 			hexpand: true,
@@ -73,9 +68,6 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 			hexpand: true,
 			halign: Gtk.Align.START
 		});
-
-		this.fullscreenNotificationSwitch = new Gtk.Switch();
-		this.fullscreenNotificationSwitch.connect("notify::active", this._saveFullscreenNotifications.bind(this));
 
 		this.graphicalCountdownSwitch = new Gtk.Switch();
 		this.graphicalCountdownSwitch.connect("notify::active", this._saveGraphicalCountdown.bind(this));
@@ -93,14 +85,6 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		this.alarmSoundFile.set_filter(this.alarmSoundFileFilter);
 		this.alarmSoundFileFilter.add_mime_type("audio/*");
 		this.alarmSoundFile.connect("selection_changed", this._saveSoundFile.bind(this));
-
-
-		if (!Utils.isGnome34()) {
-			// Full screen notifications currently not working on GNOME 3.4, thus don't show the switch
-			this.attach(labelFN, 0 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
-			this.attach(this.fullscreenNotificationSwitch, 2, curRow, 1, 1);
-			curRow += 1;
-		}
 
 		this.attach(labelGC, 0 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
 		this.attach(this.graphicalCountdownSwitch, 2, curRow, 1, 1);
@@ -183,8 +167,6 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		if (this._inhibitUpdate)
 			return;
 
-		this.fullscreenNotificationSwitch.active = this._settings.get_boolean(this.config_keys.fullscreen_notification)
-
 		this.graphicalCountdownSwitch.active = this._settings.get_boolean(this.config_keys.graphical_countdown)
 		this.alarmSoundSwitch.active = this._settings.get_boolean(this.config_keys.use_alarm_sound)
 		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
@@ -240,16 +222,6 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		});
 
 		this.treeview.get_selection().unselect_all();
-	}
-
-	_saveFullscreenNotifications(sw, data) {
-		// don't update the backend if someone else is messing with the model
-		if (this._inhibitUpdate)
-			return;
-		this._inhibitUpdate = true;
-		this._settings.set_boolean(this.config_keys.fullscreen_notification,
-			sw.active);
-		this._inhibitUpdate = false;
 	}
 
 	_saveGraphicalCountdown(sw, data) {

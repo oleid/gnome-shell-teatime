@@ -28,109 +28,6 @@ const N_ = function (e) {
 };
 
 
-
-class TeaTimeFullscreenNotification {
-	constructor() {
-		// this spans the whole monitor and contains
-		// the actual layout, which it displays in
-		// the center of itself
-
-		this._bin = new St.Bin({
-			x_align: St.Align.MIDDLE,
-			y_align: St.Align.MIDDLE
-		});
-
-		if (typeof Layout.MonitorConstraint != 'undefined') {
-			// MonitorConstraint was introduced in gnome-3.6
-			this._monitorConstraint = new Layout.MonitorConstraint();
-			this._bin.add_constraint(this._monitorConstraint);
-		}
-		Main.uiGroup.add_actor(this._bin);
-
-		// a table imitating a vertical box layout to hold the texture and
-		// a label underneath it
-		this._layout = new St.BoxLayout({
-			vertical: true,
-			y_align: Clutter.ActorAlign.CENTER
-		});
-		this._bin.set_child(this._layout);
-
-		// find all the textures
-		let datadir = Me.dir.get_child("data");
-		this._textureFiles = [];
-		if (datadir.query_exists(null)) {
-			let enumerator = datadir.enumerate_children(Gio.FILE_ATTRIBUTE_STANDARD_NAME,
-				Gio.FileQueryInfoFlags.NONE,
-				null);
-			let info;
-			info = enumerator.next_file(null);
-			while (info != null) {
-				let filename = info.get_name();
-				if (filename.match(/^cup.*/)) {
-					this._textureFiles.push(datadir.get_child(filename).get_path());
-				}
-				info = enumerator.next_file(null);
-			}
-		}
-		this._textureFiles.sort();
-
-		this._texture = new Clutter.Texture({
-			reactive: true,
-			keep_aspect_ratio: true
-		});
-		this._texture.connect("button-release-event", this.hide.bind(this));
-		this._layout.add_child(this._texture);
-
-		this._timeline = new Clutter.Timeline({
-			duration: 2000,
-			repeat_count: -1,
-			progress_mode: Clutter.AnimationMode.LINEAR
-		});
-		this._timeline.connect("new-frame", this._newFrame.bind(this));
-
-		this._label = new St.Label({
-			text: _("Your tea is ready!"),
-			style_class: "dash-label"
-		});
-		this._layout.add_child(this._label);
-
-		this._lightbox = new imports.ui.lightbox.Lightbox(Main.uiGroup); // Seems not to work on Gnome 3.10 { fadeInTime: 0.5, fadeOutTime: 0.5 }
-		this._lightbox.highlight(this._bin);
-	}
-	destroy() {
-		this.hide();
-		Main.popModal(this._bin);
-		this._bin.destroy();
-		this._lightbox.hide();
-	}
-	_newFrame(timeline, msecs, user) {
-		let progress = timeline.get_progress();
-		let idx = Math.round(progress * this._textureFiles.length) % this._textureFiles.length;
-		this._texture.set_from_file(this._textureFiles[idx]);
-	}
-	show() {
-		if (typeof Layout.MonitorConstraint != 'undefined') {
-			// global.display was introduced in gnome-shell 3.30
-			if (typeof global.screen != 'undefined') {
-				this._monitorConstraint.index = global.screen.get_current_monitor();
-			} else {
-				this._monitorConstraint.index = global.display.get_current_monitor();
-			}
-		}
-		Main.pushModal(this._bin);
-		this._timeline.start();
-		this._lightbox.show();
-		this._bin.show_all();
-	}
-	hide() {
-		Main.popModal(this._bin);
-		this._bin.hide();
-		this._lightbox.hide();
-		this._timeline.stop();
-	}
-};
-
-
 let PopupTeaMenuItem = GObject.registerClass(
 class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
 	_init(sTeaname, nBrewtime, params) {
@@ -383,14 +280,8 @@ class TeaTime extends PanelMenu.Button {
 			// count down finished, switch display again
 			this._stopCountdown();
 			this._playSound();
-
-			if (!Utils.isGnome34() && this._settings.get_boolean(this.config_keys.fullscreen_notification)) {
-				this.dialog = new TeaTimeFullscreenNotification();
-				this.dialog.show();
-			} else {
-				this._showNotification(_("Your tea is ready!"),
-					_("Drink it, while it is hot!"));
-			}
+			this._showNotification(_("Your tea is ready!"),
+					       _("Drink it, while it is hot!"));
 			return false;
 		} else {
 			this._updateTimerDisplay(remainingTime);

@@ -15,7 +15,6 @@ function debug(text) {
 function GetConfigKeys() {
 	return {
 		steep_times: 'steep-times',
-		fullscreen_notification: 'fullscreen-notification',
 		graphical_countdown: 'graphical-countdown',
 		use_alarm_sound: 'use-alarm-sound',
 		alarm_sound: 'alarm-sound-file'
