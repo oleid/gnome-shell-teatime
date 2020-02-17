@@ -44,9 +44,9 @@ class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
 
 		if (this.actor instanceof St.BoxLayout) {
 			// will be used for gnome-shell 3.10 and possibly above where this.actor is BoxLayout
-			this.actor.add(this.tealabel);
+			this.add(this.tealabel);
 			if (nBrewtime != 0) {
-				this.actor.add(this.timelabel);
+				this.add(this.timelabel);
 			}
 		} else {
 			this.addActor(this.tealabel, {
@@ -82,9 +82,9 @@ class TeaTime extends PanelMenu.Button {
 		});
 		this._graphicalTimer = new Icon.TwoColorIcon(20, Icon.Pie);
 
-		this.actor.add_actor(this._logo);
-		this.actor.add_style_class_name('panel-status-button');
-		this.actor.connect('style-changed', this._onStyleChanged.bind(this));
+		this.add_actor(this._logo);
+		this.add_style_class_name('panel-status-button');
+		this.connect('style-changed', this._onStyleChanged.bind(this));
 
 		this._idleTimeout = null;
 
@@ -159,10 +159,10 @@ class TeaTime extends PanelMenu.Button {
 		if (bWantGraphicalCountdown != this._bGraphicalCountdown) {
 			if (this._idleTimeout != null) {
 				// we have a running countdown, replace the display
-				this.actor.remove_actor(this._bGraphicalCountdown ?
+				this.remove_actor(this._bGraphicalCountdown ?
 					this._graphicalTimer : this._textualTimer);
 				this._bGraphicalCountdown = bWantGraphicalCountdown;
-				this.actor.add_actor(this._bGraphicalCountdown ?
+				this.add_actor(this._bGraphicalCountdown ?
 					this._graphicalTimer : this._textualTimer);
 
 				this._updateTimerDisplay(this._getRemainingSec());
@@ -245,11 +245,11 @@ class TeaTime extends PanelMenu.Button {
 
 		this._stopTime.setTime(this._startTime.getTime() + time * 1000); // in msec
 
-		this.actor.remove_actor(this._logo); // show timer instead of default icon
+		this.remove_actor(this._logo); // show timer instead of default icon
 
 		this._updateTimerDisplay(time);
 
-		this.actor.add_actor(this._bGraphicalCountdown ?
+		this.add_actor(this._bGraphicalCountdown ?
 			this._graphicalTimer : this._textualTimer);
 
 		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
@@ -258,9 +258,9 @@ class TeaTime extends PanelMenu.Button {
 
 	_stopCountdown() {
 		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
-		this.actor.remove_actor(this._bGraphicalCountdown ?
+		this.remove_actor(this._bGraphicalCountdown ?
 			this._graphicalTimer : this._textualTimer);
-		this.actor.add_actor(this._logo);
+		this.add_actor(this._logo);
 		this._idleTimeout = null;
 	}
 
