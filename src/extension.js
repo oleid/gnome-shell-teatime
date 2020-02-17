@@ -42,21 +42,9 @@ class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
 			});
 		}
 
-		if (this.actor instanceof St.BoxLayout) {
-			// will be used for gnome-shell 3.10 and possibly above where this.actor is BoxLayout
-			this.add(this.tealabel);
-			if (nBrewtime != 0) {
-				this.add(this.timelabel);
-			}
-		} else {
-			this.addActor(this.tealabel, {
-				expand: true
-			});
-			if (nBrewtime != 0) {
-				this.addActor(this.timelabel, {
-					expand: false
-				});
-			}
+		this.add(this.tealabel);
+		if (nBrewtime != 0) {
+			this.add(this.timelabel);
 		}
 
 		this._delegate = this;
@@ -202,24 +190,7 @@ class TeaTime extends PanelMenu.Button {
 	}
 
 	_showNotification(subject, text) {
-		let source = (Utils.isGnome34()) ?
-			new MessageTray.Source(_("TeaTime applet")) :
-			new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
-
-		if (Utils.isGnome34()) {
-			source.createNotificationIcon =
-				function () {
-					let iconBox = new St.Bin();
-					iconBox._size = this.ICON_SIZE;
-					iconBox.child = new St.Icon({
-						icon_name: 'utilities-teatime',
-						icon_type: St.IconType.FULLCOLOR,
-						icon_size: iconBox._size
-					});
-					return iconBox;
-				} // createNotificationIcon
-		}
-
+		let source = new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
 		Main.messageTray.add(source);
 
 		let notification = new MessageTray.Notification(source, subject, text);

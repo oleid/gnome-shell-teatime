@@ -151,7 +151,3 @@ function getGlobalDisplayScaleFactor() {
 function isType(value, typename) {
 	return typeof value == typename;
 }
-
-function isGnome34() {
-	return imports.misc.extensionUtils.versionCheck(["3.4"], imports.misc.config.PACKAGE_VERSION);
-}
