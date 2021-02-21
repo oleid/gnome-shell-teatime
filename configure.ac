@@ -40,8 +40,7 @@ AC_CONFIG_COMMANDS_PRE(
                          touch po/POTFILES.in
                          echo '# INTLTOOL_MAKEFILE' > po/Makefile.in])],
                     [MY_HAVE_I18N=$HAVE_I18N])])
-# space at the beginning to hide it from gnome-autogen.sh
- IT_PROG_INTLTOOL([0.26])
+IT_PROG_INTLTOOL([0.4])
 
 AC_CONFIG_COMMANDS_PRE(
     [AC_CONFIG_COMMANDS([po/clean-it],
