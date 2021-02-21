@@ -10,28 +10,28 @@
  * If there is a better way for that stuff, please let me know ;)
  ********************************************************************/
 
-const Lang = imports.lang;
+const GObject = imports.gi.GObject;
 const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 const ExUt = imports.misc.extensionUtils;
 const Me = ExUt.getCurrentExtension();
 const Utils = Me.imports.utils;
 
-var TwoColorIcon = new Lang.Class({
-	Name: 'TwoColorIcon',
-	Extends: St.DrawingArea,
-
-	_init: function (size, drawingObject) {
-		this.parent({
+var TwoColorIcon = GObject.registerClass(
+class TwoColorIcon extends St.DrawingArea {
+	_init(size, drawingObject) {
+		super._init({
 			reactive: true,
-			style: 'padding: 0px 2px'
+			style: 'padding: 0px 0px'
 		});
 		this._base_size = size;
-		this.setScaling(Utils.getGlobalDisplayScaleFactor());
+		//this.setScaling(Utils.getGlobalDisplayScaleFactor());
 
 		this._drawingObject = drawingObject;
 
-		this.connect('repaint', Lang.bind(this, this._drawIcon));
+		this.connect('repaint', function () {
+			this._drawIcon();
+		}.bind(this));
 
 		// some fallback color
 		this._primaryColor = new Clutter.Color({
@@ -42,27 +42,32 @@ var TwoColorIcon = new Lang.Class({
 		});
 		this._secundaryColor = this._primaryColor;
 		this._customStatus = null;
-	},
-	setPadding: function (padding) {
+	}
+
+	setPadding(padding) {
 		this.margin_left = padding;
 		this.margin_right = padding;
-	},
-	setColor: function (primary, secundary) {
+	}
+
+	setColor(primary, secundary) {
 		this._primaryColor = primary;
 		this._secundaryColor = secundary;
 		this.queue_repaint();
-	},
-	setScaling: function (newScale) {
+	}
+
+	setScaling(newScale) {
 		this._default_scale = newScale;
 		this.set_width(this._base_size * this._default_scale);
 		this.set_height(this._base_size * this._default_scale);
 		this.queue_repaint();
-	},
-	setStatus: function (newStatus) {
+	}
+
+	setStatus(newStatus) {
 		this._customStatus = newStatus;
 		this.queue_repaint();
-	},
-	_drawIcon: function () {
+	}
+
+	_drawIcon() {
 		let cr = this.get_context();
 		let orWdt = this._drawingObject.width;
 		let orHgt = this._drawingObject.height;
@@ -77,19 +82,22 @@ var TwoColorIcon = new Lang.Class({
 		let padding_y = (height - orHgt * scaling) * 0.5;
 
 		cr.translate(padding_x, padding_y);
-		cr.scale(scaling, scaling);
+		try {
+			cr.scale(scaling, scaling);
 
-		this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
+			this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
 
-		cr.restore();
+			cr.restore();
+		} catch (e) {
+			// ignore
+		}
 	}
-
 });
 
 var TeaPot = {
 	width: 484,
 	height: 295,
-	draw: function (cr, stat, primary, secundary) {
+	draw(cr, stat, primary, secundary) {
 		// draw TeaPot
 		// cairo commands generated from svg2cairo
 		// https://github.com/akrinke/svg2cairo
@@ -133,7 +141,7 @@ var TeaPot = {
 var Pie = {
 	width: 1,
 	height: 1,
-	draw: function (cr, stat, primary, secundary) {
+	draw(cr, stat, primary, secundary) {
 		const pi = Math.PI;
 		const r = 0.5;
 

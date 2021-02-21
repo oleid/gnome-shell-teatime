@@ -15,7 +15,6 @@ function debug(text) {
 function GetConfigKeys() {
 	return {
 		steep_times: 'steep-times',
-		fullscreen_notification: 'fullscreen-notification',
 		graphical_countdown: 'graphical-countdown',
 		use_alarm_sound: 'use-alarm-sound',
 		alarm_sound: 'alarm-sound-file'
@@ -116,7 +115,6 @@ function formatTime(sec_num) {
 
 function playSound(uri) {
 	const Gst = imports.gi.Gst;
-	const Lang = imports.lang;
 
 	debug("Playing " + uri);
 
@@ -125,7 +123,7 @@ function playSound(uri) {
 		this.player = Gst.ElementFactory.make("playbin", "player");
 		this.playBus = this.player.get_bus();
 		this.playBus.add_signal_watch();
-		this.playBus.connect("message", Lang.bind(this,
+		this.playBus.connect("message",
 			function (playBus, message) {
 				if (message != null) {
 					// IMPORTANT: to reuse the player, set state to READY
@@ -134,7 +132,7 @@ function playSound(uri) {
 						this.player.set_state(Gst.State.READY);
 					}
 				} // message handler
-			}));
+			}.bind(this));
 	} // if undefined
 	this.player.set_property('uri', uri);
 	this.player.set_state(Gst.State.PLAYING);
@@ -152,8 +150,4 @@ function getGlobalDisplayScaleFactor() {
 
 function isType(value, typename) {
 	return typeof value == typename;
-}
-
-function isGnome34() {
-	return imports.misc.extensionUtils.versionCheck(["3.4"], imports.misc.config.PACKAGE_VERSION);
 }

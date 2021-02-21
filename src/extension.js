@@ -4,7 +4,7 @@
 */
 
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
+const GObject = imports.gi.GObject;
 const Mainloop = imports.mainloop; // timer
 const Shell = imports.gi.Shell;
 const St = imports.gi.St;
@@ -28,117 +28,10 @@ const N_ = function (e) {
 };
 
 
-
-const TeaTimeFullscreenNotification = new Lang.Class({
-	Name: 'TeaTimeFullscreenNotification',
-
-	_init: function () {
-		// this spans the whole monitor and contains
-		// the actual layout, which it displays in
-		// the center of itself
-
-		this._bin = new St.Bin({
-			x_align: St.Align.MIDDLE,
-			y_align: St.Align.MIDDLE
-		});
-
-		if (typeof Layout.MonitorConstraint != 'undefined') {
-			// MonitorConstraint was introduced in gnome-3.6
-			this._monitorConstraint = new Layout.MonitorConstraint();
-			this._bin.add_constraint(this._monitorConstraint);
-		}
-		Main.uiGroup.add_actor(this._bin);
-
-		// a table imitating a vertical box layout to hold the texture and
-		// a label underneath it
-		this._layout = new St.BoxLayout({
-			vertical: true,
-			y_align: Clutter.ActorAlign.CENTER
-		});
-		this._bin.set_child(this._layout);
-
-		// find all the textures
-		let datadir = Me.dir.get_child("data");
-		this._textureFiles = [];
-		if (datadir.query_exists(null)) {
-			let enumerator = datadir.enumerate_children(Gio.FILE_ATTRIBUTE_STANDARD_NAME,
-				Gio.FileQueryInfoFlags.NONE,
-				null);
-			let info;
-			info = enumerator.next_file(null);
-			while (info != null) {
-				let filename = info.get_name();
-				if (filename.match(/^cup.*/)) {
-					this._textureFiles.push(datadir.get_child(filename).get_path());
-				}
-				info = enumerator.next_file(null);
-			}
-		}
-		this._textureFiles.sort();
-
-		this._texture = new Clutter.Texture({
-			reactive: true,
-			keep_aspect_ratio: true
-		});
-		this._texture.connect("button-release-event", Lang.bind(this, this.hide));
-		this._layout.add_child(this._texture);
-
-		this._timeline = new Clutter.Timeline({
-			duration: 2000,
-			repeat_count: -1,
-			progress_mode: Clutter.AnimationMode.LINEAR
-		});
-		this._timeline.connect("new-frame", Lang.bind(this, this._newFrame));
-
-		this._label = new St.Label({
-			text: _("Your tea is ready!"),
-			style_class: "dash-label"
-		});
-		this._layout.add_child(this._label);
-
-		this._lightbox = new imports.ui.lightbox.Lightbox(Main.uiGroup); // Seems not to work on Gnome 3.10 { fadeInTime: 0.5, fadeOutTime: 0.5 }
-		this._lightbox.highlight(this._bin);
-	},
-	destroy: function () {
-		this.hide();
-		Main.popModal(this._bin);
-		this._bin.destroy();
-		this._lightbox.hide();
-	},
-	_newFrame: function (timeline, msecs, user) {
-		let progress = timeline.get_progress();
-		let idx = Math.round(progress * this._textureFiles.length) % this._textureFiles.length;
-		this._texture.set_from_file(this._textureFiles[idx]);
-	},
-	show: function () {
-		if (typeof Layout.MonitorConstraint != 'undefined') {
-			// global.display was introduced in gnome-shell 3.30
-			if (typeof global.screen != 'undefined') {
-				this._monitorConstraint.index = global.screen.get_current_monitor();
-			} else {
-				this._monitorConstraint.index = global.display.get_current_monitor();
-			}
-		}
-		Main.pushModal(this._bin);
-		this._timeline.start();
-		this._lightbox.show();
-		this._bin.show_all();
-	},
-	hide: function () {
-		Main.popModal(this._bin);
-		this._bin.hide();
-		this._lightbox.hide();
-		this._timeline.stop();
-	}
-})
-
-
-const PopupTeaMenuItem = new Lang.Class({
-	Name: 'PopupTeaMenuItem',
-	Extends: PopupMenu.PopupBaseMenuItem,
-
-	_init: function (sTeaname, nBrewtime, params) {
-		this.parent(params);
+let PopupTeaMenuItem = GObject.registerClass(
+class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
+	_init(sTeaname, nBrewtime, params) {
+		super._init(params);
 
 		this.tealabel = new St.Label({
 			text: sTeaname
@@ -149,38 +42,25 @@ const PopupTeaMenuItem = new Lang.Class({
 			});
 		}
 
-		if (this.actor instanceof St.BoxLayout) {
-			// will be used for gnome-shell 3.10 and possibly above where this.actor is BoxLayout
-			this.actor.add(this.tealabel, {
-				expand: true
-			});
-			if (nBrewtime != 0) {
-				this.actor.add(this.timelabel);
-			}
-		} else {
-			this.addActor(this.tealabel, {
-				expand: true
-			});
-			if (nBrewtime != 0) {
-				this.addActor(this.timelabel, {
-					expand: false
-				});
-			}
+		this.add(this.tealabel);
+		if (nBrewtime != 0) {
+			this.add(this.timelabel);
 		}
+
+		this._delegate = this;
 	}
 });
 
+let TeaTime = GObject.registerClass(
+class TeaTime extends PanelMenu.Button {
+	_init() {
+		super._init(1.0, "TeaTime");
 
-const TeaTime = new Lang.Class({
-	Name: 'TeaTime',
-	Extends: PanelMenu.Button,
-
-	_init: function () {
-		this.parent(null, "TeaTime");
+		this.config_keys = Utils.GetConfigKeys();
 
 		this._settings = Utils.getSettings();
 
-		this._logo = new Icon.TwoColorIcon(24, Icon.TeaPot);
+		this._logo = new Icon.TwoColorIcon(20, Icon.TeaPot);
 
 		// set timer widget
 		this._textualTimer = new St.Label({
@@ -188,22 +68,23 @@ const TeaTime = new Lang.Class({
 			x_align: Clutter.ActorAlign.END,
 			y_align: Clutter.ActorAlign.CENTER
 		});
-		this._graphicalTimer = new Icon.TwoColorIcon(24, Icon.Pie);
+		this._graphicalTimer = new Icon.TwoColorIcon(20, Icon.Pie);
 
-		this.actor.add_actor(this._logo);
-		this.actor.add_style_class_name('panel-status-button');
-		this.actor.connect('style-changed', Lang.bind(this, this._onStyleChanged));
+		this.add_actor(this._logo);
+		this.add_style_class_name('panel-status-button');
+		this.connect('style-changed', this._onStyleChanged.bind(this));
 
 		this._idleTimeout = null;
 
 		this._createMenu();
-	},
-	_createMenu: function () {
+	}
+
+	_createMenu() {
 		this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 		this._settings.connect("changed::" + this.config_keys.steep_times,
-			Lang.bind(this, this._updateTeaList));
+			this._updateTeaList.bind(this));
 		this._settings.connect("changed::" + this.config_keys.graphical_countdown,
-			Lang.bind(this, this._updateCountdownType));
+			this._updateCountdownType.bind(this));
 
 		this.teaItemCont = new PopupMenu.PopupMenuSection();
 
@@ -212,7 +93,7 @@ const TeaTime = new Lang.Class({
 		let head = new PopupMenu.PopupMenuSection();
 		let item = new PopupMenu.PopupMenuItem(_("Show settings")); //, 'gtk-preferences');
 		//        item._icon.icon_size = 15;
-		item.connect('activate', Lang.bind(this, this._showPreferences));
+		item.connect('activate', this._showPreferences.bind(this));
 		head.addMenuItem(item);
 
 		/*******************/
@@ -223,7 +104,7 @@ const TeaTime = new Lang.Class({
 			hint_text: _("min:sec")
 		});
 		this._customEntry.get_clutter_text().set_max_length(10);
-		this._customEntry.get_clutter_text().connect("key-press-event", Lang.bind(this, this._createCustomTimer));
+		this._customEntry.get_clutter_text().connect("key-press-event", this._createCustomTimer.bind(this));
 		bottom.box.add(this._customEntry);
 		bottom.actor.set_style("padding: 0px 18px;")
 
@@ -236,57 +117,68 @@ const TeaTime = new Lang.Class({
 		this.menu.addMenuItem(bottom);
 
 		this._updateTeaList();
-	},
-	_updateTeaList: function (config, output) {
+	}
+
+	_updateTeaList(config, output) {
 		// make sure the menu is empty
 		this.teaItemCont.removeAll();
 
 		// fill with new teas
 		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
 		let menuItem = new PopupTeaMenuItem("Stop Timer", 0);
-		menuItem.connect('activate', Lang.bind(this, function () {
+		menuItem.connect('activate', function () {
 			this._stopCountdown();
-		}));
+		}.bind(this));
 		this.teaItemCont.addMenuItem(menuItem);
 		for (let teaname in list) {
 			let time = list[teaname].get_uint32();
 
 			let menuItem = new PopupTeaMenuItem(_(teaname), time);
-			menuItem.connect('activate', Lang.bind(this, function () {
+			menuItem.connect('activate', function () {
 				this._initCountdown(time);
-			}));
+			}.bind(this));
 			this.teaItemCont.addMenuItem(menuItem);
 		}
-	},
-	_updateCountdownType: function (config, output) {
+	}
+
+	_updateCountdownType(config, output) {
 		let bWantGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
 
 		if (bWantGraphicalCountdown != this._bGraphicalCountdown) {
 			if (this._idleTimeout != null) {
 				// we have a running countdown, replace the display
-				this.actor.remove_actor(this._bGraphicalCountdown ?
+				this.remove_actor(this._bGraphicalCountdown ?
 					this._graphicalTimer : this._textualTimer);
 				this._bGraphicalCountdown = bWantGraphicalCountdown;
-				this.actor.add_actor(this._bGraphicalCountdown ?
+				this.add_actor(this._bGraphicalCountdown ?
 					this._graphicalTimer : this._textualTimer);
 
 				this._updateTimerDisplay(this._getRemainingSec());
 			} // if timeout active
 		} // value changed
-	},
-	_createCustomTimer: function (text, event) {
+	}
+
+	_createCustomTimer(text, event) {
 		if (event.get_key_symbol() == Clutter.KEY_Enter ||
-			event.get_key_symbol() == Clutter.KEY_Return) {
+			event.get_key_symbol() == Clutter.KEY_Return ||
+			event.get_key_symbol() == Clutter.KEY_KP_Enter) {
 
 			let customTime = text.get_text();
 			let seconds = 0;
 			let match = customTime.match(/^(?:(\d+)(?::(\d{0,2}))?|:(\d+))$/)
 			if (match) {
 				let factor = 1;
-				for (var i = match.length - 2; i > 0; i--) {
-					let s = match[i].replace(/^0/, ''); // fix for elder GNOME <= 3.10 which don't like leading zeros
-					seconds += factor * parseInt(s);
-					factor *= 60;
+				if (match[3] === undefined) { // minutes and seconds?
+					for (var i = match.length - 2; i > 0; i--) {
+						let s = match[i] === undefined ? "" : match[i].replace(/^0/, ''); // fix for elder GNOME <= 3.10 which don't like leading zeros
+						if (s.match(/^\d+$/)) { // only if something left
+							seconds += factor * parseInt(s);
+						}
+						factor *= 60;
+					}
+				} else { // only seconds?
+					let s = match[3].replace(/^0/, '');
+					seconds = parseInt(s);
 				}
 				if (seconds > 0) {
 					this._initCountdown(seconds);
@@ -295,33 +187,22 @@ const TeaTime = new Lang.Class({
 			}
 			this._customEntry.set_text("");
 		}
-	},
-	_showNotification: function (subject, text) {
-		let source = (Utils.isGnome34()) ?
-			new MessageTray.Source(_("TeaTime applet")) :
-			new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
+	}
 
-		if (Utils.isGnome34()) {
-			source.createNotificationIcon =
-				function () {
-					let iconBox = new St.Bin();
-					iconBox._size = this.ICON_SIZE;
-					iconBox.child = new St.Icon({
-						icon_name: 'utilities-teatime',
-						icon_type: St.IconType.FULLCOLOR,
-						icon_size: iconBox._size
-					});
-					return iconBox;
-				} // createNotificationIcon
-		}
-
+	_showNotification(subject, text) {
+		let source = new MessageTray.Source(_("TeaTime applet"), 'utilities-teatime');
 		Main.messageTray.add(source);
 
 		let notification = new MessageTray.Notification(source, subject, text);
 		notification.setTransient(true);
-		source.notify(notification);
-	},
-	_initCountdown: function (time) {
+		if (typeof source.showNotification === 'function') {
+			source.showNotification(notification);
+		} else {
+			source.notify(notification);
+		}
+	}
+
+	_initCountdown(time) {
 		this._startTime = new Date();
 		this._stopTime = new Date();
 		this._cntdownStart = time;
@@ -335,66 +216,68 @@ const TeaTime = new Lang.Class({
 
 		this._stopTime.setTime(this._startTime.getTime() + time * 1000); // in msec
 
-		this.actor.remove_actor(this._logo); // show timer instead of default icon
+		this.remove_actor(this._logo); // show timer instead of default icon
 
 		this._updateTimerDisplay(time);
 
-		this.actor.add_actor(this._bGraphicalCountdown ?
+		this.add_actor(this._bGraphicalCountdown ?
 			this._graphicalTimer : this._textualTimer);
 
 		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
-		this._idleTimeout = Mainloop.timeout_add_seconds(dt, Lang.bind(this, this._doCountdown));
-	},
-	_stopCountdown: function () {
+		this._idleTimeout = Mainloop.timeout_add_seconds(dt, this._doCountdown.bind(this));
+	}
+
+	_stopCountdown() {
 		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
-		this.actor.remove_actor(this._bGraphicalCountdown ?
+		this.remove_actor(this._bGraphicalCountdown ?
 			this._graphicalTimer : this._textualTimer);
-		this.actor.add_actor(this._logo);
+		this.add_actor(this._logo);
 		this._idleTimeout = null;
-	},
-	_getRemainingSec: function () {
+	}
+
+	_getRemainingSec() {
 		let a = new Date();
 		return (this._stopTime.getTime() - a.getTime()) * 1e-3;
-	},
-	_updateTimerDisplay: function (remainingTime) {
+	}
+
+	_updateTimerDisplay(remainingTime) {
 		if (this._bGraphicalCountdown) {
 			this._graphicalTimer.setStatus((this._cntdownStart - remainingTime) / this._cntdownStart);
 		} else {
 			this._textualTimer.text = Utils.formatTime(remainingTime);
 		}
-	},
-	_doCountdown: function () {
+	}
+
+	_doCountdown() {
 		let remainingTime = this._getRemainingSec();
 
 		if (remainingTime <= 0) {
 			// count down finished, switch display again
 			this._stopCountdown();
 			this._playSound();
-
-			if (!Utils.isGnome34() && this._settings.get_boolean(this.config_keys.fullscreen_notification)) {
-				this.dialog = new TeaTimeFullscreenNotification();
-				this.dialog.show();
-			} else {
-				this._showNotification(_("Your tea is ready!"),
-					_("Drink it, while it is hot!"));
-			}
+			this._showNotification(_("Your tea is ready!"),
+					       _("Drink it, while it is hot!"));
 			return false;
 		} else {
 			this._updateTimerDisplay(remainingTime);
 			return true; // continue timer
 		}
-	},
-	_playSound: function () {
+	}
+
+	_playSound() {
 		let bPlayAlarmSound = this._settings.get_boolean(this.config_keys.use_alarm_sound);
 		if (bPlayAlarmSound) {
 			Utils.playSound(this._settings.get_string(this.config_keys.alarm_sound));
 		}
-	},
-	_showPreferences: function () {
-		imports.misc.util.spawn(["gnome-shell-extension-prefs", ExtensionUtils.getCurrentExtension().metadata['uuid']]);
+	}
+
+	_showPreferences() {
+		const currExt = ExtensionUtils.getCurrentExtension();
+		imports.misc.util.spawn(["gnome-shell-extension-prefs", currExt.metadata['uuid']]);
 		return 0;
-	},
-	_onStyleChanged: function (actor) {
+	}
+
+	_onStyleChanged(actor) {
 		let themeNode = actor.get_theme_node();
 		let color = themeNode.get_foreground_color()
 		let [bHasPadding, padding] = themeNode.lookup_length("-natural-hpadding", false);
@@ -418,13 +301,10 @@ const TeaTime = new Lang.Class({
 		let scaling = Utils.getGlobalDisplayScaleFactor();
 		this._logo.setScaling(scaling);
 		this._graphicalTimer.setScaling(scaling);
-	},
-	config_keys: Utils.GetConfigKeys()
+	}
 });
 
 function init(metadata) {
-	let theme = imports.gi.Gtk.IconTheme.get_default();
-	theme.append_search_path(metadata.path);
 }
 
 let _TeaTime;
@@ -437,4 +317,4 @@ function enable() {
 function disable() {
 	if (_TeaTime._idleTimeout != null) Mainloop.source_remove(_TeaTime._idleTimeout);
 	_TeaTime.destroy();
-};
+}

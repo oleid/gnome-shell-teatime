@@ -62,3 +62,5 @@ SUBDIRS = @CONFIGURE_SUBDIRS@
 @INTLTOOL_XML_NOMERGE_RULE@
 endif
 
+icondir = $(extensiondir)/../../../icons/gnome/scalable/apps
+icon_DATA = utilities-teatime.svg
