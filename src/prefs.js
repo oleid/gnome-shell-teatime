@@ -11,6 +11,9 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
+const Config = imports.misc.config;
+const shellVersion = Number.parseInt(Config.PACKAGE_VERSION.split('.'));
+
 const _ = Utils.getTranslationFunc();
 const N_ = function (e) {
 	return e;
@@ -81,14 +84,9 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		this.alarmSoundSwitch.connect("notify::active", this._saveUseAlarm.bind(this));
 
 
-		this.alarmSoundFile = new Gtk.FileChooserNative({
-			title: _("Select alarm sound file"),
-			action: Gtk.FileChooserAction.OPEN
-		});
 		this.alarmSoundFileFilter = new Gtk.FileFilter();
-		this.alarmSoundFile.set_filter(this.alarmSoundFileFilter);
 		this.alarmSoundFileFilter.add_mime_type("audio/*");
-		this.alarmSoundFile.connect("response", this._saveSoundFile.bind(this));
+
 		this.alarmSoundFileButton = new Gtk.Button({
 			label: _("Select alarm sound file")
 		});
@@ -155,21 +153,24 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		//});
 		// this.toolbar.get_style_context().add_class("inline-toolbar");
 		// this.attach(this.toolbar, 0 /*col*/ , curRow /*row*/ , 3 /*col span*/ , 1 /*row span*/ );
-		this.addButton = new Gtk.Button({
-			icon_name: "list-add-symbolic"
-			// use_action_appearance: false
-		});
+		this.addButton = Gtk.Button.new_from_icon_name("list-add-symbolic", 0 /* size: 0 - inherit */);
 		this.addButton.connect("clicked", this._addTea.bind(this));
 		this.attach(this.addButton, 2 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
-		this.removeButton = new Gtk.Button({
-			icon_name: "list-remove-symbolic"
-			// use_action_appearance: false
-		});
+		this.removeButton =  Gtk.Button.new_from_icon_name("list-remove-symbolic", 0);
 		this.removeButton.connect("clicked", this._removeSelectedTea.bind(this));
 		this.attach(this.removeButton, 4 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
 	}
 
 	_selectAlarmSoundFile() {
+	    // recreate -> preselecting file doesn't work on second call if not ...
+		this.alarmSoundFile = new Gtk.FileChooserNative({
+			title: _("Select alarm sound file"),
+			action: Gtk.FileChooserAction.OPEN,
+
+		});
+		this.alarmSoundFile.set_filter(this.alarmSoundFileFilter);
+		this.alarmSoundFile.connect("response", this._saveSoundFile.bind(this));
+		this.alarmSoundFile.set_file(Gio.File.new_for_uri(this.alarmSoundFileFile));
 	    this.alarmSoundFile.show();
 	}
 
@@ -181,8 +182,8 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		this.graphicalCountdownSwitch.active = this._settings.get_boolean(this.config_keys.graphical_countdown)
 		this.alarmSoundSwitch.active = this._settings.get_boolean(this.config_keys.use_alarm_sound)
 		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
-		let file_name = this._settings.get_string(this.config_keys.alarm_sound);
-		this.alarmSoundFile.set_file(Gio.File.new_for_uri(file_name));
+		this.alarmSoundFileFile = this._settings.get_string(this.config_keys.alarm_sound);
+		this.alarmSoundFileButton.label = Gio.File.new_for_uri(this.alarmSoundFileFile).get_basename();
 
 		// stop everyone from reacting to the changes we are about to produce
 		// in the model
@@ -257,7 +258,7 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 
 	_saveSoundFile(sw, response_id, data) {
 		// don't update the backend if someone else is messing with the model or not accept new file
-		if (this._inhibitUpdate || response_id != GTK_RESPONSE_ACCEPT)
+		if (this._inhibitUpdate || response_id != Gtk.ResponseType.ACCEPT)
 			return;
 		let alarm_sound = this.alarmSoundFile.get_file().get_uri();
 		Utils.debug(this._settings.get_string(this.config_keys.alarm_sound) + "-->" + alarm_sound);
@@ -271,6 +272,8 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 			Utils.playSound(alarm_sound);
 			this._settings.set_string(this.config_keys.alarm_sound, alarm_sound);
 			this._inhibitUpdate = false;
+			this.alarmSoundFileFile = alarm_sound;
+			this.alarmSoundFileButton.label = Gio.File.new_for_uri(this.alarmSoundFileFile).get_basename();
 		}
 	}
 
@@ -303,7 +306,10 @@ function init() {}
 
 function buildPrefsWidget() {
 	let widget = new TeaTimePrefsWidget();
-
-	widget.show();
+    if (shellVersion < 40) {
+        widget.show_all();
+    } else {
+	    widget.show();
+    }
 	return widget;
 }
