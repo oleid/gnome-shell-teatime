@@ -76,12 +76,21 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 			halign: Gtk.Align.START
 		});
 
+        let labelRT = new Gtk.Label({
+            label: _("Remember running Timer"),
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+
 		this.graphicalCountdownSwitch = new Gtk.Switch();
 		this.graphicalCountdownSwitch.connect("notify::active", this._saveGraphicalCountdown.bind(this));
 
 		// alarm sound file chooser
 		this.alarmSoundSwitch = new Gtk.Switch();
 		this.alarmSoundSwitch.connect("notify::active", this._saveUseAlarm.bind(this));
+
+		this.rememberRunningCounterSwitch = new Gtk.Switch();
+		this.rememberRunningCounterSwitch.connect("notify::active", this._saveRememberRunningCounter.bind(this));
 
 
 		this.alarmSoundFileFilter = new Gtk.FileFilter();
@@ -100,6 +109,10 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		this.attach(this.alarmSoundFileButton, 1, curRow, 1, 2);
 		this.attach(this.alarmSoundSwitch, 3, curRow+1, 2, 1);
 		curRow += 2;
+
+		this.attach(labelRT, 0 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
+		this.attach(this.rememberRunningCounterSwitch, 3, curRow, 2, 1);
+		curRow += 1;
 
 		this.treeview = new Gtk.TreeView({
 			model: this._tealist
@@ -184,6 +197,7 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
 		this.alarmSoundFileFile = this._settings.get_string(this.config_keys.alarm_sound);
 		this.alarmSoundFileButton.label = Gio.File.new_for_uri(this.alarmSoundFileFile).get_basename();
+        this.rememberRunningCounterSwitch.active = this._settings.get_boolean(this.config_keys.remember_running_timer);
 
 		// stop everyone from reacting to the changes we are about to produce
 		// in the model
@@ -255,6 +269,16 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 			sw.active);
 		this._inhibitUpdate = false;
 	}
+
+    _saveRememberRunningCounter(sw, data) {
+        // don't update the backend if someone else is messing with the model
+        if (this._inhibitUpdate)
+            return;
+        this._inhibitUpdate = true;
+        this._settings.set_boolean(this.config_keys.remember_running_timer,
+            sw.active);
+        this._inhibitUpdate = false;
+    }
 
 	_saveSoundFile(sw, response_id, data) {
 		// don't update the backend if someone else is messing with the model or not accept new file

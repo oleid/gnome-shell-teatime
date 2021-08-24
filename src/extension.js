@@ -77,6 +77,8 @@ class TeaTime extends PanelMenu.Button {
 		this._idleTimeout = null;
 
 		this._createMenu();
+
+		this._continueRunningTimer();
 	}
 
 	_createMenu() {
@@ -119,6 +121,18 @@ class TeaTime extends PanelMenu.Button {
 		this._updateTeaList();
 	}
 
+    _continueRunningTimer() {
+        let running = this._settings.get_string(this.config_keys.running_timer).split("#");
+        if (running.length == 2) {
+            try {
+                this._initCountdown(new Date(running[0]), parseInt(running[1]));
+            } catch (e) {
+                // remove unreadable timer
+                this._settings.set_string(this.config_keys.running_timer, '');
+            }
+        }
+    }
+
 	_updateTeaList(config, output) {
 		// make sure the menu is empty
 		this.teaItemCont.removeAll();
@@ -135,7 +149,7 @@ class TeaTime extends PanelMenu.Button {
 
 			let menuItem = new PopupTeaMenuItem(_(teaname), time);
 			menuItem.connect('activate', function () {
-				this._initCountdown(time);
+				this._initCountdown(new Date(), time);
 			}.bind(this));
 			this.teaItemCont.addMenuItem(menuItem);
 		}
@@ -181,7 +195,7 @@ class TeaTime extends PanelMenu.Button {
 					seconds = parseInt(s);
 				}
 				if (seconds > 0) {
-					this._initCountdown(seconds);
+					this._initCountdown(new Date(), seconds);
 					this.menu.close();
 				}
 			}
@@ -202,8 +216,8 @@ class TeaTime extends PanelMenu.Button {
 		}
 	}
 
-	_initCountdown(time) {
-		this._startTime = new Date();
+	_initCountdown(startTime, time) {
+		this._startTime = startTime;
 		this._stopTime = new Date();
 		this._cntdownStart = time;
 
@@ -225,6 +239,11 @@ class TeaTime extends PanelMenu.Button {
 
 		if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
 		this._idleTimeout = Mainloop.timeout_add_seconds(dt, this._doCountdown.bind(this));
+
+		if (this._settings.get_boolean(this.config_keys.remember_running_timer)) {
+			// remember timer
+			this._settings.set_string(this.config_keys.running_timer, this._startTime.toJSON() + '#' + time);
+		}
 	}
 
 	_stopCountdown() {
@@ -233,6 +252,8 @@ class TeaTime extends PanelMenu.Button {
 			this._graphicalTimer : this._textualTimer);
 		this.add_actor(this._logo);
 		this._idleTimeout = null;
+		// always remove remembered timer
+		this._settings.set_string(this.config_keys.running_timer, '');
 	}
 
 	_getRemainingSec() {

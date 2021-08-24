@@ -26,6 +26,16 @@
       <summary>Play sound when drawing completed</summary>
       <description>Play a sound file after drawing is completed.</description>
     </key>
+    <key name="running-timer" type="s">
+      <default>"-"</default>
+      <summary>Currently running timer</summary>
+      <description>Start-time and total duration in seconds to restore after plugin shutdown</description>
+    </key>
+    <key name="remember-running-timer" type="b">
+      <default>true</default>
+      <summary>remember running timer after plugin shutdown</summary>
+      <description>remember startet timer after screen-lock or reboot</description>
+    </key>
   </schema>
 </schemalist>
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-04 21:58+0200\n"
+"POT-Creation-Date: 2021-08-24 16:55+0200\n"
 "PO-Revision-Date: 2013-11-05 14:22+0100\n"
 "Last-Translator: Solveig <teatime@solveig.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,47 +16,47 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/extension.js:86 ../src/extension.js:327
-msgid "Your tea is ready!"
-msgstr "Su té está listo!"
-
-#: ../src/extension.js:179
+#: ../src/extension.js:94
 msgid "Show settings"
 msgstr "Preferencias"
 
-#: ../src/extension.js:188
+#: ../src/extension.js:104
 msgid "min:sec"
 msgstr "min:sec"
 
-#: ../src/extension.js:260 ../src/extension.js:261
+#: ../src/extension.js:205
 msgid "TeaTime applet"
 msgstr "Applicación TeaTime"
 
-#: ../src/extension.js:328
+#: ../src/extension.js:277
+msgid "Your tea is ready!"
+msgstr "Su té está listo!"
+
+#: ../src/extension.js:278
 msgid "Drink it, while it is hot!"
 msgstr "Beba mientras está caliente!"
 
-#: ../src/prefs.js:69
-msgid "Fullscreen Notifications"
-msgstr "Notificaciones en pantalla completa"
-
-#: ../src/prefs.js:72
+#: ../src/prefs.js:68
 msgid "Graphical Countdown"
 msgstr "Cuenta atrás gráfica"
 
-#: ../src/prefs.js:76
+#: ../src/prefs.js:74
 msgid "Alarm sound"
 msgstr ""
 
-#: ../src/prefs.js:92
+#: ../src/prefs.js:80
+msgid "Remember running Timer"
+msgstr ""
+
+#: ../src/prefs.js:100 ../src/prefs.js:176
 msgid "Select alarm sound file"
 msgstr ""
 
-#: ../src/prefs.js:121
+#: ../src/prefs.js:122
 msgid "Tea"
 msgstr "Té"
 
-#: ../src/prefs.js:136
+#: ../src/prefs.js:142
 msgid "Steep time"
 msgstr "Tiempo de infusión"
 
@@ -110,6 +110,26 @@ msgstr ""
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:27
 msgid "Play a sound file after drawing is completed."
 msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:31
+msgid "Currently running timer"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:32
+msgid ""
+"Start-time and total duration in seconds to restore after plugin shutdown"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:36
+msgid "remember running timer after plugin shutdown"
+msgstr ""
+
+#: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:37
+msgid "remember startet timer after screen-lock or reboot"
+msgstr ""
+
+#~ msgid "Fullscreen Notifications"
+#~ msgstr "Notificaciones en pantalla completa"
 
 #~ msgid "Timer set!"
 #~ msgstr "Definir el tiempo!"
