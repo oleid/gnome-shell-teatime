@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TeaTime 7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-24 16:55+0200\n"
+"POT-Creation-Date: 2021-08-24 17:41+0200\n"
 "PO-Revision-Date: 2016-10-04 22:00+0200\n"
 "Last-Translator: Olaf Leidinger <oleid@mescharet.de>\n"
 "Language-Team: German\n"
@@ -19,23 +19,23 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.8.9\n"
 
-#: ../src/extension.js:94
+#: ../src/extension.js:96
 msgid "Show settings"
 msgstr "Einstellungen"
 
-#: ../src/extension.js:104
+#: ../src/extension.js:106
 msgid "min:sec"
 msgstr "min:sec"
 
-#: ../src/extension.js:205
+#: ../src/extension.js:207
 msgid "TeaTime applet"
 msgstr "TeaTime applet"
 
-#: ../src/extension.js:277
+#: ../src/extension.js:279
 msgid "Your tea is ready!"
 msgstr "Dein Tee ist fertig!"
 
-#: ../src/extension.js:278
+#: ../src/extension.js:280
 msgid "Drink it, while it is hot!"
 msgstr "Trink ihn, solange er noch heiß ist!"
 
@@ -51,15 +51,15 @@ msgstr "Benachrichtigungsklang"
 msgid "Remember running Timer"
 msgstr ""
 
-#: ../src/prefs.js:100 ../src/prefs.js:176
+#: ../src/prefs.js:100 ../src/prefs.js:180
 msgid "Select alarm sound file"
 msgstr "Einen Benachrichtigungklang wählen."
 
-#: ../src/prefs.js:122
+#: ../src/prefs.js:126
 msgid "Tea"
 msgstr "Tee"
 
-#: ../src/prefs.js:142
+#: ../src/prefs.js:146
 msgid "Steep time"
 msgstr "Ziehzeit"
 
@@ -121,7 +121,9 @@ msgstr "aktuelle laufende Ziehzeit"
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:32
 msgid ""
 "Start-time and total duration in seconds to restore after plugin shutdown"
-msgstr "Startzeitpunkt und Ziehzeit in Sekunden zum Wiederherstellen bei einem Plugin-Restart "
+msgstr ""
+"Startzeitpunkt und Ziehzeit in Sekunden zum Wiederherstellen bei einem "
+"Plugin-Restart "
 
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:36
 msgid "remember running timer after plugin shutdown"
@@ -129,7 +131,9 @@ msgstr "aktuelle Ziehzeit über Plugin-Reset hinaus behalten"
 
 #: ../src/schemas/org.gnome.shell.extensions.teatime.gschema.xml:37
 msgid "remember startet timer after screen-lock or reboot"
-msgstr "Ziehzeiten über eine Bilschirmsperre oder Plugin/System-Neustart hinaus behalten"
+msgstr ""
+"Ziehzeiten über eine Bilschirmsperre oder Plugin/System-Neustart hinaus "
+"behalten"
 
 #~ msgid "Fullscreen Notifications"
 #~ msgstr "Vollbild-Benachrichtigungen"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-24 16:55+0200\n"
+"POT-Creation-Date: 2021-08-24 17:41+0200\n"
 "PO-Revision-Date: 2016-01-19 20:52-0200\n"
 "Last-Translator: Fábio B. Tramasoli <fabio@tramasoli.com>\n"
 "Language-Team: \n"
@@ -18,23 +18,23 @@ msgstr ""
 "X-Generator: Poedit 1.8.6\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../src/extension.js:94
+#: ../src/extension.js:96
 msgid "Show settings"
 msgstr "Exibir configurações"
 
-#: ../src/extension.js:104
+#: ../src/extension.js:106
 msgid "min:sec"
 msgstr "min:s"
 
-#: ../src/extension.js:205
+#: ../src/extension.js:207
 msgid "TeaTime applet"
 msgstr "applet TeaTime"
 
-#: ../src/extension.js:277
+#: ../src/extension.js:279
 msgid "Your tea is ready!"
 msgstr "Seu chá está pronto!"
 
-#: ../src/extension.js:278
+#: ../src/extension.js:280
 msgid "Drink it, while it is hot!"
 msgstr "Beba enquanto está quente!"
 
@@ -50,15 +50,15 @@ msgstr ""
 msgid "Remember running Timer"
 msgstr ""
 
-#: ../src/prefs.js:100 ../src/prefs.js:176
+#: ../src/prefs.js:100 ../src/prefs.js:180
 msgid "Select alarm sound file"
 msgstr ""
 
-#: ../src/prefs.js:122
+#: ../src/prefs.js:126
 msgid "Tea"
 msgstr "Chá"
 
-#: ../src/prefs.js:142
+#: ../src/prefs.js:146
 msgid "Steep time"
 msgstr "Tempo de infusão"
 

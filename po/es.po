@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-24 16:55+0200\n"
+"POT-Creation-Date: 2021-08-24 17:41+0200\n"
 "PO-Revision-Date: 2013-11-05 14:22+0100\n"
 "Last-Translator: Solveig <teatime@solveig.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,23 +16,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/extension.js:94
+#: ../src/extension.js:96
 msgid "Show settings"
 msgstr "Preferencias"
 
-#: ../src/extension.js:104
+#: ../src/extension.js:106
 msgid "min:sec"
 msgstr "min:sec"
 
-#: ../src/extension.js:205
+#: ../src/extension.js:207
 msgid "TeaTime applet"
 msgstr "Applicación TeaTime"
 
-#: ../src/extension.js:277
+#: ../src/extension.js:279
 msgid "Your tea is ready!"
 msgstr "Su té está listo!"
 
-#: ../src/extension.js:278
+#: ../src/extension.js:280
 msgid "Drink it, while it is hot!"
 msgstr "Beba mientras está caliente!"
 
@@ -48,15 +48,15 @@ msgstr ""
 msgid "Remember running Timer"
 msgstr ""
 
-#: ../src/prefs.js:100 ../src/prefs.js:176
+#: ../src/prefs.js:100 ../src/prefs.js:180
 msgid "Select alarm sound file"
 msgstr ""
 
-#: ../src/prefs.js:122
+#: ../src/prefs.js:126
 msgid "Tea"
 msgstr "Té"
 
-#: ../src/prefs.js:142
+#: ../src/prefs.js:146
 msgid "Steep time"
 msgstr "Tiempo de infusión"
 

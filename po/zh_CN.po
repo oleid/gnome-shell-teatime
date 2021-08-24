@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-24 16:55+0200\n"
+"POT-Creation-Date: 2021-08-24 17:41+0200\n"
 "PO-Revision-Date: 2016-10-04 21:48+0800\n"
 "Last-Translator: 绿色圣光 <lishaohui.qd@163.com>\n"
 "Language-Team: Chinese (Simplified) <>\n"
@@ -18,23 +18,23 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: ../src/extension.js:94
+#: ../src/extension.js:96
 msgid "Show settings"
 msgstr "显示设置"
 
-#: ../src/extension.js:104
+#: ../src/extension.js:106
 msgid "min:sec"
 msgstr "分:秒"
 
-#: ../src/extension.js:205
+#: ../src/extension.js:207
 msgid "TeaTime applet"
 msgstr "泡茶时间小程序"
 
-#: ../src/extension.js:277
+#: ../src/extension.js:279
 msgid "Your tea is ready!"
 msgstr "您的茶已经准备好了！"
 
-#: ../src/extension.js:278
+#: ../src/extension.js:280
 msgid "Drink it, while it is hot!"
 msgstr "趁热喝吧！"
 
@@ -50,15 +50,15 @@ msgstr "提示音"
 msgid "Remember running Timer"
 msgstr ""
 
-#: ../src/prefs.js:100 ../src/prefs.js:176
+#: ../src/prefs.js:100 ../src/prefs.js:180
 msgid "Select alarm sound file"
 msgstr "选择提示声音文件"
 
-#: ../src/prefs.js:122
+#: ../src/prefs.js:126
 msgid "Tea"
 msgstr "茶"
 
-#: ../src/prefs.js:142
+#: ../src/prefs.js:146
 msgid "Steep time"
 msgstr "浸泡时间"
 

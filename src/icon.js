@@ -18,81 +18,81 @@ const Me = ExUt.getCurrentExtension();
 const Utils = Me.imports.utils;
 
 var TwoColorIcon = GObject.registerClass(
-class TwoColorIcon extends St.DrawingArea {
-	_init(size, drawingObject) {
-		super._init({
-			reactive: true,
-			style: 'padding: 0px 0px'
-		});
-		this._base_size = size;
-		//this.setScaling(Utils.getGlobalDisplayScaleFactor());
+	class TwoColorIcon extends St.DrawingArea {
+		_init(size, drawingObject) {
+			super._init({
+				reactive: true,
+				style: 'padding: 0px 0px'
+			});
+			this._base_size = size;
+			//this.setScaling(Utils.getGlobalDisplayScaleFactor());
 
-		this._drawingObject = drawingObject;
+			this._drawingObject = drawingObject;
 
-		this.connect('repaint', function () {
-			this._drawIcon();
-		}.bind(this));
+			this.connect('repaint', function () {
+				this._drawIcon();
+			}.bind(this));
 
-		// some fallback color
-		this._primaryColor = new Clutter.Color({
-			red: 150,
-			green: 150,
-			blue: 150,
-			alpha: 255
-		});
-		this._secundaryColor = this._primaryColor;
-		this._customStatus = null;
-	}
-
-	setPadding(padding) {
-		this.margin_left = padding;
-		this.margin_right = padding;
-	}
-
-	setColor(primary, secundary) {
-		this._primaryColor = primary;
-		this._secundaryColor = secundary;
-		this.queue_repaint();
-	}
-
-	setScaling(newScale) {
-		this._default_scale = newScale;
-		this.set_width(this._base_size * this._default_scale);
-		this.set_height(this._base_size * this._default_scale);
-		this.queue_repaint();
-	}
-
-	setStatus(newStatus) {
-		this._customStatus = newStatus;
-		this.queue_repaint();
-	}
-
-	_drawIcon() {
-		let cr = this.get_context();
-		let orWdt = this._drawingObject.width;
-		let orHgt = this._drawingObject.height;
-		let [width, height] = this.get_surface_size();
-
-		cr.save();
-
-		let object_longest_edge = Math.max(orWdt, orHgt);
-		let surface_shortest_edge = Math.min(width, height);
-		let scaling = surface_shortest_edge / object_longest_edge;
-		let padding_x = (width - orWdt * scaling) * 0.5;
-		let padding_y = (height - orHgt * scaling) * 0.5;
-
-		cr.translate(padding_x, padding_y);
-		try {
-			cr.scale(scaling, scaling);
-
-			this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
-
-			cr.restore();
-		} catch (e) {
-			// ignore
+			// some fallback color
+			this._primaryColor = new Clutter.Color({
+				red: 150,
+				green: 150,
+				blue: 150,
+				alpha: 255
+			});
+			this._secundaryColor = this._primaryColor;
+			this._customStatus = null;
 		}
-	}
-});
+
+		setPadding(padding) {
+			this.margin_left = padding;
+			this.margin_right = padding;
+		}
+
+		setColor(primary, secundary) {
+			this._primaryColor = primary;
+			this._secundaryColor = secundary;
+			this.queue_repaint();
+		}
+
+		setScaling(newScale) {
+			this._default_scale = newScale;
+			this.set_width(this._base_size * this._default_scale);
+			this.set_height(this._base_size * this._default_scale);
+			this.queue_repaint();
+		}
+
+		setStatus(newStatus) {
+			this._customStatus = newStatus;
+			this.queue_repaint();
+		}
+
+		_drawIcon() {
+			let cr = this.get_context();
+			let orWdt = this._drawingObject.width;
+			let orHgt = this._drawingObject.height;
+			let [width, height] = this.get_surface_size();
+
+			cr.save();
+
+			let object_longest_edge = Math.max(orWdt, orHgt);
+			let surface_shortest_edge = Math.min(width, height);
+			let scaling = surface_shortest_edge / object_longest_edge;
+			let padding_x = (width - orWdt * scaling) * 0.5;
+			let padding_y = (height - orHgt * scaling) * 0.5;
+
+			cr.translate(padding_x, padding_y);
+			try {
+				cr.scale(scaling, scaling);
+
+				this._drawingObject.draw(cr, this._customStatus, this._primaryColor, this._secundaryColor);
+
+				cr.restore();
+			} catch (e) {
+				// ignore
+			}
+		}
+	});
 
 var TeaPot = {
 	width: 484,
