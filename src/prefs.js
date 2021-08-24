@@ -4,11 +4,15 @@
 */
 
 const Gtk = imports.gi.Gtk;
+const Gio = imports.gi.Gio;
 const GObject = imports.gi.GObject;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
+
+const Config = imports.misc.config;
+const shellVersion = Number.parseInt(Config.PACKAGE_VERSION.split('.'));
 
 const _ = Utils.getTranslationFunc();
 const N_ = function (e) {
@@ -29,7 +33,10 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 			orientation: Gtk.Orientation.VERTICAL,
 			column_homogeneous: false,
 			vexpand: true,
-			margin: 5,
+			margin_start: 5,
+			margin_end: 5,
+			margin_top: 5,
+			margin_bottom: 5,
 			row_spacing: 5
 		});
 
@@ -77,31 +84,29 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		this.alarmSoundSwitch.connect("notify::active", this._saveUseAlarm.bind(this));
 
 
-		this.alarmSoundFile = new Gtk.FileChooserButton({
-			title: _("Select alarm sound file"),
-			action: Gtk.FileChooserAction.OPEN
-		});
 		this.alarmSoundFileFilter = new Gtk.FileFilter();
-		this.alarmSoundFile.set_filter(this.alarmSoundFileFilter);
 		this.alarmSoundFileFilter.add_mime_type("audio/*");
-		this.alarmSoundFile.connect("selection_changed", this._saveSoundFile.bind(this));
+
+		this.alarmSoundFileButton = new Gtk.Button({
+			label: _("Select alarm sound file")
+		});
+        this.alarmSoundFileButton.connect("clicked", this._selectAlarmSoundFile.bind(this));
 
 		this.attach(labelGC, 0 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
-		this.attach(this.graphicalCountdownSwitch, 2, curRow, 1, 1);
+		this.attach(this.graphicalCountdownSwitch, 3, curRow, 2, 1);
 		curRow += 1;
 
-		this.attach(labelAS, 0 /*col*/ , curRow /*row*/ , 1 /*col span*/ , 1 /*row span*/ );
-		this.attach(this.alarmSoundFile, 1, curRow, 1, 1);
-		this.attach(this.alarmSoundSwitch, 2, curRow, 1, 1);
-		curRow += 1;
+		this.attach(labelAS, 0 /*col*/ , curRow+1 /*row*/ , 1 /*col span*/ , 1 /*row span*/ );
+		this.attach(this.alarmSoundFileButton, 1, curRow, 1, 2);
+		this.attach(this.alarmSoundSwitch, 3, curRow+1, 2, 1);
+		curRow += 2;
 
 		this.treeview = new Gtk.TreeView({
-			model: this._tealist,
-			expand: true
+			model: this._tealist
 		});
 		this.treeview.set_reorderable(true);
 		this.treeview.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE);
-		this.attach(this.treeview, 0, curRow, 3, 1);
+		this.attach(this.treeview, 0, curRow, 6, 1);
 		curRow += 1;
 
 		let teaname = new Gtk.TreeViewColumn({
@@ -141,25 +146,32 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		steeptime.add_attribute(spinrenderer, "adjustment", Columns.ADJUSTMENT);
 		steeptime.add_attribute(spinrenderer, "text", Columns.STEEP_TIME);
 		this.treeview.append_column(steeptime);
+        this.treeview.expand_all();
 
-
-		this.toolbar = new Gtk.Toolbar({
-			icon_size: 1
-		});
-		this.toolbar.get_style_context().add_class("inline-toolbar");
-		this.attach(this.toolbar, 0 /*col*/ , curRow /*row*/ , 3 /*col span*/ , 1 /*row span*/ );
-		this.addButton = new Gtk.ToolButton({
-			icon_name: "list-add-symbolic",
-			use_action_appearance: false
-		});
+		//this.toolbar = new Gtk.Toolbar({
+		//	icon_size: 1
+		//});
+		// this.toolbar.get_style_context().add_class("inline-toolbar");
+		// this.attach(this.toolbar, 0 /*col*/ , curRow /*row*/ , 3 /*col span*/ , 1 /*row span*/ );
+		this.addButton = Gtk.Button.new_from_icon_name("list-add-symbolic", 0 /* size: 0 - inherit */);
 		this.addButton.connect("clicked", this._addTea.bind(this));
-		this.toolbar.insert(this.addButton, -1);
-		this.removeButton = new Gtk.ToolButton({
-			icon_name: "list-remove-symbolic",
-			use_action_appearance: false
-		});
+		this.attach(this.addButton, 2 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
+		this.removeButton =  Gtk.Button.new_from_icon_name("list-remove-symbolic", 0);
 		this.removeButton.connect("clicked", this._removeSelectedTea.bind(this));
-		this.toolbar.insert(this.removeButton, -1);
+		this.attach(this.removeButton, 4 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
+	}
+
+	_selectAlarmSoundFile() {
+	    // recreate -> preselecting file doesn't work on second call if not ...
+		this.alarmSoundFile = new Gtk.FileChooserNative({
+			title: _("Select alarm sound file"),
+			action: Gtk.FileChooserAction.OPEN,
+
+		});
+		this.alarmSoundFile.set_filter(this.alarmSoundFileFilter);
+		this.alarmSoundFile.connect("response", this._saveSoundFile.bind(this));
+		this.alarmSoundFile.set_file(Gio.File.new_for_uri(this.alarmSoundFileFile));
+	    this.alarmSoundFile.show();
 	}
 
 	_refresh() {
@@ -170,8 +182,8 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		this.graphicalCountdownSwitch.active = this._settings.get_boolean(this.config_keys.graphical_countdown)
 		this.alarmSoundSwitch.active = this._settings.get_boolean(this.config_keys.use_alarm_sound)
 		let list = this._settings.get_value(this.config_keys.steep_times).unpack();
-		let file_name = this._settings.get_string(this.config_keys.alarm_sound);
-		this.alarmSoundFile.set_uri(file_name);
+		this.alarmSoundFileFile = this._settings.get_string(this.config_keys.alarm_sound);
+		this.alarmSoundFileButton.label = Gio.File.new_for_uri(this.alarmSoundFileFile).get_basename();
 
 		// stop everyone from reacting to the changes we are about to produce
 		// in the model
@@ -244,11 +256,11 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 		this._inhibitUpdate = false;
 	}
 
-	_saveSoundFile(sw, data) {
-		// don't update the backend if someone else is messing with the model
-		if (this._inhibitUpdate)
+	_saveSoundFile(sw, response_id, data) {
+		// don't update the backend if someone else is messing with the model or not accept new file
+		if (this._inhibitUpdate || response_id != Gtk.ResponseType.ACCEPT)
 			return;
-		let alarm_sound = this.alarmSoundFile.get_uri();
+		let alarm_sound = this.alarmSoundFile.get_file().get_uri();
 		Utils.debug(this._settings.get_string(this.config_keys.alarm_sound) + "-->" + alarm_sound);
 
 		let have_value = Utils.isType(alarm_sound, "string");
@@ -260,6 +272,8 @@ class TeaTimePrefsWidget extends Gtk.Grid {
 			Utils.playSound(alarm_sound);
 			this._settings.set_string(this.config_keys.alarm_sound, alarm_sound);
 			this._inhibitUpdate = false;
+			this.alarmSoundFileFile = alarm_sound;
+			this.alarmSoundFileButton.label = Gio.File.new_for_uri(this.alarmSoundFileFile).get_basename();
 		}
 	}
 
@@ -292,7 +306,10 @@ function init() {}
 
 function buildPrefsWidget() {
 	let widget = new TeaTimePrefsWidget();
-
-	widget.show_all();
+    if (shellVersion < 40) {
+        widget.show_all();
+    } else {
+	    widget.show();
+    }
 	return widget;
 }
