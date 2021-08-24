@@ -126,6 +126,7 @@ let TeaTime = GObject.registerClass(
 			if (running.length == 2) {
 				try {
 					this._initCountdown(new Date(running[0]), parseInt(running[1]));
+					this.graphicalCounter = 0; // redraw with correct values
 				} catch (e) {
 					// remove unreadable timer
 					this._settings.set_string(this.config_keys.running_timer, '');
@@ -139,7 +140,8 @@ let TeaTime = GObject.registerClass(
 
 			// fill with new teas
 			let list = this._settings.get_value(this.config_keys.steep_times).unpack();
-			let menuItem = new PopupTeaMenuItem("Stop Timer", 0);
+			let menuItem = new PopupTeaMenuItem(_("Stop Timer"), 0);
+			this.stopMenu = menuItem.tealabel
 			menuItem.connect('activate', function () {
 				this._stopCountdown();
 			}.bind(this));
@@ -223,10 +225,11 @@ let TeaTime = GObject.registerClass(
 
 			this._bGraphicalCountdown = this._settings.get_boolean(this.config_keys.graphical_countdown);
 
-			let dt = this._bGraphicalCountdown ?
+			this.graphicalInterval = this._bGraphicalCountdown ?
 				Math.max(1.0, time / 90) // set time step to fit animation
 				:
 				1.0; // show every second for the textual countdown
+			this.graphicalCounter = 0;
 
 			this._stopTime.setTime(this._startTime.getTime() + time * 1000); // in msec
 
@@ -238,7 +241,7 @@ let TeaTime = GObject.registerClass(
 				this._graphicalTimer : this._textualTimer);
 
 			if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
-			this._idleTimeout = Mainloop.timeout_add_seconds(dt, this._doCountdown.bind(this));
+			this._idleTimeout = Mainloop.timeout_add_seconds(1, this._doCountdown.bind(this));
 
 			if (this._settings.get_boolean(this.config_keys.remember_running_timer)) {
 				// remember timer
@@ -254,6 +257,7 @@ let TeaTime = GObject.registerClass(
 			this._idleTimeout = null;
 			// always remove remembered timer
 			this._settings.set_string(this.config_keys.running_timer, '');
+			this.stopMenu.text = _("Stop Timer");
 		}
 
 		_getRemainingSec() {
@@ -263,9 +267,14 @@ let TeaTime = GObject.registerClass(
 
 		_updateTimerDisplay(remainingTime) {
 			if (this._bGraphicalCountdown) {
-				this._graphicalTimer.setStatus((this._cntdownStart - remainingTime) / this._cntdownStart);
+				if (this.graphicalCounter-- <= 0) {
+					this.graphicalCounter = this.graphicalInterval;
+					this._graphicalTimer.setStatus((this._cntdownStart - remainingTime) / this._cntdownStart);
+				}
+				this.stopMenu.text = _("Stop Timer") + ': ' + _('%s to go').replace('%s', Utils.formatTime(remainingTime));
 			} else {
 				this._textualTimer.text = Utils.formatTime(remainingTime);
+				this.stopMenu.text = _("Stop Timer");
 			}
 		}
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-24 17:41+0200\n"
+"POT-Creation-Date: 2021-08-24 18:26+0200\n"
 "PO-Revision-Date: 2016-10-04 21:48+0800\n"
 "Last-Translator: 绿色圣光 <lishaohui.qd@163.com>\n"
 "Language-Team: Chinese (Simplified) <>\n"
@@ -26,15 +26,24 @@ msgstr "显示设置"
 msgid "min:sec"
 msgstr "分:秒"
 
-#: ../src/extension.js:207
+#: ../src/extension.js:142 ../src/extension.js:258 ../src/extension.js:269
+msgid "Stop Timer"
+msgstr ""
+
+#: ../src/extension.js:208
 msgid "TeaTime applet"
 msgstr "泡茶时间小程序"
 
-#: ../src/extension.js:279
+#: ../src/extension.js:269
+#, javascript-format
+msgid "%s to go"
+msgstr ""
+
+#: ../src/extension.js:282
 msgid "Your tea is ready!"
 msgstr "您的茶已经准备好了！"
 
-#: ../src/extension.js:280
+#: ../src/extension.js:283
 msgid "Drink it, while it is hot!"
 msgstr "趁热喝吧！"
 

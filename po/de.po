@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TeaTime 7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-24 17:41+0200\n"
+"POT-Creation-Date: 2021-08-24 18:22+0200\n"
 "PO-Revision-Date: 2016-10-04 22:00+0200\n"
 "Last-Translator: Olaf Leidinger <oleid@mescharet.de>\n"
 "Language-Team: German\n"
@@ -27,15 +27,24 @@ msgstr "Einstellungen"
 msgid "min:sec"
 msgstr "min:sec"
 
-#: ../src/extension.js:207
+#: ../src/extension.js:142 ../src/extension.js:258 ../src/extension.js:269
+msgid "Stop Timer"
+msgstr ""
+
+#: ../src/extension.js:208
 msgid "TeaTime applet"
 msgstr "TeaTime applet"
 
-#: ../src/extension.js:279
+#: ../src/extension.js:269
+#, javascript-format
+msgid "%s to go"
+msgstr "%s verbleiben"
+
+#: ../src/extension.js:282
 msgid "Your tea is ready!"
 msgstr "Dein Tee ist fertig!"
 
-#: ../src/extension.js:280
+#: ../src/extension.js:283
 msgid "Drink it, while it is hot!"
 msgstr "Trink ihn, solange er noch heiß ist!"
 
@@ -140,6 +149,3 @@ msgstr ""
 
 #~ msgid "Timer set!"
 #~ msgstr "Die Zeit läuft!"
-
-#~ msgid "%ss to go"
-#~ msgstr "%ss verbleiben"
