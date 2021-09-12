@@ -118,7 +118,7 @@ let TeaTime = GObject.registerClass(
 			this.menu.addMenuItem(bottom);
 
 			this._updateTeaList();
-    }
+    		}
 
 		_continueRunningTimer() {
 			let running = this._settings.get_string(this.config_keys.running_timer).split("#");
