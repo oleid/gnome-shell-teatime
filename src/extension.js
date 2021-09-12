@@ -77,7 +77,6 @@ let TeaTime = GObject.registerClass(
 			this._idleTimeout = null;
 
 			this._createMenu();
-
 			this._continueRunningTimer();
 		}
 
@@ -119,7 +118,7 @@ let TeaTime = GObject.registerClass(
 			this.menu.addMenuItem(bottom);
 
 			this._updateTeaList();
-		}
+    }
 
 		_continueRunningTimer() {
 			let running = this._settings.get_string(this.config_keys.running_timer).split("#");
@@ -151,6 +150,7 @@ let TeaTime = GObject.registerClass(
 
 				let menuItem = new PopupTeaMenuItem(_(teaname), time);
 				menuItem.connect('activate', function () {
+
 					this._initCountdown(new Date(), time);
 				}.bind(this));
 				this.teaItemCont.addMenuItem(menuItem);
@@ -230,7 +230,6 @@ let TeaTime = GObject.registerClass(
 				:
 				1.0; // show every second for the textual countdown
 			this.graphicalCounter = 0;
-
 			this._stopTime.setTime(this._startTime.getTime() + time * 1000); // in msec
 
 			this.remove_actor(this._logo); // show timer instead of default icon
