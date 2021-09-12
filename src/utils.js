@@ -17,7 +17,9 @@ function GetConfigKeys() {
 		steep_times: 'steep-times',
 		graphical_countdown: 'graphical-countdown',
 		use_alarm_sound: 'use-alarm-sound',
-		alarm_sound: 'alarm-sound-file'
+		alarm_sound: 'alarm-sound-file',
+		running_timer: 'running-timer',
+		remember_running_timer: 'remember-running-timer'
 	};
 }
 
