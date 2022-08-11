@@ -43,6 +43,7 @@ install-data-hook:
 if HAVE_GSETTINGS
 schemasdir = $(extensiondir)/schemas
 schemas_DATA = src/schemas/gschemas.compiled
+schemas_DATA += src/schemas/org.gnome.shell.extensions.teatime.gschema.xml
 
 CLEANFILES += $(schemas_DATA)
 DISTCLEANFILES += $(sort $(GSETTINGS_SCHEMAS_CONFIGURE))
