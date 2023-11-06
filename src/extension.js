@@ -3,30 +3,24 @@
    Thomas Liebetraut <thomas@tommie-lie.de>
 */
 
-const Gio = imports.gi.Gio;
-const GObject = imports.gi.GObject;
-const Mainloop = imports.mainloop; // timer
-const Shell = imports.gi.Shell;
-const St = imports.gi.St;
-const Clutter = imports.gi.Clutter;
-const Layout = imports.ui.layout;
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import Shell from 'gi://Shell';
+import St from 'gi://St';
 
-const Main = imports.ui.main;
-const MessageTray = imports.ui.messageTray;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const Panel = imports.ui.panel;
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Utils = Me.imports.utils;
-const Icon = Me.imports.icon;
+import * as Layout from 'resource:///org/gnome/shell/ui/layout.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
+import * as Panel from 'resource:///org/gnome/shell/ui/panel.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-const _ = Utils.getTranslationFunc();
-const N_ = function (e) {
-	return e;
-};
-
+import * as Utils from './utils.js';
+import * as Icon from './icon.js';
 
 let PopupTeaMenuItem = GObject.registerClass(
 	class PopupTeaMenuItem extends PopupMenu.PopupBaseMenuItem {
@@ -53,12 +47,13 @@ let PopupTeaMenuItem = GObject.registerClass(
 
 let TeaTime = GObject.registerClass(
 	class TeaTime extends PanelMenu.Button {
-		_init() {
+		_init(extension) {
 			super._init(1.0, "TeaTime");
 
 			this.config_keys = Utils.GetConfigKeys();
 
-			this._settings = Utils.getSettings();
+			this._extension = extension;
+			this._settings = this._extension.getSettings();
 
 			this._logo = new Icon.TwoColorIcon(20, Icon.TeaPot);
 
@@ -239,8 +234,12 @@ let TeaTime = GObject.registerClass(
 			this.add_actor(this._bGraphicalCountdown ?
 				this._graphicalTimer : this._textualTimer);
 
-			if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
-			this._idleTimeout = Mainloop.timeout_add_seconds(1, this._doCountdown.bind(this));
+			if (this._idleTimeout) {
+				GLib.source_remove(this._idleTimeout);
+				delete this._idleTimeout;
+			}
+			this._idleTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 250,
+			                                     this._doCountdown.bind(this));
 
 			if (this._settings.get_boolean(this.config_keys.remember_running_timer)) {
 				// remember timer
@@ -249,7 +248,10 @@ let TeaTime = GObject.registerClass(
 		}
 
 		_stopCountdown() {
-			if (this._idleTimeout != null) Mainloop.source_remove(this._idleTimeout);
+			if (this._idleTimeout) {
+				GLib.source_remove(this._idleTimeout);
+				delete this._idleTimeout;
+			}
 			this.remove_actor(this._bGraphicalCountdown ?
 				this._graphicalTimer : this._textualTimer);
 			this.add_actor(this._logo);
@@ -301,8 +303,7 @@ let TeaTime = GObject.registerClass(
 		}
 
 		_showPreferences() {
-			const currExt = ExtensionUtils.getCurrentExtension();
-			imports.misc.util.spawn(["gnome-shell-extension-prefs", currExt.metadata['uuid']]);
+			this._extension.openPreferences();
 			return 0;
 		}
 
@@ -333,16 +334,18 @@ let TeaTime = GObject.registerClass(
 		}
 	});
 
-function init(metadata) {}
+export default class TeaTimeExtension extends Extension {
+	enable() {
+		this._TeaTime = new TeaTime(this);
+		Main.panel.addToStatusArea('teatime', this._TeaTime);
+	}
 
-let _TeaTime;
-
-function enable() {
-	_TeaTime = new TeaTime();
-	Main.panel.addToStatusArea('teatime', _TeaTime);
-}
-
-function disable() {
-	if (_TeaTime._idleTimeout != null) Mainloop.source_remove(_TeaTime._idleTimeout);
-	_TeaTime.destroy();
+	disable() {
+		if (this._TeaTime._idleTimeout) {
+			GLib.source_remove(this._TeaTime._idleTimeout);
+			delete this._TeaTime._idleTimeout;
+		}
+		this._TeaTime.destroy();
+		delete this._TeaTime;
+	}
 }

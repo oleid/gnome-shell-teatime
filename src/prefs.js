@@ -3,22 +3,17 @@
    Thomas Liebetraut <thomas@tommie-lie.de>
 */
 
-const Gtk = imports.gi.Gtk;
-const Gio = imports.gi.Gio;
-const GObject = imports.gi.GObject;
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import Gtk from 'gi://Gtk';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Utils = Me.imports.utils;
+import {
+	ExtensionPreferences,
+	gettext as _
+} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-const Config = imports.misc.config;
-const shellVersion = Number.parseInt(Config.PACKAGE_VERSION.split('.'));
-
-const _ = Utils.getTranslationFunc();
-const N_ = function (e) {
-	return e;
-};
-
+import * as Utils from './utils.js';
 
 const Columns = {
 	TEA_NAME: 0,
@@ -28,7 +23,7 @@ const Columns = {
 
 var TeaTimePrefsWidget = GObject.registerClass(
 	class TeaTimePrefsWidget extends Gtk.Grid {
-		_init() {
+		_init(extension) {
 			super._init({
 				orientation: Gtk.Orientation.VERTICAL,
 				column_homogeneous: false,
@@ -51,7 +46,7 @@ var TeaTimePrefsWidget = GObject.registerClass(
 
 			this.set_column_spacing(3);
 
-			this._settings = Utils.getSettings();
+			this._settings = extension.getSettings();
 			this._inhibitUpdate = true;
 			this._settings.connect("changed", this._refresh.bind(this));
 
@@ -166,10 +161,10 @@ var TeaTimePrefsWidget = GObject.registerClass(
 			//});
 			// this.toolbar.get_style_context().add_class("inline-toolbar");
 			// this.attach(this.toolbar, 0 /*col*/ , curRow /*row*/ , 3 /*col span*/ , 1 /*row span*/ );
-			this.addButton = Gtk.Button.new_from_icon_name("list-add-symbolic", 0 /* size: 0 - inherit */ );
+			this.addButton = Gtk.Button.new_from_icon_name("list-add-symbolic");
 			this.addButton.connect("clicked", this._addTea.bind(this));
 			this.attach(this.addButton, 2 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
-			this.removeButton = Gtk.Button.new_from_icon_name("list-remove-symbolic", 0);
+			this.removeButton = Gtk.Button.new_from_icon_name("list-remove-symbolic");
 			this.removeButton.connect("clicked", this._removeSelectedTea.bind(this));
 			this.attach(this.removeButton, 4 /*col*/ , curRow /*row*/ , 2 /*col span*/ , 1 /*row span*/ );
 		}
@@ -302,8 +297,6 @@ var TeaTimePrefsWidget = GObject.registerClass(
 		}
 
 		_save(store, path_, iter_) {
-			const GLib = imports.gi.GLib;
-
 			// don't update the backend if someone else is messing with the model
 			if (this._inhibitUpdate)
 				return;
@@ -326,14 +319,8 @@ var TeaTimePrefsWidget = GObject.registerClass(
 		}
 	});
 
-function init() {}
-
-function buildPrefsWidget() {
-	let widget = new TeaTimePrefsWidget();
-	if (shellVersion < 40) {
-		widget.show_all();
-	} else {
-		widget.show();
-	}
-	return widget;
+export default class TeaTimePreferences extends ExtensionPreferences {
+    getPreferencesWidget() {
+        return new TeaTimePrefsWidget(this);
+    }
 }

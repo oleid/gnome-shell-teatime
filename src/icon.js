@@ -10,14 +10,13 @@
  * If there is a better way for that stuff, please let me know ;)
  ********************************************************************/
 
-const GObject = imports.gi.GObject;
-const St = imports.gi.St;
-const Clutter = imports.gi.Clutter;
-const ExUt = imports.misc.extensionUtils;
-const Me = ExUt.getCurrentExtension();
-const Utils = Me.imports.utils;
+import Clutter from 'gi://Clutter';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
 
-var TwoColorIcon = GObject.registerClass(
+import * as Utils from './utils.js';
+
+export var TwoColorIcon = GObject.registerClass(
 	class TwoColorIcon extends St.DrawingArea {
 		_init(size, drawingObject) {
 			super._init({
@@ -94,7 +93,7 @@ var TwoColorIcon = GObject.registerClass(
 		}
 	});
 
-var TeaPot = {
+export var TeaPot = {
 	width: 484,
 	height: 295,
 	draw(cr, stat, primary, secundary) {
@@ -138,7 +137,7 @@ var TeaPot = {
 }; // TeaPot
 
 
-var Pie = {
+export var Pie = {
 	width: 1,
 	height: 1,
 	draw(cr, stat, primary, secundary) {
