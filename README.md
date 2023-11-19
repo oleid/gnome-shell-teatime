@@ -1,3 +1,16 @@
+Please note
+===========
+
+This extension is not maintained, anymore.
+Please contribute to this fork:
+
+https://github.com/zeners/gnome-shell-teatime
+
+It is published as [TeaTimer](https://extensions.gnome.org/extension/6520/teatimer/) on extensions.gnome.org.
+
+---
+
+
 **Premise**
 
 Before you do anything, please make sure, that you have the following packages installed:
